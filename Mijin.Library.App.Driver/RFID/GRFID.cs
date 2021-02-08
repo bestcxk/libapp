@@ -11,31 +11,28 @@ using System.Threading.Tasks;
 
 namespace Mijin.Library.App.Driver.RFID
 {
-    public partial class GRFID
+    public partial class GRfid : IRfid
     {
-        private GClient _gClient;
+        protected GClient _gClient;
 
         // 当前GClient实例模块的 功率 数据
-        private Dictionary<byte, byte> _powerDic;
+        protected Dictionary<byte, byte> _powerDic;
 
         //是否自读一次模式
-        private bool _readOnce = false;
+        protected bool _readOnce = false;
         // ReadOnce 存储缓存标签
-        private LabelInfo _tempLabel = null;
+        protected LabelInfo _tempLabel = null;
 
         // gpi触发Action ,默认不处理
-        private GpiAction _gpiAction = GpiAction.Default;
+        protected GpiAction _gpiAction = GpiAction.Default;
 
         // 标签触发事件
         public event Action<LabelInfo> OnTagEpcLog;
-        // 人员进出事件(需要先设置 _gpiAction 为 InventoryGun 模式)
-        public event Action<PeopleInOut> OnPeopleInOut;
-
-        #region 构造方法
+        #region 构造函数
         /// <summary>
-        /// 构造方法
+        /// 构造函数
         /// </summary>
-        public GRFID()
+        public GRfid()
         {
             _gClient = new GClient();
             // 默认4天线模式
@@ -68,67 +65,9 @@ namespace Mijin.Library.App.Driver.RFID
         #endregion
 
         #region GPI触发事件(OnEncapedGpiStart)
-
-        private int gpiInIndex = 0;              // 通道门入口的gpi 索引值
-        private int gpiOutIndex = 1;             // 通道门出口的gpi 索引值
-
-        private int inCount = 0;
-        private int outCount = 0;
-        private System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
-        private int intervalTime = 3000;          // 触发器之间的间隔
-        private int firstTrigger = -1;            // 首先触发GPI索引
-
-        private void OnEncapedGpiStart(EncapedLogBaseGpiStart msg)
+        protected virtual void OnEncapedGpiStart(EncapedLogBaseGpiStart msg)
         {
             if (null == msg) { return; }
-
-            // 进馆/出馆 处理
-            if (_gpiAction == GpiAction.WatchPeopleInOut)
-            {
-                if (msg.logBaseGpiStart.GpiPort != gpiInIndex && msg.logBaseGpiStart.GpiPort != gpiOutIndex) { return; }
-                //进先高，出低
-                if (firstTrigger == -1 && msg.logBaseGpiStart.Level == 1)
-                {
-                    firstTrigger = msg.logBaseGpiStart.GpiPort;
-                    stopwatch.Reset();
-                    stopwatch.Start();
-                }
-                else if (firstTrigger != -1 && msg.logBaseGpiStart.Level == 0) 
-                {
-                    if (firstTrigger != msg.logBaseGpiStart.GpiPort)
-                    {
-                        stopwatch.Stop();
-                        TimeSpan timespan = stopwatch.Elapsed;
-                        stopwatch.Reset();
-                        stopwatch.Start();
-                        if (timespan.TotalMilliseconds < intervalTime)
-                        {
-                            if (firstTrigger == gpiInIndex)
-                            {
-                                inCount++;
-                                OnPeopleInOut.Invoke(new PeopleInOut(InOut.In,inCount,outCount));
-                            }
-                            else if (firstTrigger == gpiOutIndex)
-                            {
-                                outCount++;
-                                OnPeopleInOut.Invoke(new PeopleInOut(InOut.Out, inCount, outCount));
-                            }
-                            firstTrigger = -1;
-
-                        }
-                        else
-                        {
-                            firstTrigger = msg.logBaseGpiStart.GpiPort;
-                        }
-                    }
-                    else
-                    {
-                        stopwatch.Reset();
-                        stopwatch.Start();
-                    }
-                }
-
-            }
 
             // 扫码枪 处理
             if (_gpiAction == GpiAction.InventoryGun && msg.logBaseGpiStart.GpiPort == 0) //扫码枪
@@ -542,14 +481,62 @@ namespace Mijin.Library.App.Driver.RFID
         }
         #endregion
 
-        #region
+        # region 开始盘点(StartInventory)
+        /// <summary>
+        /// 开始盘点
+        /// </summary>
+        /// <param name="gpiAction"></param>
+        /// <returns></returns>
+        public MessageModel<bool> StartInventory(GpiAction gpiAction = GpiAction.Default)
+        {
+            MessageModel<bool> result = new MessageModel<bool>();
+            MsgAppSetGpiTrigger msg = new MsgAppSetGpiTrigger()
+            {
+                GpiPort = 0,
+                TriggerStart = 5,
+            };
+            _gClient.SendSynMsg(msg);
+            _gpiAction = gpiAction;
 
+            // 不是 扫码枪，则直接开启读标签
+            if (_gpiAction != GpiAction.InventoryGun)
+            {
+                result = this.Read();
+            }
+            else
+            {
+                result.success = msg.RtCode == 0;
+                result.devMsg = msg.RtMsg;
+            }
+            result.msg = "开启盘点" + (result.success ? "成功" : "失败");
+            return result;
+
+        }
         #endregion
 
-        #region
-        #endregion
+        #region 停止盘点(StopInventory)
+        /// <summary>
+        /// 停止盘点
+        /// </summary>
+        /// <param name="gpiAction"></param>
+        /// <returns></returns>
+        public MessageModel<bool> StopInventory()
+        {
+            MessageModel<bool> result = new MessageModel<bool>();
+            MsgAppSetGpiTrigger msg = new MsgAppSetGpiTrigger()
+            {
+                GpiPort = 0,
+                TriggerStart = 0,
+            };
+            _gClient.SendSynMsg(msg);
 
-        #region
+            _gpiAction = GpiAction.Default;
+
+            result = this.Stop();
+            result.msg = "停止盘点" + (result.success ? "成功" : "失败");
+            return result;
+
+        }
         #endregion
     }
 }
