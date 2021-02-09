@@ -2,12 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Util;
 
 namespace Mijin.Library.App.Driver.LibrarySIP2
 {
+    [ComVisible(true)]
     public class WenhuaSIP2Client : baseTcpClient
     {
         public WenhuaSIP2Client()
