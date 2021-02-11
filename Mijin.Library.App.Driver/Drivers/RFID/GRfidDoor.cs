@@ -1,12 +1,13 @@
 ﻿using GDotnet.Reader.Api.DAL;
 using GDotnet.Reader.Api.Protocol.Gx;
 using Mijin.Library.App.Driver.RFID.Model;
-using Mijin.Library.App.Model.Model;
+using Mijin.Library.App.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Util;
 
 namespace Mijin.Library.App.Driver.RFID
 {
@@ -96,7 +97,7 @@ namespace Mijin.Library.App.Driver.RFID
         /// <param name="clear"></param>
         /// <param name="ms"></param>
         /// <returns></returns>
-        public MessageModel<bool> StartWatchPeopleInOut(bool clear = false)
+        public MessageModel<bool> StartWatchPeopleInOut(string clear = "false")
         {
             var result = new MessageModel<bool>();
 
@@ -116,7 +117,7 @@ namespace Mijin.Library.App.Driver.RFID
                 base._gClient.SendSynMsg(msg1);
                 base._gClient.SendSynMsg(msg2);
 
-                if (clear)
+                if (clear.ToBool())
                     inCount = outCount = 0;
 
                 result.success = msg2.RtCode == 0;

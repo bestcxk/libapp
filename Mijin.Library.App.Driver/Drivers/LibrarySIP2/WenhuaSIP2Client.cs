@@ -1,4 +1,7 @@
-﻿using Mijin.Library.App.Model.Model;
+﻿using Mijin.Library.App.Driver.LibrarySIP2.Base;
+using Mijin.Library.App.Driver.LibrarySIP2.Interface;
+using Mijin.Library.App.Driver.LibrarySIP2.Model;
+using Mijin.Library.App.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,23 +9,41 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Util;
+using Util.Maps;
 
 namespace Mijin.Library.App.Driver.LibrarySIP2
 {
     [ComVisible(true)]
-    public class WenhuaSIP2Client : baseTcpClient
+    public class WenhuaSIP2Client : baseTcpClient, ISIP2Client
     {
         public WenhuaSIP2Client()
         {
         }
 
-        public WenhuaSIP2Client(string host, int port) : base(host, port)
+        public WenhuaSIP2Client(string host, string port) : base(host, port)
         {
 
         }
 
         private static string[] CirculationStatusStr = { "分编", "入藏", "在装订", "已合并", "修补", "丢失", "剔除", "普通借出", "预约", "阅览借出", "预借", "互借", "闭架借阅", "赠送", "交换出", "调拨", "转送", "临时借出", "未知状态" };
 
+        /// <summary>
+        /// 连接socket
+        /// </summary>
+        /// <param name="host"></param>
+        /// <param name="port"></param>
+        /// <returns></returns>
+        public override bool Connect(string host, string port)
+        {
+            return base.Connect(host, port);
+        }
+
+        /// <summary>
+        /// 登录文化socket
+        /// </summary>
+        /// <param name="account"></param>
+        /// <param name="pw"></param>
+        /// <returns></returns>
         public MessageModel<object> Login(string account, string pw)
         {
             var dic = new Dictionary<string, object>();
@@ -415,17 +436,14 @@ namespace Mijin.Library.App.Driver.LibrarySIP2
             return data;
         }
 
-        public class RegiesterInfo
+        /// <summary>
+        /// 自助办证(用于web进行反射调用)
+        /// </summary>
+        /// <param name="readerInfo"></param>
+        /// <returns></returns>
+        MessageModel<object> RegiesterReader(object readerInfo)
         {
-            public string Identity { get; set; } = "";
-            public string Pw { get; set; } = "";
-            public string Name { get; set; } = "";
-            public string CreateReaderLibrary { get; set; } = "";
-            public string Phone { get; set; } = "";
-            public string Addr { get; set; } = "";
-            public string Type { get; set; } = "";
-            public decimal Moeny { get; set; }
-            public bool Sex { get; set; } = true;
+            return RegiesterReader(readerInfo.JsonMapTo<RegiesterInfo>());
         }
     }
 }

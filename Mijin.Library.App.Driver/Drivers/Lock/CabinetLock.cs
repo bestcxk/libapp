@@ -1,17 +1,19 @@
-﻿using Mijin.Library.App.Model.Model;
+﻿using Mijin.Library.App.Driver.Lock.Interface;
+using Mijin.Library.App.Model;
 using System;
 using System.Collections.Generic;
 using System.IO.Ports;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Util;
 
 namespace Mijin.Library.App.Driver.Lock
 {
     /// <summary>
     /// 柜锁
     /// </summary>
-    public class CabinetLock
+    public class CabinetLock : ICabinetLock
     {
         /// <summary>
         /// 柜号索引 16个柜子
@@ -26,7 +28,7 @@ namespace Mijin.Library.App.Driver.Lock
         public bool IsOpen { get => _serialPort.IsOpen; }
 
         /// <summary>
-        /// 锁状态事件
+        /// 开/关 状态事件
         /// </summary>
         public event Action<List<bool>> lockStatusEvent;
 
@@ -111,7 +113,7 @@ namespace Mijin.Library.App.Driver.Lock
         /// <param name="com"></param>
         /// <param name="baud"></param>
         /// <returns></returns>
-        public MessageModel<bool> OpenSerialPort(string com, int baud = 115200)
+        public MessageModel<bool> OpenSerialPort(string com, string baud = "115200")
         {
             var data = new MessageModel<bool>();
             Console.WriteLine(@$"com:{com} baud:{baud}");
@@ -119,7 +121,7 @@ namespace Mijin.Library.App.Driver.Lock
                 ClosePort();
 
             _serialPort.PortName = com;
-            _serialPort.BaudRate = baud;
+            _serialPort.BaudRate = baud.ToInt();
             _serialPort.DataBits = 8;//数据位：8
             _serialPort.StopBits = StopBits.One;//停止位：1
             _serialPort.Parity = Parity.None;
@@ -216,9 +218,11 @@ namespace Mijin.Library.App.Driver.Lock
         /// </summary>
         /// <param name="lockIndex">柜号 1开始</param>
         /// <returns></returns>
-        public MessageModel<bool> OpenBox(int lockIndex)
+        public MessageModel<bool> OpenBox(string lockIndex)
         {
             var data = new MessageModel<bool>();
+
+            int index = lockIndex.ToInt();
 
             if (!_serialPort.IsOpen)
             {
@@ -230,14 +234,14 @@ namespace Mijin.Library.App.Driver.Lock
             {
                 _serialPort.DataReceived -= ReceivedData;
 
-                var sendBytes = new byte[] { lockNos[lockIndex - 1] };
+                var sendBytes = new byte[] { lockNos[index - 1] };
                 Console.WriteLine(@$"发送数据：{string.Join(" ", sendBytes.Select(s => s.ToString()))}");
                 _serialPort.Write(sendBytes, 0, sendBytes.Length);
                 _serialPort.ReadTimeout = 500;
                 var lockStatusList = ReceivedDataHandle();
 
                 // 开柜失败
-                if (lockStatusList == null || lockStatusList[lockIndex - 1] == false)
+                if (lockStatusList == null || lockStatusList[index - 1] == false)
                 {
                     data.msg = "开柜失败";
                     return data;

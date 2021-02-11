@@ -4,8 +4,9 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using Util;
 
-namespace Mijin.Library.App.Driver.LibrarySIP2
+namespace Mijin.Library.App.Driver.LibrarySIP2.Base
 {
     /// <summary>
     /// SIP2客户端通信协议基类
@@ -30,7 +31,7 @@ namespace Mijin.Library.App.Driver.LibrarySIP2
         /// </summary>
         /// <param name="host"></param>
         /// <param name="port"></param>
-        public baseTcpClient(string host, int port)
+        public baseTcpClient(string host, string port)
         {
             Connect(host, port);
         }
@@ -61,7 +62,7 @@ namespace Mijin.Library.App.Driver.LibrarySIP2
         /// 建立TCP连接
         /// </summary>
         /// <returns></returns>
-        public bool Connect(string host, int port)
+        public virtual bool Connect(string host, string port)
         {
             if (_tcpClient != null)
             {
@@ -74,7 +75,7 @@ namespace Mijin.Library.App.Driver.LibrarySIP2
                 {
                 }
 
-                _tcpClient.Connect(host, port);
+                _tcpClient.Connect(host, port.ToInt());
 
                 if (_tcpClient.Connected)
                     ReadTimeOut = 3000;

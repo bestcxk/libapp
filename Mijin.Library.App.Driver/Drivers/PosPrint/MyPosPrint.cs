@@ -1,11 +1,15 @@
 ﻿using autoreplyprint.cs;
-using Mijin.Library.App.Model.Model;
+using Mijin.Library.App.Driver.PosPrint.Interface;
+using Mijin.Library.App.Driver.PosPrint.Model;
+using Mijin.Library.App.Model;
 using System;
 using System.Collections.Generic;
 using System.IO.Ports;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Util;
+using Util.Maps;
 
 namespace Mijin.Library.App.Driver.PosPrint
 {
@@ -149,5 +153,14 @@ namespace Mijin.Library.App.Driver.PosPrint
             return data;
         }
 
+        /// <summary>
+        /// 打印(用于web进行反射调用)
+        /// </summary>
+        /// <param name="print"></param>
+        /// <returns></returns>
+        public MessageModel<bool> Print(object print)
+        {
+            return Print(print.JsonMapTo<PrintInfo>());
+        }
     }
 }

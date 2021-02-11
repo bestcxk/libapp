@@ -1,13 +1,15 @@
 ﻿using GDotnet.Reader.Api.DAL;
 using GDotnet.Reader.Api.Protocol.Gx;
 using Mijin.Library.App.Driver.RFID.Model;
-using Mijin.Library.App.Model.Model;
+using Mijin.Library.App.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Util;
+using Util.Maps;
 
 namespace Mijin.Library.App.Driver.RFID
 {
@@ -58,8 +60,11 @@ namespace Mijin.Library.App.Driver.RFID
                 {
                     _tempLabel = new LabelInfo(msg.logBaseEpcInfo);
                 }
+                else
+                { 
+                    OnTagEpcLog.Invoke(new LabelInfo(msg.logBaseEpcInfo));
+                }
 
-                OnTagEpcLog.Invoke(new LabelInfo(msg.logBaseEpcInfo));
             }
         }
         #endregion
@@ -78,7 +83,7 @@ namespace Mijin.Library.App.Driver.RFID
                 {
                     Task.Run(() =>
                     {
-                        ReadByAntId(new List<uint> { 2 });
+                        ReadByAntId(new List<string> { "2" });
                     });
                 }
                 else
@@ -294,11 +299,11 @@ namespace Mijin.Library.App.Driver.RFID
         #endregion
 
         #region 设置频段(SetFreqRange)
-        public MessageModel<bool> SetFreqRange(byte index)
+        public MessageModel<bool> SetFreqRange(string index)
         {
             var result = new MessageModel<bool>();
             MsgBaseSetFreqRange msgBaseSetFreqRange = new MsgBaseSetFreqRange();
-            msgBaseSetFreqRange.FreqRangeIndex = index;
+            msgBaseSetFreqRange.FreqRangeIndex = byte.Parse(index);
             _gClient.SendSynMsg(msgBaseSetFreqRange);
             result.success = msgBaseSetFreqRange.RtCode == 0;
             result.msg = "设置" + (result.success ? "成功" : "失败");
@@ -313,10 +318,14 @@ namespace Mijin.Library.App.Driver.RFID
         /// </summary>
         /// <param name="dt"></param>
         /// <returns></returns>
-        public MessageModel<bool> ReadByAntId(List<uint> antIds)
+        public MessageModel<bool> ReadByAntId(List<string> antIdStrs)
         {
             var result = new MessageModel<bool>();
             MsgBaseInventoryEpc msgBaseInventoryEpc = new MsgBaseInventoryEpc();
+
+            List<uint> antIds = antIdStrs.MapTo<List<uint>>();
+
+
             //天线排序
             antIds = antIds.OrderBy(p => p).ToList();
 
@@ -349,7 +358,7 @@ namespace Mijin.Library.App.Driver.RFID
         /// <returns></returns>
         public MessageModel<bool> Read()
         {
-            return ReadByAntId(_powerDic.Select(p => (uint)p.Key).ToList());
+            return ReadByAntId(_powerDic.Select(p => p.Key.ToString()).ToList());
         }
         #endregion
 
@@ -359,11 +368,11 @@ namespace Mijin.Library.App.Driver.RFID
         /// </summary>
         /// <param name="antIds"></param>
         /// <returns></returns>
-        public MessageModel<LabelInfo> ReadOnceByAntId(List<uint> antIds)
+        public MessageModel<LabelInfo> ReadOnceByAntId(List<string> antIdStrs)
         {
             var result = new MessageModel<LabelInfo>();
             _tempLabel = null;
-            var res = ReadByAntId(antIds);
+            var res = ReadByAntId(antIdStrs);
             if (!res.success)
             {
                 return new MessageModel<LabelInfo>(res);
@@ -387,6 +396,7 @@ namespace Mijin.Library.App.Driver.RFID
                 }
 
             }
+            _readOnce = false;
             this.Stop(); // 达到次数后停止读标签
             result.response = _tempLabel;
             result.success = result.response != null;
@@ -399,7 +409,7 @@ namespace Mijin.Library.App.Driver.RFID
         #region 只读一个标签(ReadOnce)
         public MessageModel<LabelInfo> ReadOnce()
         {
-            return ReadOnceByAntId(_powerDic.Select(p => (uint)p.Key).ToList());
+            return ReadOnceByAntId(_powerDic.Select(p => p.Key.ToString()).ToList());
         }
         #endregion
 
@@ -437,13 +447,14 @@ namespace Mijin.Library.App.Driver.RFID
         /// <param name="baseTid"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        public MessageModel<bool> WriteLabel(byte area, byte startAddr, string data, string baseTid = null, string password = "00000000", int timeOut = 3)
+        public MessageModel<bool> WriteLabel(string area, string startAddr, string data, string baseTid = null, string password = "00000000", string timeOutStr = "3")
         {
+            int timeOut = timeOutStr.ToInt();
             var result = new MessageModel<bool>();
             MsgBaseWriteEpc msgBaseWriteEpc = new MsgBaseWriteEpc();
             msgBaseWriteEpc.AntennaEnable = (ushort)eAntennaNo._1;
-            msgBaseWriteEpc.Area = area;
-            msgBaseWriteEpc.Start = startAddr;
+            msgBaseWriteEpc.Area = byte.Parse(area);
+            msgBaseWriteEpc.Start = byte.Parse(startAddr);
             int iWordLen = data.Length / 4;                            // 1 word = 2 byte     
             ushort iPc = (ushort)(iWordLen << 11);                              // PC值为EPC区域的长度标识（前5个bit标记长度），参考文档说明 
             String sPc = Convert.ToString(iPc, 16).PadLeft(4, '0');
@@ -538,5 +549,32 @@ namespace Mijin.Library.App.Driver.RFID
 
         }
         #endregion
+
+
+        #region 设置天线功率(SetPower(用于web进行反射调用))
+        /// <summary>
+        /// 设置天线功率(用于web进行反射调用)
+        /// </summary>
+        /// <param name="dt"></param>
+        /// <returns></returns>
+        public MessageModel<Dictionary<byte, byte>> SetPower(object dt)
+        {
+            return SetPower(dt.JsonMapTo<Dictionary<byte, byte>>());
+        }
+        #endregion
+
+        #region 设置GPO输出(SetGpo(用于web进行反射调用))
+        /// <summary>
+        /// 设置GPO输出
+        /// </summary>
+        /// <param name="dt"></param>
+        /// <returns></returns>
+        public MessageModel<bool> SetGpo(object dic)
+        {
+            return SetGpo(dic.JsonMapTo<Dictionary<string, byte>>());
+        }
+        #endregion
+
+
     }
 }

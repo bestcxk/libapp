@@ -1,4 +1,4 @@
-﻿using Mijin.Library.App.Model.Model;
+﻿using Mijin.Library.App.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +11,7 @@ namespace Mijin.Library.App.Driver.Reader
     /// <summary>
     /// 万特身份证/高频卡 读卡器
     /// </summary>
-    public class WonteReader
+    public class WonteReader : IdentityReader
     {
         private int port = 0;
 

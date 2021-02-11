@@ -1,10 +1,11 @@
-﻿using Mijin.Library.App.Model.Model;
+﻿using Mijin.Library.App.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using Util;
 
 namespace Mijin.Library.App.Driver.Reader
 {
@@ -12,7 +13,7 @@ namespace Mijin.Library.App.Driver.Reader
     /// 黑色高频读卡器
     /// 可直接调用读卡方法，读卡方法会进行初始化
     /// </summary>
-    public class BlackHFReader
+    public class BlackHFReader : IHFReader
     {
         #region DllImport
         [DllImport("kernel32.dll")]
@@ -261,7 +262,7 @@ namespace Mijin.Library.App.Driver.Reader
         /// </summary>
         /// <param name="block"></param>
         /// <returns></returns>
-        public MessageModel<string> ReadBlock(byte block)
+        public MessageModel<string> ReadBlock(string block)
         {
             MessageModel<string> result = new MessageModel<string>();
             result.msg = "读卡失败";
@@ -284,6 +285,7 @@ namespace Mijin.Library.App.Driver.Reader
                 // 初始化失败则直接返回结果
                 if (!initResult.success)
                     return new MessageModel<string>(initResult);
+                    //return new MessageModel<string>(initResult);
             }
 
             status = TyA_Request(g_hDevice, mode, ref TagType);//搜寻所有的卡
@@ -315,7 +317,7 @@ namespace Mijin.Library.App.Driver.Reader
             }
             var bts = new byte[256];
             byte rtbtsLen = 0;
-            status = TyA_CS_Read(g_hDevice, block, bts, ref rtbtsLen);
+            status = TyA_CS_Read(g_hDevice, byte.Parse(block), bts, ref rtbtsLen);
             if (status != 0)
             {
                 result.devMsg = "TyA_CS_Read failed !";
