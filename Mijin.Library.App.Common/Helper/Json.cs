@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 
-namespace Util.Helpers
+namespace Util
 {
     /// <summary>
     /// Json操作
@@ -21,13 +22,16 @@ namespace Util.Helpers
         /// </summary>
         /// <param name="target">目标对象</param>
         /// <param name="isConvertToSingleQuotes">是否将双引号转成单引号</param>
-        public static string ToJson( object target,bool isConvertToSingleQuotes = false ) {
-            if ( target == null )
+        public static string ToJson(object target, bool isConvertToSingleQuotes = false)
+        {
+            if (target == null)
                 return string.Empty;
-            var result = JsonConvert.SerializeObject( target );
-            if ( isConvertToSingleQuotes )
-                result = result.Replace( "\"", "'" );
+            var result = JsonConvert.SerializeObject(target);
+            if (isConvertToSingleQuotes)
+                result = result.Replace("\"", "'");
             return result;
         }
+
+        
     }
 }
