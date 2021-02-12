@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="System.Drawing.Common" Version="5.0.1" />
     <PackageReference Include="System.IO.Ports" Version="5.0.0" />
   </ItemGroup>
 
@@ -16,6 +17,12 @@
   <ItemGroup>
     <Reference Include="autoreplyprint.cs">
       <HintPath>..\..\..\SDK\SDKDLL\x64\autoreplyprint.cs.dll</HintPath>
+    </Reference>
+    <Reference Include="Emgu.CV">
+      <HintPath>..\..\..\..\SDK\SDKDLL\x64\Emgu.CV.dll</HintPath>
+    </Reference>
+    <Reference Include="Emgu.Util">
+      <HintPath>..\..\..\SDK\SDKDLL\x64\Emgu.Util.dll</HintPath>
     </Reference>
     <Reference Include="GReaderApi">
       <HintPath>..\..\..\SDK\SDKDLL\x64\GReaderApi.dll</HintPath>

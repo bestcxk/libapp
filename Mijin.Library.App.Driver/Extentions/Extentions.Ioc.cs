@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Mijin.Library.App.Driver.Drivers.Camera;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +21,7 @@ namespace Mijin.Library.App.Driver.Extentions
             services.AddSingleton<IRfidDoor, GRfidDoor>();
             services.AddSingleton<IKeyboard, Keyboard>();
             services.AddSingleton<ISystemFunc, SystemFunc>();
-
+            services.AddSingleton<ICamera, Camera>();
             services.AddSingleton<IDriverHandle, DriverHandle>();
         }
     }

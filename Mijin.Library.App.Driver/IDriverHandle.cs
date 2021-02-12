@@ -8,7 +8,7 @@ namespace Mijin.Library.App.Driver
     {
 
         /// <summary>
-        /// 开/关 锁事件 false:未打开  true:打开
+        /// 锁孔板开/关 锁事件 false:未打开  true:打开
         /// </summary>
         event Action<List<bool>> lockStatusEvent;
 
@@ -18,9 +18,14 @@ namespace Mijin.Library.App.Driver
         event Action<LabelInfo> OnTagEpcLog;
 
         /// <summary>
-        /// 人进出事件
+        /// 通道门进出事件
         /// </summary>
         event Action<PeopleInOut> OnPeopleInOut;
+
+        /// <summary>
+        /// 摄像头获取图片事件
+        /// </summary>
+        event Action<string> OnImgLog;
 
         /// <summary>
         /// 调用Driver方法

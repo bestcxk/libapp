@@ -1,4 +1,5 @@
-﻿using Mijin.Library.App.Model;
+﻿using Mijin.Library.App.Driver.Drivers.Camera;
+using Mijin.Library.App.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,35 +21,31 @@ namespace Mijin.Library.App.Driver
         private IRfidDoor _rfidDoor { get; }
         public IKeyboard _keyboard { get; }
         private ISystemFunc _systemFunc { get; }
+        private ICamera _camera { get; }
 
-
+        /// <summary>
+        /// 锁孔板开/关 锁事件 false:未打开  true:打开
+        /// </summary>
         public event Action<List<bool>> lockStatusEvent;
+
+        // <summary>
+        /// 读到标签事件
+        /// </summary>
         public event Action<LabelInfo> OnTagEpcLog;
+
+        /// <summary>
+        /// 通道门进出事件
+        /// </summary>
         public event Action<PeopleInOut> OnPeopleInOut;
 
         /// <summary>
-        /// 获取操作方法的实例
+        /// 摄像头获取图片事件
         /// </summary>
-        /// <param name="objInterfaceName">接口名</param>
-        /// <returns>返回实例</returns>
-        private object GetActionObj(string objInterfaceName) =>
-            objInterfaceName switch
-            {
-                "ISystemFunc" => _systemFunc,
-                "ISIP2Client" => _sIP2Client,
-                "ICabinetLock" => _cabinetLock,
-                "IPosPrint" => _posPrint,
-                "IdentityReader" => _identityReader,
-                "IHFReader" => _hFReader,
-                "IRfid" => _rfid,
-                "IRfidDoor" => _rfidDoor,
-                "IKeyboard" => _keyboard,
-                _ => null
-            };
+        public event Action<string> OnImgLog;
 
         #region 构造函数
 
-        public DriverHandle(ISystemFunc systemFunc, ISIP2Client sIP2Client, ICabinetLock cabinetLock, IPosPrint posPrint, IdentityReader identityReader, IHFReader HFReader, IRfid rfid, IRfidDoor rfidDoor,IKeyboard keyboard)
+        public DriverHandle(ISystemFunc systemFunc, ISIP2Client sIP2Client, ICabinetLock cabinetLock, IPosPrint posPrint, IdentityReader identityReader, IHFReader HFReader, IRfid rfid, IRfidDoor rfidDoor,IKeyboard keyboard,ICamera camera)
         {
             _systemFunc = systemFunc;
             _sIP2Client = sIP2Client;
@@ -59,13 +56,19 @@ namespace Mijin.Library.App.Driver
             _rfid = rfid;
             _rfidDoor = rfidDoor;
             _keyboard = keyboard;
+            _camera = camera;
+
+
             _cabinetLock.lockStatusEvent += lockStatusEvent;
             _rfid.OnTagEpcLog += OnTagEpcLog;
 
             _rfidDoor.OnPeopleInOut += OnPeopleInOut;
             _rfidDoor.OnTagEpcLog += OnTagEpcLog;
 
+            _camera.OnImgLog += OnImgLog;
+
         }
+        
         #endregion
 
         /// <summary>
@@ -80,11 +83,12 @@ namespace Mijin.Library.App.Driver
             // 获取执行参数的所有type
             Type[] parametersTypes = parameters == null ? new Type[] { } : parameters.Select(p => p.GetType()).ToArray();
 
-            // 通过类名(接口名)获取到实例
-            var acionObj = GetActionObj(cls);
+            // 反射通过cls 获取 同名接口的 属性
+            var bindingFlags = BindingFlags.NonPublic | BindingFlags.Instance;
+            PropertyInfo propertyInfo = this.GetType().GetProperties(bindingFlags).Where(p => p.PropertyType.Name == cls).FirstOrDefault();
 
             // 匹配不到执行类
-            if (acionObj == null)
+            if (propertyInfo == null)
             {
                 return new MessageModel<object>()
                 {
@@ -92,8 +96,11 @@ namespace Mijin.Library.App.Driver
                 };
             }
 
+            // 获取执行类实体
+            var acionInstance = propertyInfo.GetValue(this);
+
             // 反射执行完方法后转换成 WebMessageModel 类
-            return acionObj.GetType().GetMethod(mthod, parametersTypes).Invoke(acionObj, parameters).JsonMapTo<MessageModel<object>>();
+            return acionInstance.GetType().GetMethod(mthod, parametersTypes).Invoke(acionInstance, parameters).JsonMapTo<MessageModel<object>>();
         }
     }
 }
