@@ -574,9 +574,10 @@ namespace Mijin.Library.App.Driver
         }
         #endregion
 
-        public void Test()
+        public MessageModel<bool> Test()
         {
             Console.WriteLine("Test调用成功");
+            return new MessageModel<bool>();
         }
 
 
