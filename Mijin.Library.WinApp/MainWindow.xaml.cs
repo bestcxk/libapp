@@ -25,10 +25,10 @@ namespace Mijin.Library.App
     /// </summary>
     public partial class MainWindow : MetroWindow
     {
-        private readonly WebView _webView;
+        private readonly WebViewWindow _webView;
         private readonly ClientSettings _clientSettings;
 
-        public MainWindow(WebView webView,ClientSettings clientSettings)
+        public MainWindow(WebViewWindow webView,ClientSettings clientSettings)
         {
             //显示在显示器最中间
             this.WindowStartupLocation = WindowStartupLocation.CenterScreen;

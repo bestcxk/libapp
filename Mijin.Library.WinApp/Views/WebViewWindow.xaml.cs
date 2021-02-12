@@ -13,15 +13,15 @@ using Util.Maps;
 namespace Mijin.Library.App.Views
 {
     /// <summary>
-    /// WebView.xaml 的交互逻辑
+    /// WebViewWindow.xaml 的交互逻辑
     /// </summary>
-    public partial class WebView : Window
+    public partial class WebViewWindow : Window
     {
         private readonly IDriverHandle _driverHandle;
         private readonly ClientSettings _clientSettings;
 
         #region 构造函数
-        public WebView(IDriverHandle driverHandle,ClientSettings clientSettings)
+        public WebViewWindow(IDriverHandle driverHandle,ClientSettings clientSettings)
         {
             _driverHandle = driverHandle;
             _clientSettings = clientSettings;

@@ -37,7 +37,7 @@ namespace Mijin.Library.App
         {
             // 注册主window
             services.AddSingleton<MainWindow>();
-            services.AddSingleton<WebView>();
+            services.AddSingleton<WebViewWindow>();
             // 注册Nlog
             services.AddNLog();
             // 注册MemoryCache
@@ -59,7 +59,7 @@ namespace Mijin.Library.App
         private void App_OnStartup(object sender, StartupEventArgs e)
         {
             var mainWindow = _serviceProvider.GetService<MainWindow>();
-            var webviewWindow = _serviceProvider.GetService<WebView>();
+            var webviewWindow = _serviceProvider.GetService<WebViewWindow>();
             var settings = _serviceProvider.GetService<ClientSettings>();
             // 启动窗口前检测
             this.BeforeStart();
