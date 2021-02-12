@@ -1,10 +1,4 @@
-﻿using Mijin.Library.App.Driver.LibrarySIP2.Interface;
-using Mijin.Library.App.Driver.Lock.Interface;
-using Mijin.Library.App.Driver.PosPrint.Interface;
-using Mijin.Library.App.Driver.Reader;
-using Mijin.Library.App.Driver.RFID;
-using Mijin.Library.App.Driver.RFID.Model;
-using Mijin.Library.App.Model;
+﻿using Mijin.Library.App.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +18,9 @@ namespace Mijin.Library.App.Driver
         private IHFReader _hFReader { get; }
         private IRfid _rfid { get; }
         private IRfidDoor _rfidDoor { get; }
+        public IKeyboard _keyboard { get; }
+        private ISystemFunc _systemFunc { get; }
+
 
         public event Action<List<bool>> lockStatusEvent;
         public event Action<LabelInfo> OnTagEpcLog;
@@ -37,6 +34,7 @@ namespace Mijin.Library.App.Driver
         private object GetActionObj(string objInterfaceName) =>
             objInterfaceName switch
             {
+                "ISystemFunc" => _systemFunc,
                 "ISIP2Client" => _sIP2Client,
                 "ICabinetLock" => _cabinetLock,
                 "IPosPrint" => _posPrint,
@@ -44,14 +42,15 @@ namespace Mijin.Library.App.Driver
                 "IHFReader" => _hFReader,
                 "IRfid" => _rfid,
                 "IRfidDoor" => _rfidDoor,
+                "IKeyboard" => _keyboard,
                 _ => null
             };
 
         #region 构造函数
 
-        public DriverHandle(ISIP2Client sIP2Client, ICabinetLock cabinetLock, IPosPrint posPrint, IdentityReader identityReader, IHFReader HFReader, IRfid rfid, IRfidDoor rfidDoor)
+        public DriverHandle(ISystemFunc systemFunc, ISIP2Client sIP2Client, ICabinetLock cabinetLock, IPosPrint posPrint, IdentityReader identityReader, IHFReader HFReader, IRfid rfid, IRfidDoor rfidDoor,IKeyboard keyboard)
         {
-
+            _systemFunc = systemFunc;
             _sIP2Client = sIP2Client;
             _cabinetLock = cabinetLock;
             _posPrint = posPrint;
@@ -59,7 +58,7 @@ namespace Mijin.Library.App.Driver
             _hFReader = HFReader;
             _rfid = rfid;
             _rfidDoor = rfidDoor;
-
+            _keyboard = keyboard;
             _cabinetLock.lockStatusEvent += lockStatusEvent;
             _rfid.OnTagEpcLog += OnTagEpcLog;
 

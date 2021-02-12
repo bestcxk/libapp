@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Util;
 
-namespace Mijin.Library.App.Driver.Reader
+namespace Mijin.Library.App.Driver
 {
     /// <summary>
     /// 黑色高频读卡器

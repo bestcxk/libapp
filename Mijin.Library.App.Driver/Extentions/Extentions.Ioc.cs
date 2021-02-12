@@ -1,12 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Mijin.Library.App.Driver.LibrarySIP2;
-using Mijin.Library.App.Driver.LibrarySIP2.Interface;
-using Mijin.Library.App.Driver.Lock;
-using Mijin.Library.App.Driver.Lock.Interface;
-using Mijin.Library.App.Driver.PosPrint;
-using Mijin.Library.App.Driver.PosPrint.Interface;
-using Mijin.Library.App.Driver.Reader;
-using Mijin.Library.App.Driver.RFID;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +18,8 @@ namespace Mijin.Library.App.Driver.Extentions
             services.AddSingleton<IHFReader, BlackHFReader>();
             services.AddSingleton<IRfid, GRfid>();
             services.AddSingleton<IRfidDoor, GRfidDoor>();
+            services.AddSingleton<IKeyboard, Keyboard>();
+            services.AddSingleton<ISystemFunc, SystemFunc>();
 
             services.AddSingleton<IDriverHandle, DriverHandle>();
         }

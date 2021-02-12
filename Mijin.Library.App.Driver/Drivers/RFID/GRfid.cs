@@ -1,6 +1,5 @@
 ﻿using GDotnet.Reader.Api.DAL;
 using GDotnet.Reader.Api.Protocol.Gx;
-using Mijin.Library.App.Driver.RFID.Model;
 using Mijin.Library.App.Model;
 using System;
 using System.Collections.Generic;
@@ -11,7 +10,7 @@ using System.Threading.Tasks;
 using Util;
 using Util.Maps;
 
-namespace Mijin.Library.App.Driver.RFID
+namespace Mijin.Library.App.Driver
 {
     public partial class GRfid : IRfid
     {
@@ -574,6 +573,11 @@ namespace Mijin.Library.App.Driver.RFID
             return SetGpo(dic.JsonMapTo<Dictionary<string, byte>>());
         }
         #endregion
+
+        public void Test()
+        {
+            Console.WriteLine("Test调用成功");
+        }
 
 
     }

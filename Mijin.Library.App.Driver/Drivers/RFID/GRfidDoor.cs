@@ -1,6 +1,5 @@
 ﻿using GDotnet.Reader.Api.DAL;
 using GDotnet.Reader.Api.Protocol.Gx;
-using Mijin.Library.App.Driver.RFID.Model;
 using Mijin.Library.App.Model;
 using System;
 using System.Collections.Generic;
@@ -9,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Util;
 
-namespace Mijin.Library.App.Driver.RFID
+namespace Mijin.Library.App.Driver
 {
     public class GRfidDoor : GRfid, IRfidDoor
     {

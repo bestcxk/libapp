@@ -1,7 +1,4 @@
-﻿using Mijin.Library.App.Driver.LibrarySIP2.Base;
-using Mijin.Library.App.Driver.LibrarySIP2.Interface;
-using Mijin.Library.App.Driver.LibrarySIP2.Model;
-using Mijin.Library.App.Model;
+﻿using Mijin.Library.App.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +8,7 @@ using System.Threading.Tasks;
 using Util;
 using Util.Maps;
 
-namespace Mijin.Library.App.Driver.LibrarySIP2
+namespace Mijin.Library.App.Driver
 {
     [ComVisible(true)]
     public class WenhuaSIP2Client : baseTcpClient, ISIP2Client

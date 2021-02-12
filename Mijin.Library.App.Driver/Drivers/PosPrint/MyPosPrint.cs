@@ -1,6 +1,4 @@
 ﻿using autoreplyprint.cs;
-using Mijin.Library.App.Driver.PosPrint.Interface;
-using Mijin.Library.App.Driver.PosPrint.Model;
 using Mijin.Library.App.Model;
 using System;
 using System.Collections.Generic;
@@ -11,7 +9,7 @@ using System.Threading.Tasks;
 using Util;
 using Util.Maps;
 
-namespace Mijin.Library.App.Driver.PosPrint
+namespace Mijin.Library.App.Driver
 {
     /// <summary>
     /// 茗又小票打印机

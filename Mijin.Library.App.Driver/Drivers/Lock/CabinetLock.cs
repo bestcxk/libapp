@@ -1,5 +1,4 @@
-﻿using Mijin.Library.App.Driver.Lock.Interface;
-using Mijin.Library.App.Model;
+﻿using Mijin.Library.App.Model;
 using System;
 using System.Collections.Generic;
 using System.IO.Ports;
@@ -8,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Util;
 
-namespace Mijin.Library.App.Driver.Lock
+namespace Mijin.Library.App.Driver
 {
     /// <summary>
     /// 柜锁

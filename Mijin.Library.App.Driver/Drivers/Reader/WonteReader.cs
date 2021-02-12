@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Mijin.Library.App.Driver.Reader
+namespace Mijin.Library.App.Driver
 {
     /// <summary>
     /// 万特身份证/高频卡 读卡器

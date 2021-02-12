@@ -1,5 +1,4 @@
-﻿using Mijin.Library.App.Driver.RFID.Model;
-using Mijin.Library.App.Model;
+﻿using Mijin.Library.App.Model;
 using System;
 using System.Collections.Generic;
 
