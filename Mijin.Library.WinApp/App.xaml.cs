@@ -2,16 +2,14 @@
 using Mijin.Library.App.Common.Helper;
 using Mijin.Library.App.Filters;
 using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Threading;
-using Util.Helpers;
-using Util.Logs;
 using Util.Logs.Extensions;
+using Microsoft.Extensions.Configuration;
+using Mijin.Library.App.Views;
+using Mijin.Library.App.Driver.Extentions;
+using System.Windows.Media;
+using System.Drawing;
+using Mijin.Library.App.Model;
 
 namespace Mijin.Library.App
 {
@@ -21,11 +19,16 @@ namespace Mijin.Library.App
     public partial class App : Application
     {
         public IServiceCollection _serviceCollection { get; }
+
+        public IConfiguration Configuration { get; }
+
         public IServiceProvider _serviceProvider { get; }
+
 
         public App()
         {
             _serviceCollection = new ServiceCollection();
+
             ConfigureServices(_serviceCollection);
             _serviceProvider = _serviceCollection.BuildServiceProvider();
         }
@@ -34,16 +37,30 @@ namespace Mijin.Library.App
         {
             // 注册主window
             services.AddSingleton<MainWindow>();
+            services.AddSingleton<WebView>();
             // 注册Nlog
             services.AddNLog();
             // 注册MemoryCache
             services.AddMemoryCache();
+
+            // 注册Driver
+            services.AddDriver();
+
+            // 注册客户端设置类
+            services.AddSingleton<ClientSettings>();
         }
+
+        //public void Configure(IApplicationBuilder app)
+        //{ 
+        //     app.UseSignalR()
+        //}
 
         // 使用了ioc后，只能使用该方式进行启动,把app.xaml的StartupUrl 修改成 Startup = App_OnStartup
         private void App_OnStartup(object sender, StartupEventArgs e)
         {
             var mainWindow = _serviceProvider.GetService<MainWindow>();
+            var webviewWindow = _serviceProvider.GetService<WebView>();
+            var settings = _serviceProvider.GetService<ClientSettings>();
             // 启动窗口前检测
             this.BeforeStart();
 
@@ -53,7 +70,16 @@ namespace Mijin.Library.App
             ////Task线程内未捕获异常处理事件
             //TaskScheduler.UnobservedTaskException += TestException;
 
-            mainWindow.Show();
+            // 是否直接打开webview
+            if (!string.IsNullOrEmpty(settings.NoSelectOpenUrl))
+            {
+                webviewWindow.webView.Source = new Uri(settings.NoSelectOpenUrl);
+                webviewWindow.Show();
+            }
+            else
+            { 
+                mainWindow.Show();
+            }
         }
 
         // 启动程序前检测
@@ -77,7 +103,10 @@ namespace Mijin.Library.App
                         // 需要在注册Nlog后启动，否则就注释掉
                         //ex.Log(Log.GetLog().Caption("BeforeStart"));
                     }
-
+                }
+                else
+                {
+                    Environment.Exit(0);
                 }
             }
             #endregion

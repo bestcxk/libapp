@@ -33,9 +33,10 @@
 
         <WrapPanel Margin="10,10,10,10">
             <Controls:Tile x:Name="manager" Title="后台管理系统"
+                           Click="GoWebView"
                            Margin="10"
                            Controls:ControlsHelper.MouseOverBorderBrush="{DynamicResource MahApps.Brushes.ThemeForeground}"
-                           Background="MediumBlue"
+                           Background="#06BF94"
                            HorizontalTitleAlignment="Center" Width="420" Height="180" TitleFontSize="24" >
                 <iconPacks:PackIconModern Width="40"
                                           Height="40"
@@ -53,6 +54,7 @@
             </Controls:Tile>-->
 
             <Controls:Tile x:Name="autoLend" Title="自助借阅"
+                           Click="GoWebView"
                            Margin="10"
                            Controls:ControlsHelper.MouseOverBorderBrush="{DynamicResource MahApps.Brushes.ThemeForeground}"
                            Background="#FF842D"

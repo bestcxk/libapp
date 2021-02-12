@@ -21,7 +21,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mijin.Library.App.Tests", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleApp", "ConsoleApp\ConsoleApp.csproj", "{E9926A03-74F0-4D0B-BB38-16ED19E14D08}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mijin.Library.App.Model", "Mijin.Library.App.Model\Mijin.Library.App.Model.csproj", "{25CC1C4A-4F49-47A0-ADE0-192E33179821}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mijin.Library.App.Model", "Mijin.Library.App.Model\Mijin.Library.App.Model.csproj", "{25CC1C4A-4F49-47A0-ADE0-192E33179821}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
