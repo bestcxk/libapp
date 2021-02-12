@@ -9,13 +9,14 @@ using Util.Helpers;
 using Util.Logs.Extensions;
 using Util.Logs;
 using Util.Maps;
+using MahApps.Metro.Controls;
 
 namespace Mijin.Library.App.Views
 {
     /// <summary>
     /// WebViewWindow.xaml 的交互逻辑
     /// </summary>
-    public partial class WebViewWindow : Window
+    public partial class WebViewWindow : MetroWindow
     {
         private readonly IDriverHandle _driverHandle;
         private readonly ClientSettings _clientSettings;
