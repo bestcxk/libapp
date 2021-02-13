@@ -10,6 +10,7 @@ using Mijin.Library.App.Driver.Extentions;
 using System.Windows.Media;
 using System.Drawing;
 using Mijin.Library.App.Model;
+using Mijin.Library.App.Driver;
 
 namespace Mijin.Library.App
 {
@@ -70,6 +71,10 @@ namespace Mijin.Library.App
             ////Task线程内未捕获异常处理事件
             //TaskScheduler.UnobservedTaskException += TestException;
 
+            // 其中一个窗口触发了关闭事件则直接退出全部程序
+            mainWindow.Closed += ExitApplication;
+            webviewWindow.Closed += ExitApplication;
+
             // 是否直接打开webview
             if (!string.IsNullOrEmpty(settings.NoSelectOpenUrl))
             {
@@ -80,6 +85,17 @@ namespace Mijin.Library.App
             { 
                 mainWindow.Show();
             }
+        }
+
+        /// <summary>
+        /// 退出整个应用
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ExitApplication(object sender, EventArgs e)
+        {
+            // 退出整个应用
+            Environment.Exit(0);
         }
 
         // 启动程序前检测
@@ -111,6 +127,9 @@ namespace Mijin.Library.App
             }
             #endregion
         }
+
+
+        
 
     }
 }

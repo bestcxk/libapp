@@ -44,9 +44,7 @@ namespace Mijin.Library.App.Views
             this.webView.CoreWebView2.WebMessageReceived += WebMessageReceived;
 
             // 注册事件
-            _driverHandle.lockStatusEvent += LockStatusEvent;
-            _driverHandle.OnTagEpcLog += OnTagEpcLog;
-            _driverHandle.OnPeopleInOut += OnPeopleInOut;
+            _driverHandle.OnDriverEvent += OnDriverEvent;
 
             // 窗口关闭时
             this.Closed += (s, e) =>
@@ -54,9 +52,6 @@ namespace Mijin.Library.App.Views
                 // 清空Cookies
                 if (_clientSettings.OnExitClearWebCookie)
                     this.webView.CoreWebView2.CookieManager.DeleteAllCookies();
-
-                // 退出整个应用
-                Environment.Exit(0);
             };
 
             // 非 开发 模式
@@ -66,6 +61,7 @@ namespace Mijin.Library.App.Views
                 webView.CoreWebView2.Settings.AreDevToolsEnabled = false;
                 // 取消右键菜单
                 webView.CoreWebView2.Settings.AreDefaultContextMenusEnabled = false;
+
             }
 
             #region 窗口设置
@@ -112,61 +108,26 @@ namespace Mijin.Library.App.Views
             Left = (workArea.Width - this.Width) / 2 + workArea.Left;
             Top = (workArea.Height - this.Height) / 2 + workArea.Top;
             // 显示到最前端
-            this.Topmost = true;
+            //this.Topmost = true;
             #endregion
 
+            // 直达webView模式
             if (!string.IsNullOrEmpty(_clientSettings.NoSelectOpenUrl))
             {
                 this.webView.Source = new Uri(_clientSettings.NoSelectOpenUrl);
             }
+
+            var result = _driverHandle.Invoke("IRfid", "Test", null);
         }
+
+
         #endregion
 
         #region Driver 模块事件
-
-        #region 通道门人员进出事件处理
-        private void OnPeopleInOut(PeopleInOut obj)
+        private void OnDriverEvent(object obj)
         {
-            var result = new SendMessageModel<object>()
-            {
-                success = true,
-                msg = "获取成功",
-                response = obj
-            };
-
-            Send(result);
-
+            Send(obj);
         }
-        #endregion
-        #region 标签事件处理 
-        private void OnTagEpcLog(LabelInfo obj)
-        {
-            var result = new SendMessageModel<object>()
-            {
-                success = true,
-                msg = "获取成功",
-                response = obj
-            };
-
-            Send(result);
-
-
-        }
-        #endregion
-        #region 锁孔板事件处理
-        private void LockStatusEvent(List<bool> obj)
-        {
-            var result = new SendMessageModel<object>()
-            {
-                success = true,
-                msg = "获取成功",
-                response = obj
-            };
-
-            Send(result);
-        }
-        #endregion
-
         #endregion
 
         #region 前端 web 接收事件
@@ -177,7 +138,7 @@ namespace Mijin.Library.App.Views
         /// <param name="e"></param>
         private void WebMessageReceived(object sender, CoreWebView2WebMessageReceivedEventArgs receivedEvent)
         {
-            var result = new SendMessageModel<object>();
+            var result = new WebViewSendModel<object>();
             try
             {
                 // 获取请求字符串
@@ -254,29 +215,6 @@ namespace Mijin.Library.App.Views
         #endregion
 
         #region web前端 发送/接收 类
-        /// <summary>
-        /// web 前端发送类
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        private class SendMessageModel<T> : MessageModel<T>
-        {
-            public SendMessageModel()
-            {
-            }
-
-            public SendMessageModel(baseMessageModel @base) : base(@base)
-            {
-            }
-            /// <summary>
-            /// 执行方法 sample : ISIP2Client.Connect
-            /// </summary>
-            public string method { get; set; }
-            /// <summary>
-            /// guid，确保唯一性
-            /// </summary>
-            public string guid { get; set; }
-        }
-
         /// <summary>
         /// web 前端接收类
         /// </summary>
