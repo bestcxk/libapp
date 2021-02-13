@@ -580,18 +580,18 @@ namespace Mijin.Library.App.Driver
         }
         #endregion
 
-        public MessageModel<bool> Test()
-        {
-            OnReadLabel.Invoke(new WebViewSendModel<LabelInfo>()
-            {
-                msg = "获取成功",
-                success = true,
-                response = new LabelInfo(),
-                method = "OnReadLabel"
-            });
+        //public MessageModel<bool> Test()
+        //{
+        //    OnReadLabel.Invoke(new WebViewSendModel<LabelInfo>()
+        //    {
+        //        msg = "获取成功",
+        //        success = true,
+        //        response = new LabelInfo(),
+        //        method = "OnReadLabel"
+        //    });
 
-            return new MessageModel<bool>();
-        }
+        //    return new MessageModel<bool>();
+        //}
 
 
     }

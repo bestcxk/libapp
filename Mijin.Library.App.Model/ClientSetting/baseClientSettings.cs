@@ -48,14 +48,40 @@ namespace Mijin.Library.App.Model
         public List<string> DoorUrls { get; set; }
 
         /// <summary>
-        /// 每次退出清空浏览器缓存
+        /// 每次退出清空Cookie
         /// </summary>
-        public bool OnExitClearWebCookie { get; set; }
+        public ClearWebViewCacheMode OnExitClearWebCache { get; set; } = ClearWebViewCacheMode.Default;
 
         /// <summary>
         /// 开发者模式
         /// </summary>
         public bool IsDev { get; set; }
+    }
 
+    /// <summary>
+    /// webview清楚缓存类型
+    /// </summary>
+    public enum ClearWebViewCacheMode
+    {
+        /// <summary>
+        /// 不清空
+        /// </summary>
+        Default = 0,
+        /// <summary>
+        /// 清空cookie
+        /// </summary>
+        Cookie = 1,
+        /// <summary>
+        /// 清空LocalState
+        /// </summary>
+        LocalState = 2,
+        /// <summary>
+        /// 删除webview 下的Default文件
+        /// </summary>
+        DefaultCache = 3,
+        /// <summary>
+        /// 删除整个webview 的Cache文件
+        /// </summary>
+        AllCache = 4,
     }
 }
