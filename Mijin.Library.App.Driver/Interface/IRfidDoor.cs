@@ -15,7 +15,7 @@ namespace Mijin.Library.App.Driver
         /// <summary>
         /// 人进出事件
         /// </summary>
-        event Action<PeopleInOut> OnPeopleInOut;
+        event Action<WebViewSendModel<PeopleInOut>> OnPeopleInOut;
 
         /// <summary>
         /// 开始监听人员进出

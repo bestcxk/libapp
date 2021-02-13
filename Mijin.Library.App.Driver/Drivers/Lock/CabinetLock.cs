@@ -27,9 +27,9 @@ namespace Mijin.Library.App.Driver
         public bool IsOpen { get => _serialPort.IsOpen; }
 
         /// <summary>
-        /// 开/关 状态事件
+        /// 开/关 状态事件 ,response 实际是List<bool>
         /// </summary>
-        public event Action<List<bool>> lockStatusEvent;
+        public event Action<MessageModel<List<bool>>> OnLockOnOff;
 
         /// <summary>
         /// 数据接收缓存
@@ -41,45 +41,7 @@ namespace Mijin.Library.App.Driver
         /// </summary>
         public CabinetLock()
         {
-            //Task.Run(() =>
-            //{
-            //    while (true)
-            //    {
-            //        try
-            //        {
-            //            if (_serialPort.IsOpen)
-            //            {
-            //                byte[] data = new byte[4];
-            //                //Console.WriteLine($@"开始接收数据");
-            //                _serialPort.Read(data, 0, data.Length);
-            //                Console.WriteLine($@"收到数据：{string.Join(" ",data.ToString())}");
-            //                if (data[0] == 0x08 && data[1] == 0x81)
-            //                {
-            //                    var lockStatus1 = new List<bool>();
-            //                    var lockStatus2 = new List<bool>();
-            //                    for (byte i = 0; i < 8; i++)
-            //                    {
-            //                        byte dt = (byte)(0x01 << i);
-            //                        lockStatus1.Add((data[2] & dt) != dt); // false:未打开  true:打开
-            //                        lockStatus2.Add((data[3] & dt) != dt);
-            //                    }
-            //                    lockStatus1.AddRange(lockStatus2);
 
-            //                    lockStatusEvent.Invoke(lockStatus1);
-            //                }
-            //            }
-
-            //        }
-            //        catch (TimeoutException)
-            //        { 
-
-            //        }
-            //        catch (Exception e)
-            //        {
-            //            Console.WriteLine(e.ToString());
-            //        }
-            //    }
-            //});
         }
 
         /// <summary>
@@ -174,10 +136,18 @@ namespace Mijin.Library.App.Driver
         private void ReceivedData(object obj, SerialDataReceivedEventArgs args)
         {
             var lockStatusList = ReceivedDataHandle();
-
             if (lockStatusList != null)
-                lockStatusEvent.Invoke(lockStatusList);
+            {
+                var SendModel = new WebViewSendModel<List<bool>>()
+                {
+                    msg = "获取成功",
+                    success = true,
+                    response = lockStatusList,
+                    method = "OnLockOnOff"
 
+                };
+                OnLockOnOff.Invoke(SendModel);
+            }
         }
 
         /// <summary>

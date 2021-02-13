@@ -31,7 +31,7 @@ namespace Mijin.Library.App.Driver
         }
 
         // 人员进出事件(需要先设置 _gpiAction 为 InventoryGun 模式)
-        public event Action<PeopleInOut> OnPeopleInOut;
+        public event Action<WebViewSendModel<PeopleInOut>> OnPeopleInOut;
 
         #region GPI触发事件(OnEncapedGpiStart)
 
@@ -60,15 +60,28 @@ namespace Mijin.Library.App.Driver
                         stopwatch.Start();
                         if (timespan.TotalMilliseconds < intervalTime)
                         {
+                            var eventObj = new WebViewSendModel<PeopleInOut>();
                             if (firstTrigger == gpiInIndex)
                             {
                                 inCount++;
-                                OnPeopleInOut.Invoke(new PeopleInOut(InOut.In, inCount, outCount));
+                                OnPeopleInOut.Invoke(new WebViewSendModel<PeopleInOut>()
+                                {
+                                    msg = "获取成功",
+                                    success = true,
+                                    response = new PeopleInOut(InOut.In, inCount, outCount),
+                                    method = "OnPeopleInOut"
+                                });
                             }
                             else if (firstTrigger == gpiOutIndex)
                             {
                                 outCount++;
-                                OnPeopleInOut.Invoke(new PeopleInOut(InOut.Out, inCount, outCount));
+                                OnPeopleInOut.Invoke(new WebViewSendModel<PeopleInOut>()
+                                {
+                                    msg = "获取成功",
+                                    success = true,
+                                    response = new PeopleInOut(InOut.Out, inCount, outCount),
+                                    method = "OnPeopleInOut"
+                                });
                             }
                             firstTrigger = -1;
 

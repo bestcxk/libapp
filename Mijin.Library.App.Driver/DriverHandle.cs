@@ -24,28 +24,40 @@ namespace Mijin.Library.App.Driver
         private ICamera _camera { get; }
 
         /// <summary>
-        /// 锁孔板开/关 锁事件 false:未打开  true:打开
+        /// 所有Driver模块的事件
         /// </summary>
-        public event Action<List<bool>> lockStatusEvent;
-
-        // <summary>
-        /// 读到标签事件
-        /// </summary>
-        public event Action<LabelInfo> OnTagEpcLog;
-
+        private event Action<object> OnAllDriverEvent;
         /// <summary>
-        /// 通道门进出事件
+        /// 所有Driver模块的事件 (访问器)
         /// </summary>
-        public event Action<PeopleInOut> OnPeopleInOut;
+        public event Action<object> OnDriverEvent
+        {
+            add
+            {
+                //如果多次注册的话可能每次都要 执行 ReflectionRegiesterEvents,这里还不清楚，先留个坑,目前项目暂时这么写没问题
 
-        /// <summary>
-        /// 摄像头获取图片事件
-        /// </summary>
-        public event Action<string> OnImgLog;
+                // 第一次注册时
+                if (OnAllDriverEvent == null)
+                {
+                    // 注册完后再注册Driver模块事件
+                    OnAllDriverEvent += value;
+                    ReflectionRegiesterEvents();
+                }
+                else
+                {
+                    OnAllDriverEvent += value;
+                }
+            }
+            remove
+            {
+                OnAllDriverEvent -= value;
+            }
+        }
+
 
         #region 构造函数
 
-        public DriverHandle(ISystemFunc systemFunc, ISIP2Client sIP2Client, ICabinetLock cabinetLock, IPosPrint posPrint, IdentityReader identityReader, IHFReader HFReader, IRfid rfid, IRfidDoor rfidDoor,IKeyboard keyboard,ICamera camera)
+        public DriverHandle(ISystemFunc systemFunc, ISIP2Client sIP2Client, ICabinetLock cabinetLock, IPosPrint posPrint, IdentityReader identityReader, IHFReader HFReader, IRfid rfid, IRfidDoor rfidDoor, IKeyboard keyboard, ICamera camera)
         {
             _systemFunc = systemFunc;
             _sIP2Client = sIP2Client;
@@ -57,18 +69,8 @@ namespace Mijin.Library.App.Driver
             _rfidDoor = rfidDoor;
             _keyboard = keyboard;
             _camera = camera;
-
-
-            _cabinetLock.lockStatusEvent += lockStatusEvent;
-            _rfid.OnTagEpcLog += OnTagEpcLog;
-
-            _rfidDoor.OnPeopleInOut += OnPeopleInOut;
-            _rfidDoor.OnTagEpcLog += OnTagEpcLog;
-
-            _camera.OnImgLog += OnImgLog;
-
         }
-        
+
         #endregion
 
         /// <summary>
@@ -76,9 +78,9 @@ namespace Mijin.Library.App.Driver
         /// </summary>
         /// <param name="cls">接口名</param>
         /// <param name="mthod">方法名</param>
-        /// <param name="parameters">传入参数</param>
+        /// <param name="parameters">传入参数，无参数传null</param>
         /// <returns>调用结果</returns>
-        public MessageModel<object> Invoke(string cls, string mthod, object[] parameters)
+        public MessageModel<object> Invoke(string cls, string mthod, object[]? parameters)
         {
             // 获取执行参数的所有type
             Type[] parametersTypes = parameters == null ? new Type[] { } : parameters.Select(p => p.GetType()).ToArray();
@@ -101,6 +103,27 @@ namespace Mijin.Library.App.Driver
 
             // 反射执行完方法后转换成 WebMessageModel 类
             return acionInstance.GetType().GetMethod(mthod, parametersTypes).Invoke(acionInstance, parameters).JsonMapTo<MessageModel<object>>();
+        }
+
+        /// <summary>
+        /// 反射注册事件 , 需要在注册OnDriverEvent后调用
+        /// </summary>
+        private void ReflectionRegiesterEvents()
+        {
+            var bindingFlags = BindingFlags.NonPublic | BindingFlags.Instance;
+            PropertyInfo[] propertyInfos = this.GetType().GetProperties(bindingFlags);
+
+            foreach (var propertyInfo in propertyInfos)
+            {
+                // 获取执行类实体
+                var instance = propertyInfo.GetValue(this);
+
+                // 设置所有模块的事件传向 OnDriverEvent
+                foreach (var eventInfo in instance.GetType().GetEvents())
+                {
+                    eventInfo.AddEventHandler(instance, OnAllDriverEvent);
+                }
+            }
         }
     }
 }

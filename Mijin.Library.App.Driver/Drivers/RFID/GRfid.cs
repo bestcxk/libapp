@@ -28,7 +28,7 @@ namespace Mijin.Library.App.Driver
         protected GpiAction _gpiAction = GpiAction.Default;
 
         // 标签触发事件
-        public event Action<LabelInfo> OnTagEpcLog;
+        public event Action<WebViewSendModel<LabelInfo>> OnReadLabel;
         #region 构造函数
         /// <summary>
         /// 构造函数
@@ -61,7 +61,13 @@ namespace Mijin.Library.App.Driver
                 }
                 else
                 { 
-                    OnTagEpcLog.Invoke(new LabelInfo(msg.logBaseEpcInfo));
+                    OnReadLabel.Invoke(new WebViewSendModel<LabelInfo>()
+                    {
+                        msg = "获取成功",
+                        success = true,
+                        response = new LabelInfo(msg.logBaseEpcInfo),
+                        method = "OnReadLabel"
+                    });
                 }
 
             }
@@ -576,7 +582,14 @@ namespace Mijin.Library.App.Driver
 
         public MessageModel<bool> Test()
         {
-            Console.WriteLine("Test调用成功");
+            OnReadLabel.Invoke(new WebViewSendModel<LabelInfo>()
+            {
+                msg = "获取成功",
+                success = true,
+                response = new LabelInfo(),
+                method = "OnReadLabel"
+            });
+
             return new MessageModel<bool>();
         }
 

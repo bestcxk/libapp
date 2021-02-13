@@ -15,9 +15,9 @@ namespace Mijin.Library.App.Driver
         bool IsOpen { get; }
 
         /// <summary>
-        /// 开/关 锁事件 false:未打开  true:打开
+        /// 开/关 状态事件 ,response 实际是List<bool>
         /// </summary>
-        event Action<List<bool>> lockStatusEvent;
+        event Action<MessageModel<List<bool>>> OnLockOnOff;
 
 
         /// <summary>

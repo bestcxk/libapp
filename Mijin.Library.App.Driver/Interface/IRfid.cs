@@ -15,7 +15,7 @@ namespace Mijin.Library.App.Driver
         /// <summary>
         /// 读到标签事件
         /// </summary>
-        event Action<LabelInfo> OnTagEpcLog;
+        event Action<WebViewSendModel<LabelInfo>> OnReadLabel;
 
         /// <summary>
         /// 232自动连接读写器

@@ -21,9 +21,9 @@ namespace Mijin.Library.App.Driver.Drivers.Camera
         private Task _task = null;                  // 检测线程
 
         /// <summary>
-        /// 摄像头图片事件
+        /// 摄像头图片事件, response 是 string
         /// </summary>
-        public event Action<string> OnImgLog;
+        public event Action<WebViewSendModel<string>> OnCameraGetImage;
 
         /// <summary>
         /// 开启摄像头
@@ -79,7 +79,15 @@ namespace Mijin.Library.App.Driver.Drivers.Camera
                     MessageModel<Dictionary<string, string>> data = new MessageModel<Dictionary<string, string>>() { response = new Dictionary<string, string>() };
                     data.response["method"] = "image";
                     data.response["image"] = GetCameraImageForBase64();
-                    //WebSocketForManager._socket.Send(JsonConvert.SerializeObject(data));
+
+                    var SendModel = new WebViewSendModel<string>()
+                    {
+                        msg = "获取成功",
+                        success = true,
+                        response = GetCameraImageForBase64(),
+                        method = "OnCameraGetImage"
+                    };
+                    this.OnCameraGetImage.Invoke(SendModel);
                 }
                 catch (Exception)
                 {

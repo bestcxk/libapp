@@ -8,24 +8,9 @@ namespace Mijin.Library.App.Driver
     {
 
         /// <summary>
-        /// 锁孔板开/关 锁事件 false:未打开  true:打开
+        /// 所有Driver模块的事件
         /// </summary>
-        event Action<List<bool>> lockStatusEvent;
-
-        /// <summary>
-        /// 读到标签事件
-        /// </summary>
-        event Action<LabelInfo> OnTagEpcLog;
-
-        /// <summary>
-        /// 通道门进出事件
-        /// </summary>
-        event Action<PeopleInOut> OnPeopleInOut;
-
-        /// <summary>
-        /// 摄像头获取图片事件
-        /// </summary>
-        event Action<string> OnImgLog;
+        event Action<object> OnDriverEvent;
 
         /// <summary>
         /// 调用Driver方法
@@ -34,6 +19,6 @@ namespace Mijin.Library.App.Driver
         /// <param name="mthod">方法名</param>
         /// <param name="parameters">传入参数</param>
         /// <returns>调用结果</returns>
-        MessageModel<object> Invoke(string cls, string mthod, object[] parameters);
+        MessageModel<object> Invoke(string cls, string mthod, object[]? parameters);
     }
 }
