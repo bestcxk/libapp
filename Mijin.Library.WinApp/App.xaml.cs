@@ -73,7 +73,7 @@ namespace Mijin.Library.App
 
             // 其中一个窗口触发了关闭事件则直接退出全部程序
             mainWindow.Closed += ExitApplication;
-            webviewWindow.Closed += ExitApplication;
+            //webviewWindow.Closed += ExitApplication;
 
             // 是否直接打开webview
             if (!string.IsNullOrEmpty(settings.NoSelectOpenUrl))

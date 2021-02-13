@@ -10,6 +10,7 @@ using Util.Logs.Extensions;
 using Util.Logs;
 using Util.Maps;
 using MahApps.Metro.Controls;
+using System.IO;
 
 namespace Mijin.Library.App.Views
 {
@@ -49,9 +50,56 @@ namespace Mijin.Library.App.Views
             // 窗口关闭时
             this.Closed += (s, e) =>
             {
-                // 清空Cookies
-                if (_clientSettings.OnExitClearWebCookie)
-                    this.webView.CoreWebView2.CookieManager.DeleteAllCookies();
+                #region 退出时清空浏览器缓存
+                try
+                {
+                    switch (_clientSettings.OnExitClearWebCache)
+                    {
+                        case ClearWebViewCacheMode.Cookie: // 清空cookie
+                            this.webView.CoreWebView2.CookieManager.DeleteAllCookies();
+                            break;
+                        case ClearWebViewCacheMode.LocalState: // 清空LocalState
+                            {
+                                var dirPath = @"./Mijin.Library.App.exe.WebView2/EBWebView/Default/Local Storage";
+                                var FilePath = @"./Mijin.Library.App.exe.WebView2/EBWebView/Local Storage";
+
+                                if (Directory.Exists(dirPath))
+                                {
+                                    FileHelper.DeleteFolder(dirPath);
+                                    FileHelper.FileDel(FilePath);
+                                }
+                            }
+                            break;
+                        case ClearWebViewCacheMode.DefaultCache: // 删除webview 下的Default文件
+                            {
+                                var dirPath = @"./Mijin.Library.App.exe.WebView2/EBWebView/Default";
+                                if (Directory.Exists(dirPath))
+                                {
+                                    FileHelper.DeleteFolder(dirPath);
+                                }
+                            }
+                            break;
+                        case ClearWebViewCacheMode.AllCache: // 删除整个webview 的Cache文件
+                            {
+                                var dirPath = @"Mijin.Library.App.exe.WebView2";
+                                if (Directory.Exists(dirPath))
+                                {
+                                    FileHelper.DeleteFolder(dirPath);
+                                }
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ex.Log(Log.GetLog().Caption("退出时清空浏览器缓存"));
+                }
+                
+                #endregion
+                // 退出整个应用
+                Environment.Exit(0);
             };
 
             // 非 开发 模式
@@ -116,8 +164,6 @@ namespace Mijin.Library.App.Views
             {
                 this.webView.Source = new Uri(_clientSettings.NoSelectOpenUrl);
             }
-
-            var result = _driverHandle.Invoke("IRfid", "Test", null);
         }
 
 
