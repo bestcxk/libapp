@@ -11,6 +11,10 @@ using System.Windows.Media;
 using System.Drawing;
 using Mijin.Library.App.Model;
 using Mijin.Library.App.Driver;
+using Microsoft.Win32;
+using System.Diagnostics;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace Mijin.Library.App
 {
@@ -28,6 +32,10 @@ namespace Mijin.Library.App
 
         public App()
         {
+            // 程序启动检测
+            this.BeforeStart();
+
+
             _serviceCollection = new ServiceCollection();
 
             ConfigureServices(_serviceCollection);
@@ -62,8 +70,6 @@ namespace Mijin.Library.App
             var mainWindow = _serviceProvider.GetService<MainWindow>();
             var webviewWindow = _serviceProvider.GetService<WebViewWindow>();
             var settings = _serviceProvider.GetService<ClientSettings>();
-            // 启动窗口前检测
-            this.BeforeStart();
 
             // 全局异常处理
             this.DispatcherUnhandledException += GlobalExceptionsFilter.OnException;
@@ -82,7 +88,7 @@ namespace Mijin.Library.App
                 webviewWindow.Show();
             }
             else
-            { 
+            {
                 mainWindow.Show();
             }
         }
@@ -126,10 +132,54 @@ namespace Mijin.Library.App
                 }
             }
             #endregion
+
+            #region 检查是否安装了webview2
+            string version = null;
+            try
+            {
+                // 注册表查询webview2 runtime 版本
+                version = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}")?.GetValue("pv")?.ToString();
+            }
+            catch (Exception)
+            {
+                version = null;
+            }
+
+            // 未安装wenview2 runtime
+            if (version == null)
+            {
+                var result = MessageBox.Show("检测到未安装必要环境，不安装将导致应用无法正常运行，是否现在开始安装？", "提示", MessageBoxButton.YesNoCancel);
+                if (result == MessageBoxResult.Yes)
+                {
+                    // 本地安装包路径
+                    string path = @"./DependInstaller/MicrosoftEdgeWebView2RuntimeInstallerX64.exe";
+
+                    // 如果文件不存在，则直接默认浏览器打开网页提示下载
+                    if (File.Exists(path))
+                    {
+                        Process.Start(path);
+                    }
+                    else
+                    {
+                        result = MessageBox.Show("未找到本地安装包，将打开指定网页进行下载，请选择 “常青版引导程序”，是否现在下载？", "提示", MessageBoxButton.YesNoCancel);
+                        if (result == MessageBoxResult.Yes)
+                        {
+                            //调用系统默认的浏览器   
+                            Process.Start("explorer.exe", "https://developer.microsoft.com/zh-cn/microsoft-edge/webview2/#download-section");
+                            //Task.Delay(200).GetAwaiter().GetResult();
+                        }
+
+                    }
+                }
+                // 退出整个应用
+                Environment.Exit(0);
+            }
+
+            #endregion
         }
 
 
-        
+
 
     }
 }
