@@ -209,9 +209,9 @@ namespace Util.Helpers
         /// </summary>
         /// <param name="Path">文件路径</param>
         /// <param name="strings">内容</param>
-        public static void FileAdd(string Path, string strings)
+        public static void FileAdd(string Path, string strings,Encoding encoding)
         {
-            StreamWriter sw = File.AppendText(Path);
+            using StreamWriter sw = new StreamWriter(Path, true, encoding);
             sw.Write(strings);
             sw.Flush();
             sw.Close();
