@@ -60,7 +60,9 @@ namespace Mijin.Library.App.Model
                 }
                 catch (Exception e)
                 {
-                    FileHelper.FileAdd("./appsettings.json", "\r\n\r\n" + "//ErrorMsg：序列化失败，请检查Json 格式");
+                    string addStr = "\r\n\r\n" + "//ErrorMsg：序列化失败，请检查Json 格式";
+                    //FileHelper.FileAdd("./appsettings.json", addStr, Encoding.UTF8);
+                    FileHelper.WriteFile("./appsettingsErrorMsg", e.ToString(),Encoding.UTF8);
                     return null;
                 }
                 //读取并序列化appsettings
