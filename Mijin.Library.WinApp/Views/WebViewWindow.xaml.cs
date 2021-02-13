@@ -11,6 +11,8 @@ using Util.Logs;
 using Util.Maps;
 using MahApps.Metro.Controls;
 using System.IO;
+using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace Mijin.Library.App.Views
 {
@@ -23,7 +25,7 @@ namespace Mijin.Library.App.Views
         private readonly ClientSettings _clientSettings;
 
         #region 构造函数
-        public WebViewWindow(IDriverHandle driverHandle,ClientSettings clientSettings)
+        public WebViewWindow(IDriverHandle driverHandle, ClientSettings clientSettings)
         {
             _driverHandle = driverHandle;
             _clientSettings = clientSettings;
@@ -48,55 +50,65 @@ namespace Mijin.Library.App.Views
             _driverHandle.OnDriverEvent += OnDriverEvent;
 
             // 窗口关闭时
-            this.Closed += (s, e) =>
+            this.Closed += async (s, e) =>
             {
                 #region 退出时清空浏览器缓存
                 try
                 {
-                    switch (_clientSettings.OnExitClearWebCache)
-                    {
-                        case ClearWebViewCacheMode.Cookie: // 清空cookie
-                            this.webView.CoreWebView2.CookieManager.DeleteAllCookies();
-                            break;
-                        case ClearWebViewCacheMode.LocalState: // 清空LocalState
-                            {
-                                var dirPath = @"./Mijin.Library.App.exe.WebView2/EBWebView/Default/Local Storage";
-                                var FilePath = @"./Mijin.Library.App.exe.WebView2/EBWebView/Local Storage";
+                    // 获取webview 进程id 并杀掉，否则无法删除文件
+                    var process = Process.GetProcessById((int)this.webView.CoreWebView2.BrowserProcessId);
+                    process.Kill();
+                    process.WaitForExit();
 
-                                if (Directory.Exists(dirPath))
+                    //等待500毫秒等待文件被释放
+                    await Task.Delay(500);
+                    if (true) // 最多等待3秒
+                    {
+                        switch (_clientSettings.OnExitClearWebCache)
+                        {
+                            case ClearWebViewCacheMode.Cookie: // 清空cookie
+                                this.webView.CoreWebView2.CookieManager.DeleteAllCookies();
+                                break;
+                            case ClearWebViewCacheMode.LocalState: // 清空LocalState
                                 {
-                                    FileHelper.DeleteFolder(dirPath);
-                                    FileHelper.FileDel(FilePath);
+                                    var dirPath = @"./Mijin.Library.App.exe.WebView2/EBWebView/Default/Local Storage";
+                                    var FilePath = @"./Mijin.Library.App.exe.WebView2/EBWebView/Local Storage";
+
+                                    if (Directory.Exists(dirPath))
+                                    {
+                                        FileHelper.DeleteFolder(dirPath);
+                                        FileHelper.FileDel(FilePath);
+                                    }
                                 }
-                            }
-                            break;
-                        case ClearWebViewCacheMode.DefaultCache: // 删除webview 下的Default文件
-                            {
-                                var dirPath = @"./Mijin.Library.App.exe.WebView2/EBWebView/Default";
-                                if (Directory.Exists(dirPath))
+                                break;
+                            case ClearWebViewCacheMode.DefaultCache: // 删除webview 下的Default文件
                                 {
-                                    FileHelper.DeleteFolder(dirPath);
+                                    var dirPath = @"./Mijin.Library.App.exe.WebView2/EBWebView/Default";
+                                    if (Directory.Exists(dirPath))
+                                    {
+                                        FileHelper.DeleteFolder(dirPath);
+                                    }
                                 }
-                            }
-                            break;
-                        case ClearWebViewCacheMode.AllCache: // 删除整个webview 的Cache文件
-                            {
-                                var dirPath = @"Mijin.Library.App.exe.WebView2";
-                                if (Directory.Exists(dirPath))
+                                break;
+                            case ClearWebViewCacheMode.AllCache: // 删除整个webview 的Cache文件
                                 {
-                                    FileHelper.DeleteFolder(dirPath);
+                                    var dirPath = @"Mijin.Library.App.exe.WebView2";
+                                    if (Directory.Exists(dirPath))
+                                    {
+                                        FileHelper.DeleteFolder(dirPath);
+                                    }
                                 }
-                            }
-                            break;
-                        default:
-                            break;
+                                break;
+                            default:
+                                break;
+                        }
                     }
                 }
                 catch (Exception ex)
                 {
                     ex.Log(Log.GetLog().Caption("退出时清空浏览器缓存"));
                 }
-                
+
                 #endregion
                 // 退出整个应用
                 Environment.Exit(0);
@@ -113,7 +125,7 @@ namespace Mijin.Library.App.Views
             }
 
             #region 窗口设置
-            
+
             // 不可调整窗口宽高
             if (!_clientSettings.CanResize)
             {
@@ -226,7 +238,7 @@ namespace Mijin.Library.App.Views
                 result.success = resultObj?.success ?? false;
                 result.response = resultObj?.response;
 
-                
+
             }
             catch (Exception ex)
             {
@@ -275,7 +287,7 @@ namespace Mijin.Library.App.Views
             {
             }
 
-            
+
             /// <summary>
             /// 执行方法 sample : ISIP2Client.Connect
             /// </summary>
@@ -288,7 +300,7 @@ namespace Mijin.Library.App.Views
             /// guid，确保唯一性
             /// </summary>
             public string guid { get; set; }
-            
+
         }
         #endregion
     }
