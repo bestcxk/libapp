@@ -7,7 +7,7 @@
         xmlns:mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:local="clr-namespace:Mijin.Library.App.Views"
         mc:Ignorable="d"
-        Title="图书馆管理系统" Height="0" Width="0">
+        Title="图书馆管理系统" Height="0" Width="0" Visibility="Hidden">
     <DockPanel>
         <wv2:WebView2 Name="webView"
                  Source="http://192.168.2.10:8001/test"

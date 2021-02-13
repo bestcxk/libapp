@@ -30,7 +30,6 @@ namespace Mijin.Library.App.Views
             _driverHandle = driverHandle;
             _clientSettings = clientSettings;
 
-
             InitializeComponent();
 
             InitializeAsync(); // 初始化
@@ -176,6 +175,8 @@ namespace Mijin.Library.App.Views
             {
                 this.webView.Source = new Uri(_clientSettings.NoSelectOpenUrl);
             }
+
+            this.Show();
         }
 
 
