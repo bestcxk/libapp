@@ -78,7 +78,10 @@ namespace Mijin.Library.App
             //TaskScheduler.UnobservedTaskException += TestException;
 
             // 其中一个窗口触发了关闭事件则直接退出全部程序
-            mainWindow.Closed += ExitApplication;
+            mainWindow.Closed += (s,e)=> {
+                // 退出整个应用
+                Environment.Exit(0);
+            };
             //webviewWindow.Closed += ExitApplication;
 
             // 是否直接打开webview
@@ -93,20 +96,21 @@ namespace Mijin.Library.App
             }
         }
 
-        /// <summary>
-        /// 退出整个应用
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ExitApplication(object sender, EventArgs e)
-        {
-            // 退出整个应用
-            Environment.Exit(0);
-        }
 
         // 启动程序前检测
         private void BeforeStart()
         {
+
+            #region 检测是否管理员启动
+            var isAdmin = IsAdministrator();
+            if (!isAdmin)
+            {
+                var res = MessageBox.Show("请以管理员权限运行！");
+                // 退出整个应用
+                Environment.Exit(0);
+            }
+            #endregion
+
             #region 检测程序是否已启动
             var prs = ProcessHelper.CheckSameAppRunProcess();
             if (prs != null)
@@ -152,7 +156,7 @@ namespace Mijin.Library.App
                 if (result == MessageBoxResult.Yes)
                 {
                     // 本地安装包路径
-                    string path = @"./DependInstaller/MicrosoftEdgeWebView2RuntimeInstallerX64.exe";
+                    string path = @"./DependInstaller/MicrosoftEdgeWebview2Setup.exe";
 
                     // 如果文件不存在，则直接默认浏览器打开网页提示下载
                     if (File.Exists(path))
@@ -178,8 +182,15 @@ namespace Mijin.Library.App
             #endregion
         }
 
-
-
-
+        /// <summary>
+        /// 是否管理员权限运行
+        /// </summary>
+        /// <returns></returns>
+        private bool IsAdministrator()
+        {
+            System.Security.Principal.WindowsIdentity identity = System.Security.Principal.WindowsIdentity.GetCurrent();
+            System.Security.Principal.WindowsPrincipal principal = new System.Security.Principal.WindowsPrincipal(identity);
+            return principal.IsInRole(System.Security.Principal.WindowsBuiltInRole.Administrator);
+        }
     }
 }
