@@ -189,7 +189,8 @@ namespace Mijin.Library.App.Driver
             }
 
             uint icNumber = 0;
-            if (IC_GetICSnr(port, ref icNumber) != 1)
+            // 这里需要填串口号
+            if (IC_GetICSnr(8, ref icNumber) != 1)
             {
                 result.msg = "读IC卡物理卡号失败";
                 result.devMsg = "IC_GetICSnr Faild！";
@@ -278,6 +279,23 @@ namespace Mijin.Library.App.Driver
             result.success = true;
             result.msg = "读身份证成功";
             return result;
+
+        }
+
+        public string Test()
+        {
+            var init = InitCommExt();
+            uint icNumber = 0;
+
+            StringBuilder stringBuilder = new StringBuilder();
+
+            if (IC_GetIDSnr(port, stringBuilder,0) != 1)
+            {
+              
+            }
+
+            return stringBuilder.ToString();
+
 
         }
     }

@@ -16,22 +16,22 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="autoreplyprint.cs">
-      <HintPath>..\..\..\SDK\SDKDLL\x64\autoreplyprint.cs.dll</HintPath>
-    </Reference>
-    <Reference Include="Emgu.CV">
-      <HintPath>..\..\..\..\SDK\SDKDLL\x64\Emgu.CV.dll</HintPath>
-    </Reference>
-    <Reference Include="Emgu.Util">
-      <HintPath>..\..\..\SDK\SDKDLL\x64\Emgu.Util.dll</HintPath>
-    </Reference>
-    <Reference Include="GReaderApi">
-      <HintPath>..\..\..\SDK\SDKDLL\x64\GReaderApi.dll</HintPath>
-    </Reference>
+    <Folder Include="Drivers\SystemFunc\Helpers\" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Drivers\SystemFunc\Helpers\" />
+    <Reference Include="autoreplyprint.cs">
+      <HintPath>..\..\..\..\..\..\..\SDK\SDKDLL\x64\autoreplyprint.cs.dll</HintPath>
+    </Reference>
+    <Reference Include="Emgu.CV">
+      <HintPath>..\..\..\..\..\..\..\SDK\SDKDLL\x64\Emgu.CV.dll</HintPath>
+    </Reference>
+    <Reference Include="Emgu.Util">
+      <HintPath>..\..\..\..\..\..\..\SDK\SDKDLL\x64\Emgu.Util.dll</HintPath>
+    </Reference>
+    <Reference Include="GReaderApi">
+      <HintPath>..\..\..\..\..\..\..\SDK\SDKDLL\x64\GReaderApi.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>
