@@ -1,4 +1,5 @@
 ﻿using Mijin.Library.App.Model;
+using Mijin.Library.App.Model.Setting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,11 +16,17 @@ namespace Mijin.Library.App.Driver
     /// </summary>
     public class BlackHFReader : IHFReader
     {
+        public ISystemFunc _systemFunc { get; }
+
+
+        public BlackHFReader(ISystemFunc systemFunc)
+        {
+            _systemFunc = systemFunc;
+        }
+
         #region DllImport
         [DllImport("kernel32.dll")]
         static extern void Sleep(int dwMilliseconds);
-
-
         //=========================== System Function =============================
         [DllImport("hfrdapi.dll")]
         static extern int Sys_GetDeviceNum(UInt16 vid, UInt16 pid, ref UInt32 pNum);
@@ -251,7 +258,8 @@ namespace Mijin.Library.App.Driver
                 str = str.Insert(0, dt);
             }
 
-            result.response = Convert.ToInt64(str, 16).ToString();
+            result.response = DataHandle(Convert.ToInt64(str, 16).ToString()); ;
+            
             result.success = true;
             result.msg = "读卡成功";
             return result;
@@ -330,6 +338,22 @@ namespace Mijin.Library.App.Driver
             result.msg = "读卡成功";
 
             return result;
+        }
+
+
+        /// <summary>
+        /// 添加字符
+        /// </summary>
+        /// <param name="val"></param>
+        /// <returns></returns>
+        private string DataHandle(string val)
+        {
+            var icSettings = _systemFunc.LibrarySettings?.IcSettings;
+            if (val.IsEmpty() || icSettings.IsNull() || icSettings.ICAddStr.IsEmpty() || icSettings.ICLength <= val.Length)
+            {
+                return val;
+            }
+            return @$"{(icSettings.ICAddDirection == DirectionEnum.left ? icSettings.ICAddStr : "")}val{(icSettings.ICAddDirection == DirectionEnum.right ? icSettings.ICAddStr : "")}";
         }
 
 
