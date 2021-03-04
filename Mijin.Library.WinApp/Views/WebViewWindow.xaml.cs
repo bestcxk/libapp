@@ -216,11 +216,11 @@ namespace Mijin.Library.App.Views
                 var req = Util.Json.ToObject<ReqMessageModel<object[]>>(reqStr);
                 // 请求method guid 赋值
                 result.method = req.method;
-                result.guid = result.guid;
+                result.guid = req.guid;
 
                 string interfaceName = req.method.Split('.')[0]; // 执行的接口名
                 string methodName = req.method.Split('.')[1];    // 执行的方法
-                object[] parameters = req.parameters;            // 执行参数处理
+                object[] parameters = req.@params;            // 执行参数处理
                 // 把请求参数中的 JArray 转换为 List<List<string> ,否则会匹配不到方法
                 for (int i = 0; i < parameters?.Length; i++)
                 {
@@ -296,7 +296,7 @@ namespace Mijin.Library.App.Views
             /// <summary>
             /// 请求参数
             /// </summary>
-            public object[] parameters { get; set; }
+            public object[] @params { get; set; }
             /// <summary>
             /// guid，确保唯一性
             /// </summary>
