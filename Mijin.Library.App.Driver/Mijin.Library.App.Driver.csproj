@@ -11,7 +11,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Mijin.Library.App.Common\Mijin.Library.App.Common.csproj" />
     <ProjectReference Include="..\Mijin.Library.App.Model\Mijin.Library.App.Model.csproj" />
   </ItemGroup>
 
@@ -21,16 +20,16 @@
 
   <ItemGroup>
     <Reference Include="autoreplyprint.cs">
-      <HintPath>..\..\..\..\..\..\..\SDK\SDKDLL\x64\autoreplyprint.cs.dll</HintPath>
+      <HintPath>..\..\..\SDK\SDKDLL\x64\autoreplyprint.cs.dll</HintPath>
     </Reference>
     <Reference Include="Emgu.CV">
-      <HintPath>..\..\..\..\..\..\..\SDK\SDKDLL\x64\Emgu.CV.dll</HintPath>
+      <HintPath>..\..\..\SDK\SDKDLL\x64\Emgu.CV.dll</HintPath>
     </Reference>
     <Reference Include="Emgu.Util">
-      <HintPath>..\..\..\..\..\..\..\SDK\SDKDLL\x64\Emgu.Util.dll</HintPath>
+      <HintPath>..\..\..\SDK\SDKDLL\x64\Emgu.Util.dll</HintPath>
     </Reference>
     <Reference Include="GReaderApi">
-      <HintPath>..\..\..\..\..\..\..\SDK\SDKDLL\x64\GReaderApi.dll</HintPath>
+      <HintPath>..\..\..\SDK\SDKDLL\x64\GReaderApi.dll</HintPath>
     </Reference>
   </ItemGroup>
 

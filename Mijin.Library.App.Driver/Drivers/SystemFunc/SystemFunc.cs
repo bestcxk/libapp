@@ -24,5 +24,14 @@ namespace Mijin.Library.App.Driver
                 response = System.IO.Ports.SerialPort.GetPortNames(),
                 success = true
             };
+
+
+        public MessageModel<string> Test()
+        {
+            return new MessageModel<string>() {
+                msg = "调用成功"
+            };
+        }
+
     }
 }

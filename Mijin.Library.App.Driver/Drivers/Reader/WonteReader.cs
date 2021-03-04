@@ -172,7 +172,9 @@ namespace Mijin.Library.App.Driver
         /// <summary>
         /// 读高频卡卡号
         /// </summary>
-        public MessageModel<string> ReadHFCardNo()
+        /// <param name="comNo">com口号，只用传com口的号码</param>
+        /// <returns></returns>
+        public MessageModel<string> ReadHFCardNo(int com)
         {
             var result = new MessageModel<string>();
             //未连接读卡器
@@ -295,7 +297,6 @@ namespace Mijin.Library.App.Driver
             }
 
             return stringBuilder.ToString();
-
 
         }
     }
