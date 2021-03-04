@@ -101,8 +101,24 @@ namespace Mijin.Library.App.Driver
             // 获取执行类实体
             var acionInstance = propertyInfo.GetValue(this);
 
-            // 反射执行完方法后转换成 WebMessageModel 类
-            return acionInstance.GetType().GetMethod(mthod, parametersTypes).Invoke(acionInstance, parameters).JsonMapTo<MessageModel<object>>();
+            // 访问的是参数
+            var proInfo = acionInstance.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static).Where(p => p.Name == mthod).FirstOrDefault();
+            if (proInfo != null)
+            {
+                return new MessageModel<object>()
+                {
+                    success = true,
+                    msg = "参数获取成功",
+                    response = proInfo.GetValue(acionInstance)
+                };
+            }
+            else // 访问的是方法
+            {
+                // 反射执行完方法后转换成 WebMessageModel 类
+                return acionInstance.GetType().GetMethod(mthod, parametersTypes).Invoke(acionInstance, parameters).JsonMapTo<MessageModel<object>>();
+            }
+
+            
         }
 
         /// <summary>
