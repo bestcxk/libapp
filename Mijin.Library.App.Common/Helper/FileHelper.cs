@@ -139,6 +139,21 @@ namespace Util.Helpers
             f2.Close();
             f2.Dispose();
         }
+
+        public static void WriteFile(string path, Stream stream,FileMode fileMode = FileMode.Create)
+        {
+            // 把 Stream 转换成 byte[]
+            byte[] bytes = new byte[stream.Length];
+            stream.Read(bytes, 0, bytes.Length);
+            // 设置当前流的位置为流的开始
+            stream.Seek(0, SeekOrigin.Begin);
+            // 把 byte[] 写入文件
+            using FileStream fs = new FileStream(path, FileMode.Create);
+            using BinaryWriter bw = new BinaryWriter(fs);
+            bw.Write(bytes);
+            bw.Close();
+            fs.Close();
+        }
         #endregion
 
         #region 读文件

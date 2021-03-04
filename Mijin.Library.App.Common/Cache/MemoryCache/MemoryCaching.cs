@@ -23,9 +23,19 @@ namespace Util.Cache
         {
             return _cache.Get<T>(cacheKey);
         }
-        public void Set(string cacheKey, object cacheValue,int timeSpan)
+        public void Set(string cacheKey, object cacheValue, double timeSpan)
         {
             _cache.Set(cacheKey, cacheValue, TimeSpan.FromSeconds(timeSpan * 60));
+        }
+
+        public void Set<T>(string cacheKey, object cacheValue, double timeSpan)
+        {
+            _cache.Set(cacheKey, cacheValue, TimeSpan.FromSeconds(timeSpan * 60));
+        }
+
+        public void Remove(string cacheKey)
+        {
+            _cache.Remove(cacheKey);
         }
     }
 

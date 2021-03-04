@@ -5,10 +5,13 @@
     /// </summary>
     public interface ICaching
     {
-        object Get(string cacheKey);
-
-        void Set(string cacheKey, object cacheValue, int timeSpan);
-
         T Get<T>(string cacheKey);
+
+        object Get(string cacheKey);
+        void Set<T>(string cacheKey, object cacheValue, double timeSpan);
+
+        void Set(string cacheKey, object cacheValue, double timeSpan);
+
+        void Remove(string cacheKey);
     }
 }

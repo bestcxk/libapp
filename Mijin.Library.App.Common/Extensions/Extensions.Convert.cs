@@ -19,8 +19,9 @@ namespace Util {
         /// 转换为bool
         /// </summary>
         /// <param name="obj">数据</param>
-        public static bool ToBool( this string obj ) {
-            return Util.Helpers.Convert.ToBool( obj );
+        public static bool ToBool(this object obj)
+        {
+            return Util.Helpers.Convert.ToBool(obj);
         }
 
         /// <summary>
@@ -35,7 +36,7 @@ namespace Util {
         /// 转换为int
         /// </summary>
         /// <param name="obj">数据</param>
-        public static int ToInt( this string obj ) {
+        public static int ToInt( this object obj ) {
             return Util.Helpers.Convert.ToInt( obj );
         }
 
@@ -51,7 +52,7 @@ namespace Util {
         /// 转换为long
         /// </summary>
         /// <param name="obj">数据</param>
-        public static long ToLong( this string obj ) {
+        public static long ToLong( this object obj ) {
             return Util.Helpers.Convert.ToLong( obj );
         }
 
@@ -67,7 +68,7 @@ namespace Util {
         /// 转换为double
         /// </summary>
         /// <param name="obj">数据</param>
-        public static double ToDouble( this string obj ) {
+        public static double ToDouble( this object obj ) {
             return Util.Helpers.Convert.ToDouble( obj );
         }
 
@@ -83,7 +84,7 @@ namespace Util {
         /// 转换为decimal
         /// </summary>
         /// <param name="obj">数据</param>
-        public static decimal ToDecimal( this string obj ) {
+        public static decimal ToDecimal( this object obj ) {
             return Util.Helpers.Convert.ToDecimal( obj );
         }
 
@@ -99,7 +100,7 @@ namespace Util {
         /// 转换为日期
         /// </summary>
         /// <param name="obj">数据</param>
-        public static DateTime ToDate( this string obj ) {
+        public static DateTime ToDate( this object obj ) {
             return Util.Helpers.Convert.ToDate( obj );
         }
 
@@ -115,7 +116,7 @@ namespace Util {
         /// 转换为Guid
         /// </summary>
         /// <param name="obj">数据</param>
-        public static Guid ToGuid( this string obj ) {
+        public static Guid ToGuid( this object obj ) {
             return Util.Helpers.Convert.ToGuid( obj );
         }
 

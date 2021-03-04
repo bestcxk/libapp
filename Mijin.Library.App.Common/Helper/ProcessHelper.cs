@@ -7,7 +7,7 @@ using System.Diagnostics;
 using System.Reflection;
 
 
-namespace Mijin.Library.App.Common.Helper
+namespace Mijin.Library.Core.Common.Helper
 {
     public partial class ProcessHelper
     {

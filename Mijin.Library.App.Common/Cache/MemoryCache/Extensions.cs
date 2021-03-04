@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Util.Cache;
 
-namespace Mijin.Library.App.Common.Cache.MemoryCache
+namespace Mijin.Library.Core.Common.Cache.MemoryCache
 {
     public static partial class Extensions
     {
