@@ -258,7 +258,7 @@ namespace Mijin.Library.App.Driver
                 str = str.Insert(0, dt);
             }
 
-            result.response = DataHandle(Convert.ToInt64(str, 16).ToString()); ;
+            result.response = IcSettings.DataHandle(Convert.ToInt64(str, 16).ToString(), _systemFunc.LibrarySettings?.IcSettings);
             
             result.success = true;
             result.msg = "读卡成功";
@@ -339,23 +339,6 @@ namespace Mijin.Library.App.Driver
 
             return result;
         }
-
-
-        /// <summary>
-        /// 添加字符
-        /// </summary>
-        /// <param name="val"></param>
-        /// <returns></returns>
-        private string DataHandle(string val)
-        {
-            var icSettings = _systemFunc.LibrarySettings?.IcSettings;
-            if (val.IsEmpty() || icSettings.IsNull() || icSettings.ICAddStr.IsEmpty() || icSettings.ICLength <= val.Length)
-            {
-                return val;
-            }
-            return @$"{(icSettings.ICAddDirection == DirectionEnum.left ? icSettings.ICAddStr : "")}val{(icSettings.ICAddDirection == DirectionEnum.right ? icSettings.ICAddStr : "")}";
-        }
-
 
         #region byteHEX
         /// <summary>

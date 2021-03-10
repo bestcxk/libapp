@@ -1,10 +1,12 @@
 ﻿using Mijin.Library.App.Model;
+using Mijin.Library.App.Model.Setting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using Util;
 
 namespace Mijin.Library.App.Driver
 {
@@ -16,6 +18,16 @@ namespace Mijin.Library.App.Driver
         private int port = 0;
 
         public const int cbDataSize = 128;
+
+        public ISystemFunc _systemFunc { get; set; }
+
+        // 读高频卡的com口
+        private static int hfCom = 0;
+        public WonteReader(ISystemFunc systemFunc)
+        {
+            _systemFunc = systemFunc;
+        }
+
         #region identity DllImport
         [DllImport("termb.dll")]
         static extern int InitComm(int port);//连接身份证阅读器 
@@ -172,34 +184,58 @@ namespace Mijin.Library.App.Driver
         /// <summary>
         /// 读高频卡卡号
         /// </summary>
-        /// <param name="comNo">com口号，只用传com口的号码</param>
+        /// <param name="com">com口，不填则自动寻找，读卡一次成功则直接保存com口号直到关闭软件</param>
         /// <returns></returns>
-        public MessageModel<string> ReadHFCardNo(int com)
+        public MessageModel<string> ReadHFCardNo(int? com = null)
         {
             var result = new MessageModel<string>();
-            //未连接读卡器
-            if (port == 0)
+            uint icNumber = 0;
+
+            
+            List<string> coms = null; // 当前存在的com口
+
+            if (hfCom == 0) // 还没有一次读成功
             {
-                int AutoSearchReader = InitCommExt();
-                if (AutoSearchReader <= 0)
+                if (!com.IsNull())
                 {
-                    result.msg = "自动搜索连接读卡器失败";
-                    result.devMsg = "InitCommExt Faild！";
+                    if (IC_GetICSnr(com.ToInt(), ref icNumber) == 1)
+                    {
+                        hfCom = com.ToInt();
+                    }
+                }
+                else
+                {
+                    coms = _systemFunc.GetComs().response?.ToList();
+                    foreach (var c in coms)
+                    {
+                        int comNum = c.Replace("COM", "").ToInt();
+                        if (IC_GetICSnr(comNum, ref icNumber) == 1)
+                        {
+                            hfCom = comNum;
+                            break;
+                        }
+                    }
+                }
+                // 如果在连接时读卡并未成功，则直接返回读卡失败
+                if (icNumber <= 0)
+                {
+                    result.msg = "未连接到读卡器";
+                    result.devMsg = @$"已扫描的com口：{string.Join(",",coms)}";
                     return result;
                 }
-                port = AutoSearchReader;
-            }
 
-            uint icNumber = 0;
-            // 这里需要填串口号
-            if (IC_GetICSnr(8, ref icNumber) != 1)
+            }
+            else
             {
-                result.msg = "读IC卡物理卡号失败";
-                result.devMsg = "IC_GetICSnr Faild！";
-                return result;
+                if (IC_GetICSnr(hfCom, ref icNumber) != 1)
+                {
+                    result.msg = "读IC卡物理卡号失败";
+                    result.devMsg = "IC_GetICSnr Faild！";
+                    return result;
+                }
             }
 
-            result.response = icNumber.ToString();
+            result.response = IcSettings.DataHandle(icNumber.ToString(), _systemFunc.LibrarySettings?.IcSettings);
             result.success = true;
             result.msg = "读IC卡物理卡号成功";
 
@@ -228,7 +264,7 @@ namespace Mijin.Library.App.Driver
 
             if (FindCard != 1) //无卡或不是身份证
             {
-                result.msg = "无卡或不是身份证";
+                result.msg = "无卡或不是身份证 或 移开卡再重试";
                 return result;
             }
 
@@ -266,7 +302,7 @@ namespace Mijin.Library.App.Driver
 
             //身份证号
             getIDNum(sb, cbDataSize);
-            identityInfo.IdentityNo = sb.ToString();
+            identityInfo.Identity = sb.ToString();
 
             //显示头像
             GetBmpPhotoExt();
@@ -278,26 +314,12 @@ namespace Mijin.Library.App.Driver
                 identityInfo.FacePicBase64 = sbPhoto.ToString();
             }
 
+            result.response = identityInfo;
             result.success = true;
             result.msg = "读身份证成功";
             return result;
 
         }
 
-        public string Test()
-        {
-            var init = InitCommExt();
-            uint icNumber = 0;
-
-            StringBuilder stringBuilder = new StringBuilder();
-
-            if (IC_GetIDSnr(port, stringBuilder,0) != 1)
-            {
-              
-            }
-
-            return stringBuilder.ToString();
-
-        }
     }
 }
