@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Util;
 
 namespace Mijin.Library.App.Model.Setting
 {
@@ -81,6 +82,21 @@ namespace Mijin.Library.App.Model.Setting
         /// IC卡号不足ICLength补的字符
         /// </summary>
         public string ICAddStr { get; set; }
+
+        /// <summary>
+        /// 添加字符
+        /// </summary>
+        /// <param name="icSettings">高频卡参数设置</param>
+        /// <param name="val"></param>
+        /// <returns></returns>
+        public static string DataHandle(string val, IcSettings icSettings)
+        {
+            if (val.IsEmpty() || icSettings.IsNull() || icSettings.ICAddStr.IsEmpty() || icSettings.ICLength <= val.Length)
+            {
+                return val;
+            }
+            return @$"{(icSettings.ICAddDirection == DirectionEnum.left ? icSettings.ICAddStr : "")}{val}{(icSettings.ICAddDirection == DirectionEnum.right ? icSettings.ICAddStr : "")}";
+        }
     }
 
     /// <summary>
