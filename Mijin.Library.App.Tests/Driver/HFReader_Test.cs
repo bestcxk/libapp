@@ -1,8 +1,11 @@
 ﻿using Mijin.Library.App.Driver;
+using Mijin.Library.App.Model;
+using Mijin.Library.App.Model.Setting;
 using Mijin.Library.App.Tests;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Util;
@@ -35,37 +38,10 @@ namespace Mijin.Library.App.Tests.Driver
         {
             var result = _hfReader.ReadCardNo();
             Assert.True(result.success);
-            Assert.True(result.response.IsEmpty());
+            Assert.True(!result.response.IsEmpty());
         }
 
-        /// <summary>
-        /// 测试读卡号左边添加内容
-        /// </summary>
-        [Fact, TestPriority(2)]
-        public void ReadCardNoAddLeft_Test()
-        {
-            sysFunc.LibrarySettings.IcSettings.ICAddDirection = Model.Setting.DirectionEnum.left;
-            sysFunc.LibrarySettings.IcSettings.ICAddStr = "ASD";
-            var result = _hfReader.ReadCardNo();
-            Assert.True(result.success);
-            Assert.True(result.response.IsEmpty());
-            Assert.True(result.response[0] == 'A' && result.response[1] == 'S' && result.response[2] == 'D');
-        }
 
-        /// <summary>
-        /// 测试读卡号右边添加内容
-        /// </summary>
-        [Fact, TestPriority(3)]
-        public void ReadCardNoAddRight_Test()
-        {
-            sysFunc.LibrarySettings.IcSettings.ICAddDirection = Model.Setting.DirectionEnum.right;
-            sysFunc.LibrarySettings.IcSettings.ICAddStr = "ASD";
-            var result = _hfReader.ReadCardNo();
-            Assert.True(result.success);
-            Assert.True(result.response.IsEmpty());
-            var len = result.response.Length;
-            Assert.True(result.response[len-3] == 'A' && result.response[len-2] == 'S' && result.response[len-1] == 'D');
-        }
 
     }
 }

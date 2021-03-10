@@ -27,4 +27,8 @@
     <ProjectReference Include="..\Mijin.Library.App.Model\Mijin.Library.App.Model.csproj" />
   </ItemGroup>
 
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="copy &quot;$(SolutionDir)DLL\*.*&quot; &quot;$(TargetDir)&quot;" />
+  </Target>
+
 </Project>
