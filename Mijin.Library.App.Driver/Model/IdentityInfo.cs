@@ -18,7 +18,7 @@ namespace Mijin.Library.App.Driver
         /// <summary>
         /// 身份证号
         /// </summary>
-        public string IdentityNo { get; set; }
+        public string Identity { get; set; }
         /// <summary>
         /// 国家
         /// </summary>
