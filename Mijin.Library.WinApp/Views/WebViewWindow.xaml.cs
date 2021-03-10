@@ -182,14 +182,14 @@ namespace Mijin.Library.App.Views
 
         #endregion
 
-        #region Driver 模块事件
+        #region Driver 模块事件 发送
         private void OnDriverEvent(object obj)
         {
             Send(obj);
         }
         #endregion
 
-        #region 前端 web 接收事件
+        #region webview 接收事件
         /// <summary>
         /// 接收前端信息
         /// </summary>
@@ -269,11 +269,14 @@ namespace Mijin.Library.App.Views
         /// <param name="obj"></param>
         private void Send(object obj)
         {
-            this.webView.CoreWebView2.PostWebMessageAsString(Json.ToJson(obj));
+            this.Dispatcher.Invoke(new Action(() => {
+                this.webView.CoreWebView2.PostWebMessageAsString(Json.ToJson(obj));
+            }));
+            
         }
         #endregion
 
-        #region web前端 发送/接收 类
+        #region web前端 发送/接收 实体类
         /// <summary>
         /// web 前端接收类
         /// </summary>
