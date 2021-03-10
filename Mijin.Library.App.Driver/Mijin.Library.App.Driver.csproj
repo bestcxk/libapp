@@ -20,17 +20,36 @@
 
   <ItemGroup>
     <Reference Include="autoreplyprint.cs">
-      <HintPath>..\..\..\SDK\SDKDLL\x64\autoreplyprint.cs.dll</HintPath>
+      <HintPath>..\DLL\autoreplyprint.cs.dll</HintPath>
     </Reference>
     <Reference Include="Emgu.CV">
-      <HintPath>..\..\..\SDK\SDKDLL\x64\Emgu.CV.dll</HintPath>
+      <HintPath>..\DLL\Emgu.CV.dll</HintPath>
     </Reference>
     <Reference Include="Emgu.Util">
-      <HintPath>..\..\..\SDK\SDKDLL\x64\Emgu.Util.dll</HintPath>
+      <HintPath>..\DLL\Emgu.Util.dll</HintPath>
     </Reference>
     <Reference Include="GReaderApi">
-      <HintPath>..\..\..\SDK\SDKDLL\x64\GReaderApi.dll</HintPath>
+      <HintPath>..\DLL\GReaderApi.dll</HintPath>
     </Reference>
   </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="copy &quot;$(SolutionDir)DLL\*.*&quot; &quot;$(TargetDir)&quot;" />
+  </Target>
 
 </Project>

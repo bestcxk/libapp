@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Mijin.Library.App.Common.Helper;
 using Mijin.Library.App.Filters;
 using System;
 using System.Windows;
@@ -15,6 +14,7 @@ using Microsoft.Win32;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
+using Mijin.Library.Core.Common.Helper;
 
 namespace Mijin.Library.App
 {

@@ -1,5 +1,4 @@
 ﻿using MahApps.Metro.Controls;
-using Mijin.Library.App.Common;
 using Mijin.Library.App.Model;
 using Mijin.Library.App.Views;
 using System;
