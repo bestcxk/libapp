@@ -19,7 +19,7 @@ namespace Mijin.Library.App.Driver
         // 当前GClient实例模块的 功率 数据
         protected Dictionary<byte, byte> _powerDic;
 
-        //是否自读一次模式
+        //是否只读一次模式
         protected bool _readOnce = false;
         // ReadOnce 存储缓存标签
         protected LabelInfo _tempLabel = null;
@@ -58,6 +58,7 @@ namespace Mijin.Library.App.Driver
                 if (_readOnce)
                 {
                     _tempLabel = new LabelInfo(msg.logBaseEpcInfo);
+                    this.Stop(); // 达到次数后停止读标签
                 }
                 else
                 { 
@@ -328,7 +329,7 @@ namespace Mijin.Library.App.Driver
             var result = new MessageModel<bool>();
             MsgBaseInventoryEpc msgBaseInventoryEpc = new MsgBaseInventoryEpc();
 
-            List<uint> antIds = antIdStrs.MapTo<List<uint>>();
+            List<uint> antIds = antIdStrs.JsonMapToList<uint>();
 
 
             //天线排序
@@ -338,7 +339,7 @@ namespace Mijin.Library.App.Driver
             for (int i = 0; i < antIds.Count; i++)
             {
                 double doub = Math.Pow(2.0, Convert.ToDouble(antIds[i] - 1));
-                antIds[i] = Convert.ToUInt16(doub);
+                antIds[i] = (uint)doub;
                 msgBaseInventoryEpc.AntennaEnable |= antIds[i];
             }
 
@@ -377,12 +378,13 @@ namespace Mijin.Library.App.Driver
         {
             var result = new MessageModel<LabelInfo>();
             _tempLabel = null;
+            _readOnce = true; // 为true时且读到标签时，_tempLabel 才获取值
             var res = ReadByAntId(antIdStrs);
             if (!res.success)
             {
+                _readOnce = false;
                 return new MessageModel<LabelInfo>(res);
             }
-            _readOnce = true; // 为true时且读到标签时，_tempLabel 才获取值
 
             DateTime beforeDate = DateTime.Now;
 
@@ -402,7 +404,6 @@ namespace Mijin.Library.App.Driver
 
             }
             _readOnce = false;
-            this.Stop(); // 达到次数后停止读标签
             result.response = _tempLabel;
             result.success = result.response != null;
             result.msg = "获取标签" + (result.success ? "成功" : "失败");
@@ -579,20 +580,6 @@ namespace Mijin.Library.App.Driver
             return SetGpo(dic.JsonMapTo<Dictionary<string, byte>>());
         }
         #endregion
-
-        //public MessageModel<bool> Test()
-        //{
-        //    OnReadLabel.Invoke(new WebViewSendModel<LabelInfo>()
-        //    {
-        //        msg = "获取成功",
-        //        success = true,
-        //        response = new LabelInfo(),
-        //        method = "OnReadLabel"
-        //    });
-
-        //    return new MessageModel<bool>();
-        //}
-
 
     }
 }
