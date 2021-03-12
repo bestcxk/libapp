@@ -115,7 +115,9 @@ namespace Mijin.Library.App.Driver
             else // 访问的是方法
             {
                 // 反射执行完方法后转换成 WebMessageModel 类
-                return acionInstance.GetType().GetMethod(mthod, parametersTypes).Invoke(acionInstance, parameters).JsonMapTo<MessageModel<object>>();
+                var method = acionInstance.GetType().GetMethod(mthod, parametersTypes);
+                var invoke = method.Invoke(acionInstance, parameters);
+                return invoke.JsonMapTo<MessageModel<object>>();
             }
 
             

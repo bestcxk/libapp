@@ -3,6 +3,7 @@ using GDotnet.Reader.Api.Protocol.Gx;
 using Mijin.Library.App.Model;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -153,6 +154,8 @@ namespace Mijin.Library.App.Driver
         public MessageModel<bool> Auto232Connect()
         {
             var result = new MessageModel<bool>();
+
+
             var coms = System.IO.Ports.SerialPort.GetPortNames().OrderBy(c => int.Parse(c.Split('M')[1])).ToArray(); // rfid串口最好修改到com1
             for (int i = 0; i < coms.Length; i++)
             {
@@ -453,14 +456,13 @@ namespace Mijin.Library.App.Driver
         /// <param name="baseTid"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        public MessageModel<bool> WriteLabel(string area, string startAddr, string data, string baseTid = null, string password = "00000000", string timeOutStr = "3")
+        public MessageModel<bool> WriteLabel(Int64 area, Int64 startAddr, string data, string baseTid = null, string password = "00000000", Int64 timeOut = 3)
         {
-            int timeOut = timeOutStr.ToInt();
             var result = new MessageModel<bool>();
             MsgBaseWriteEpc msgBaseWriteEpc = new MsgBaseWriteEpc();
             msgBaseWriteEpc.AntennaEnable = (ushort)eAntennaNo._1;
-            msgBaseWriteEpc.Area = byte.Parse(area);
-            msgBaseWriteEpc.Start = byte.Parse(startAddr);
+            msgBaseWriteEpc.Area = (byte)area;
+            msgBaseWriteEpc.Start = (byte)startAddr;
             int iWordLen = data.Length / 4;                            // 1 word = 2 byte     
             ushort iPc = (ushort)(iWordLen << 11);                              // PC值为EPC区域的长度标识（前5个bit标记长度），参考文档说明 
             String sPc = Convert.ToString(iPc, 16).PadLeft(4, '0');

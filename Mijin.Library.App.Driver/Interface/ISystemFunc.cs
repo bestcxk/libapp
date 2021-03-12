@@ -12,6 +12,11 @@ namespace Mijin.Library.App.Driver
         /// 图书馆设置
         /// </summary>
         public LibrarySettings LibrarySettings { get; set; }
+
+        /// <summary>
+        /// 客户端设置
+        /// </summary>
+        public ClientSettings ClientSettings { get; set; }
         /// <summary>
         /// 获取系统中所有能使用的com口
         /// </summary>
@@ -23,7 +28,7 @@ namespace Mijin.Library.App.Driver
         /// </summary>
         /// <param name="librarySettings"></param>
         /// <returns></returns>
-        MessageModel<bool> SetLibrarySettings(LibrarySettings librarySettings);
+        MessageModel<int> SetLibrarySettings(LibrarySettings librarySettings);
 
     }
 }

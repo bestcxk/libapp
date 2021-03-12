@@ -107,6 +107,6 @@ namespace Mijin.Library.App.Driver
         /// <param name="password">访问密码</param>
         /// <param name="timeOut">超时次数</param>
         /// <returns></returns>
-        MessageModel<bool> WriteLabel(string area, string startAddr, string data, string baseTid = null, string password = "00000000", string timeOutStr = "3");
+        MessageModel<bool> WriteLabel(Int64 area, Int64 startAddr, string data, string baseTid = null, string password = "00000000", Int64 timeOut = 3);
     }
 }

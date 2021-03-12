@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Util;
+using Util.Maps;
 
 namespace Mijin.Library.App.Driver
 {
@@ -13,9 +14,11 @@ namespace Mijin.Library.App.Driver
     {
         public SystemFunc()
         {
+            ClientSettings = new ClientSettings();
         }
 
         public LibrarySettings LibrarySettings { get; set ; }
+        public ClientSettings ClientSettings { get; set; }
 
         /// <summary>
         /// 获取系统中所有能使用的com口
@@ -34,22 +37,24 @@ namespace Mijin.Library.App.Driver
         /// </summary>
         /// <param name="librarySettings"></param>
         /// <returns></returns>
-        public MessageModel<bool> SetLibrarySettings(LibrarySettings librarySettings)
+        public MessageModel<int> SetLibrarySettings(LibrarySettings librarySettings)
         {
-            var result = new MessageModel<bool>();
+            var result = new MessageModel<int>();
             if (librarySettings.IsNull())
             {
                 result.msg = "参数不可为空";
                 return result;
             }
-
             LibrarySettings = librarySettings;
-
+            result.success = true;
+            result.response = ClientSettings.Id;
             result.msg = "设置成功";
             return result;
+        }
 
-
-
+        public MessageModel<int> SetLibrarySettings(object librarySettings)
+        {
+            return SetLibrarySettings(librarySettings.JsonMapTo<LibrarySettings>());
         }
 
     }
