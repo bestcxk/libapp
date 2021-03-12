@@ -51,7 +51,7 @@ namespace Mijin.Library.App
 
         private void OpenSettingsWindow(object sender, RoutedEventArgs e)
         {
-            this._settingsWindow.Show();
+            this._settingsWindow.ShowDialog();
             //显示在显示器最中间
         }
 

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -67,9 +68,9 @@ namespace Mijin.Library.App.Views
             this.WindowWidthText.Text = _clientSettings.WindowWidth.ToString();
             this.WindowHeightText.Text = _clientSettings.WindowHeight.ToString();
             this.OnExitClearWebCacheCom.SelectedIndex = (int)_clientSettings.OnExitClearWebCache;
-            this.ShowWindowTitleBarCheck.IsChecked = _clientSettings.ShowWindowTitleBar;
-            this.CanResizeCheck.IsChecked = _clientSettings.CanResize;
-            this.IsDevCheck.IsChecked = _clientSettings.IsDev;
+            this.ShowWindowTitleBarCheck.IsOn = _clientSettings.ShowWindowTitleBar;
+            this.CanResizeCheck.IsOn = _clientSettings.CanResize;
+            this.IsDevCheck.IsOn = _clientSettings.IsDev;
         }
 
         private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -84,28 +85,39 @@ namespace Mijin.Library.App.Views
             this.ReLoadSettings();
         }
 
-        private void saveBtn_Click(object sender, RoutedEventArgs e)
+        private async void saveBtn_Click(object sender, RoutedEventArgs e)
         {
-            _clientSettings.Id = this.idCom.SelectedIndex +1;
-            _clientSettings.LibraryManageUrl = this.LibraryManageUrlText.Text;
-            _clientSettings.ReaderActionUrl = this.ReaderActionUrlText.Text;
-            _clientSettings.NoSelectOpenUrl = this.NoSelectOpenUrlText.Text;
-            _clientSettings.WindowWidth = this.WindowWidthText.Text.ToInt();
-            _clientSettings.WindowHeight = this.WindowHeightText.Text.ToInt();
-            _clientSettings.OnExitClearWebCache = (ClearWebViewCacheMode)this.OnExitClearWebCacheCom.SelectedIndex;
-            _clientSettings.ShowWindowTitleBar = this.ShowWindowTitleBarCheck.IsChecked.ToBool();
-            _clientSettings.CanResize = this.CanResizeCheck.IsChecked.ToBool();
-            _clientSettings.IsDev = this.IsDevCheck.IsChecked.ToBool();
+            Button button = sender as Button;
+            button.IsEnabled = false;
+            this.saveLoading.Visibility = Visibility.Visible;
+            await Task.Run(() =>
+            {
+                this.Dispatcher.Invoke(new Action(() => {
+                    _clientSettings.Id = this.idCom.SelectedIndex + 1;
+                    _clientSettings.LibraryManageUrl = this.LibraryManageUrlText.Text;
+                    _clientSettings.ReaderActionUrl = this.ReaderActionUrlText.Text;
+                    _clientSettings.NoSelectOpenUrl = this.NoSelectOpenUrlText.Text;
+                    _clientSettings.WindowWidth = this.WindowWidthText.Text.ToInt();
+                    _clientSettings.WindowHeight = this.WindowHeightText.Text.ToInt();
+                    _clientSettings.OnExitClearWebCache = (ClearWebViewCacheMode)this.OnExitClearWebCacheCom.SelectedIndex;
+                    _clientSettings.ShowWindowTitleBar = this.ShowWindowTitleBarCheck.IsOn;
+                    _clientSettings.CanResize = this.CanResizeCheck.IsOn;
+                    _clientSettings.IsDev = this.IsDevCheck.IsOn;
 
-            _clientSettings.Write();
+                    _clientSettings.Write();
+                }));
+                Thread.Sleep(500);
+            });
 
+            this.saveLoading.Visibility = Visibility.Hidden;
+            button.IsEnabled = true;
         }
 
         private void syncUrl_Click(object sender, RoutedEventArgs e)
         {
             if (!string.IsNullOrWhiteSpace(this.LibraryManageUrlText.Text))
             {
-                this.ReaderActionUrlText.Text = this.LibraryManageUrlText.Text + "/terminal";
+                this.ReaderActionUrlText.Text = this.LibraryManageUrlText.Text + @$"{(this.LibraryManageUrlText.Text.Last() == '/'?"":"/")}/terminal";
             }
         }
     }

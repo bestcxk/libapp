@@ -5,9 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:local="clr-namespace:Mijin.Library.App.Views"
+        xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
         mc:Ignorable="d"
-        Title="设置" Height="500" Width="400" Closing="MetroWindow_Closing">
+        Title="设置" MinHeight="500" MinWidth="400" MaxHeight="500" MaxWidth="400" Height="500" Width="400" Closing="MetroWindow_Closing">
     <Grid >
+        
         <StackPanel Margin="0,5,0,5">
             <StackPanel Margin="0,5,0,5"  Orientation="Horizontal" Height="30">
                 <Label HorizontalContentAlignment="Center" Width="100" Content="设备ID："></Label>
@@ -15,8 +17,15 @@
             </StackPanel>
             <StackPanel Margin="0,5,0,5" Orientation="Horizontal" Height="30">
                 <Label Content="后台管理URL：" HorizontalContentAlignment="Center" Width="100" ></Label>
-                <TextBox Width="200"  Name="LibraryManageUrlText"></TextBox>
-                <Button Margin="5,0,0,0" Content="同步自助URL" Name="syncUrl" Click="syncUrl_Click"></Button>
+                <TextBox 
+                    Width="200"
+                    Name="LibraryManageUrlText"
+                    HorizontalContentAlignment="Stretch"
+                    Controls:TextBoxHelper.ClearTextButton="True"
+                    Controls:TextBoxHelper.WatermarkAlignment="Right"
+                    SpellCheck.IsEnabled="True"
+                    />
+                <Button Margin="5,0,0,0" ToolTip="根据后台管理页URL自动生成自助页面URL" Content="同步自助URL" Name="syncUrl" Click="syncUrl_Click"></Button>
             </StackPanel>
             <StackPanel Margin="0,5,0,5" Orientation="Horizontal" Height="30">
                 <Label Content="自助页面URL：" HorizontalContentAlignment="Center" Width="100" ></Label>
@@ -24,7 +33,7 @@
             </StackPanel>
             <StackPanel Margin="0,5,0,5" Orientation="Horizontal" Height="30">
                 <Label Content="直达URL：" HorizontalContentAlignment="Center" Width="100" ></Label>
-                <TextBox Width="250"  Name="NoSelectOpenUrlText"></TextBox>
+                <TextBox Width="250"  Name="NoSelectOpenUrlText" ToolTip="该输入框存在值时，则直接打开该值地址页"></TextBox>
             </StackPanel>
             <StackPanel Margin="0,5,0,5" Orientation="Horizontal" Height="30" >
                 <Label Content="窗口宽：" HorizontalContentAlignment="Center" Width="100" ></Label>
@@ -34,16 +43,26 @@
             </StackPanel>
             <StackPanel Margin="0,5,0,5" Orientation="Horizontal" Height="30">
                 <Label Content="缓存处理：" HorizontalContentAlignment="Center" Width="100" ></Label>
-                <ComboBox Name="OnExitClearWebCacheCom"></ComboBox>
+                <ComboBox ToolTip="程序退出时缓存处理" Name="OnExitClearWebCacheCom"></ComboBox>
             </StackPanel>
-
-            <CheckBox Margin="10,10,10,10" Content="显示窗口标题栏" Name="ShowWindowTitleBarCheck"></CheckBox>
-            <CheckBox Margin="10,0,10,10" Content="手动调整窗口宽高" Name="CanResizeCheck"></CheckBox>
-            <CheckBox Margin="10,0,10,10" Content="开发者模式" Name="IsDevCheck"></CheckBox>
+            <Controls:ToggleSwitch Margin="10,10,10,10" Content="显示窗口标题栏" Name="ShowWindowTitleBarCheck" />
+            <Controls:ToggleSwitch Margin="10,0,10,10" Content="调整窗口宽高" Name="CanResizeCheck" />
+            <Controls:ToggleSwitch Margin="10,0,10,10" Content="开发者模式" Name="IsDevCheck" />
+            <!--<CheckBox Margin="10,10,10,10" Content="显示窗口标题栏" Name="ShowWindowTitleBarCheck"></CheckBox>-->
+            <!--<CheckBox Margin="10,0,10,10" Content="手动调整窗口宽高" Name="CanResizeCheck"></CheckBox>
+            <CheckBox Margin="10,0,10,10" Content="开发者模式" Name="IsDevCheck"></CheckBox>-->
         </StackPanel>
-        <Button Height="30" Content="重置" Name="reLoadBtn" Margin="10,400,340,10" Click="reLoadBtn_Click"></Button>
+        <Button Height="30" Content="重置" Name="reLoadBtn" Margin="10,380,340,10" Click="reLoadBtn_Click"></Button>
 
-        <Button Height="30" Content="保存" Name="saveBtn" Margin="340,400,10,10" Click="saveBtn_Click"></Button>
-        
+        <Button Height="30" Content="保存" Name="saveBtn" Margin="340,380,10,10" Click="saveBtn_Click"></Button>
+        <ProgressBar
+            Width="380"
+            Margin="0,420,0,0"
+            IsIndeterminate="true"
+            Height="5"
+            Name="saveLoading"
+            Maximum="100"
+            Visibility="Hidden"
+            Minimum="0"/>
     </Grid>
 </mah:MetroWindow>
