@@ -24,11 +24,14 @@ namespace Mijin.Library.App.Views
         private readonly IDriverHandle _driverHandle;
         private readonly ClientSettings _clientSettings;
 
+        public ISystemFunc _systemFunc { get; }
+
         #region 构造函数
-        public WebViewWindow(IDriverHandle driverHandle, ClientSettings clientSettings)
+        public WebViewWindow(IDriverHandle driverHandle,ISystemFunc systemFunc)
         {
             _driverHandle = driverHandle;
-            _clientSettings = clientSettings;
+            _systemFunc = systemFunc;
+            _clientSettings = systemFunc.ClientSettings;
 
             InitializeComponent();
 

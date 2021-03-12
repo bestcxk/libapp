@@ -1,4 +1,5 @@
 ﻿using MahApps.Metro.Controls;
+using Mijin.Library.App.Driver;
 using Mijin.Library.App.Model;
 using Mijin.Library.App.Views;
 using System;
@@ -24,10 +25,12 @@ namespace Mijin.Library.App
     /// </summary>
     public partial class MainWindow : MetroWindow
     {
-        private readonly WebViewWindow _webView;
-        private readonly ClientSettings _clientSettings;
+        public WebViewWindow _webView { get; }
+        public ClientSettings _clientSettings { get; }
+        public SettingsWindow _settingsWindow { get; }
+        public ISystemFunc _systemFunc { get; }
 
-        public MainWindow(WebViewWindow webView,ClientSettings clientSettings)
+        public MainWindow(WebViewWindow webView,SettingsWindow settingsWindow,ISystemFunc systemFunc)
         {
             //显示在显示器最中间
             this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
@@ -35,12 +38,21 @@ namespace Mijin.Library.App
 
             InitializeComponent();
             _webView = webView;
-            _clientSettings = clientSettings;
+            _clientSettings = systemFunc.ClientSettings;
+            _webView = webView;
+            _settingsWindow = settingsWindow;
+            _systemFunc = systemFunc;
         }
 
         private void  MetroWindow_Loaded(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private void OpenSettingsWindow(object sender, RoutedEventArgs e)
+        {
+            this._settingsWindow.Show();
+            //显示在显示器最中间
         }
 
         private void GoWebView(object sender, RoutedEventArgs e)
@@ -60,7 +72,7 @@ namespace Mijin.Library.App
                         return;
                 }
                 this._webView.Show();
-                this.Close();
+                this.Hide();
             }
         }
     }

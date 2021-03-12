@@ -12,8 +12,9 @@
 
     <mah:MetroWindow.LeftWindowCommands>
         <Controls:WindowCommands>
-            <Button  ToolTip="设置" >
+            <Button  ToolTip="设置" Click="OpenSettingsWindow" >
                 <iconPacks:PackIconModern Width="22"
+                                          
                                   Height="22"
                                   Kind="cog" />
             </Button>

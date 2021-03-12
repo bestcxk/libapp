@@ -47,6 +47,7 @@ namespace Mijin.Library.App
             // 注册主window
             services.AddSingleton<MainWindow>();
             services.AddSingleton<WebViewWindow>();
+            services.AddSingleton<SettingsWindow>();
             // 注册Nlog
             services.AddNLog();
             // 注册MemoryCache
@@ -56,7 +57,7 @@ namespace Mijin.Library.App
             services.AddDriver();
 
             // 注册客户端设置类
-            services.AddSingleton<ClientSettings>();
+            //services.AddSingleton<ClientSettings>();
         }
 
         //public void Configure(IApplicationBuilder app)
@@ -69,7 +70,7 @@ namespace Mijin.Library.App
         {
             var mainWindow = _serviceProvider.GetService<MainWindow>();
             var webviewWindow = _serviceProvider.GetService<WebViewWindow>();
-            var settings = _serviceProvider.GetService<ClientSettings>();
+            var settings = _serviceProvider.GetService<ISystemFunc>().ClientSettings;
 
             // 全局异常处理
             this.DispatcherUnhandledException += GlobalExceptionsFilter.OnException;
