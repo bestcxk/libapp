@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Util;
+using Util.Helpers;
 
 namespace Mijin.Library.App.Model.Setting
 {
@@ -13,18 +15,12 @@ namespace Mijin.Library.App.Model.Setting
     public class LibrarySettings
     {
         /// <summary>
-        /// 如果存在设置文件，则读设置文件
-        /// </summary>
-        public LibrarySettings()
-        {
-
-        }
-
-        /// <summary>
-        /// 自助借阅支持类型
+        /// 每个客户端参数设置
         /// </summary>
         /// <value></value>
-        public List<AutoLendSupport> AutoLendSupports { get; set; } = null;
+        public List<ClientSetting> Clients { get; set; }
+
+
 
         /// <summary>
         /// 通道的Ips
@@ -32,11 +28,6 @@ namespace Mijin.Library.App.Model.Setting
         /// <value></value>
         public List<string> DoorIps { get; set; } = null;
 
-        /// <summary>
-        /// 自助借阅机是否支持小票打印
-        /// </summary>
-        /// <value></value>
-        public bool PosPrintEnabled { get; set; } = false;
         /// <summary>
         /// IC卡设置
         /// </summary>
@@ -60,9 +51,42 @@ namespace Mijin.Library.App.Model.Setting
         /// </summary>
         /// <value></value>
         public int FaceMinValid { get; set; } = 70;
-
     }
 
+
+    public class ClientSetting
+    {
+        /// <summary>
+        /// 设备Id
+        /// </summary>
+        /// <value></value>
+        public string Id { get; set; }
+        /// <summary>
+        /// 自助借阅支持类型
+        /// </summary>
+        /// <value></value>
+        public List<DriverSupport> Supports { get; set; } = null;
+
+        /// <summary>
+        /// RFID设备com口
+        /// </summary>
+        /// <value></value>
+        public string RfidCom { get; set; }
+
+        /// <summary>
+        /// 身份证设备com口
+        /// </summary>
+        /// <value></value>
+        public string IdentityReaderCom { get; set; }
+
+        /// <summary>
+        /// 读高频卡使用身份证？ 
+        /// </summary>
+        /// <value></value>
+        public bool ReadCardUseByIdentity { get; set; } = false;
+
+
+    }
     /// <summary>
     /// 高频卡设置
     /// </summary>
@@ -102,14 +126,16 @@ namespace Mijin.Library.App.Model.Setting
     /// <summary>
     /// 自助借阅支持
     /// </summary>
-    public enum AutoLendSupport
+    public enum DriverSupport
     {
-        // 高频卡
+        //高频卡
         HFCard = 1,
         // 身份证
         IdentityCard = 2,
         // 人脸识别
-        Face = 3
+        Face = 3,
+        // 小票打印机
+        PosPrint = 4
     }
 
     /// <summary>

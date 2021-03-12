@@ -9,7 +9,12 @@ namespace Mijin.Library.App.Model
     public class baseClientSettings
     {
         /// <summary>
-        /// 后台管理打开的URL
+        /// 设备Id
+        /// </summary>
+        public int Id { get; set; } = 0;
+
+        /// <summary>
+        /// 后台管理打开的URL 
         /// </summary>
         public string LibraryManageUrl { get; set; }
         /// <summary>
