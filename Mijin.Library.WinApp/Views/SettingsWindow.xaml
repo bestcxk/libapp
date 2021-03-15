@@ -7,9 +7,9 @@
         xmlns:local="clr-namespace:Mijin.Library.App.Views"
         xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
         mc:Ignorable="d"
-        Title="设置" MinHeight="500" MinWidth="400" MaxHeight="500" MaxWidth="400" Height="500" Width="400" Closing="MetroWindow_Closing">
-    <Grid >
-        
+        Title="设置" MinHeight="480" MinWidth="400" MaxHeight="480" MaxWidth="400" Height="480" Width="400" Closing="MetroWindow_Closing">
+    <StackPanel >
+
         <StackPanel Margin="0,5,0,5">
             <StackPanel Margin="0,5,0,5"  Orientation="Horizontal" Height="30">
                 <Label HorizontalContentAlignment="Center" Width="100" Content="设备ID："></Label>
@@ -36,9 +36,9 @@
                 <TextBox Width="250"  Name="NoSelectOpenUrlText" ToolTip="该输入框存在值时，则直接打开该值地址页"></TextBox>
             </StackPanel>
             <StackPanel Margin="0,5,0,5" Orientation="Horizontal" Height="30" >
-                <Label Content="窗口宽：" HorizontalContentAlignment="Center" Width="100" ></Label>
-                <TextBox Width="75"  Name="WindowWidthText"></TextBox>
-                <Label Content="窗口高：" HorizontalContentAlignment="Center" Width="100" ></Label>
+                <Label ToolTip="全屏则宽高都填0" Content="窗口宽：" HorizontalContentAlignment="Center" Width="100" ></Label>
+                <TextBox Width="75"  Name="WindowWidthText" ></TextBox>
+                <Label ToolTip="全屏则宽高都填0" Content="窗口高：" HorizontalContentAlignment="Center" Width="100" ></Label>
                 <TextBox Width="75"  Name="WindowHeightText"></TextBox>
             </StackPanel>
             <StackPanel Margin="0,5,0,5" Orientation="Horizontal" Height="30">
@@ -52,17 +52,22 @@
             <!--<CheckBox Margin="10,0,10,10" Content="手动调整窗口宽高" Name="CanResizeCheck"></CheckBox>
             <CheckBox Margin="10,0,10,10" Content="开发者模式" Name="IsDevCheck"></CheckBox>-->
         </StackPanel>
-        <Button Height="30" Content="重置" Name="reLoadBtn" Margin="10,380,340,10" Click="reLoadBtn_Click"></Button>
+            <StackPanel>
+                <WrapPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 
-        <Button Height="30" Content="保存" Name="saveBtn" Margin="340,380,10,10" Click="saveBtn_Click"></Button>
-        <ProgressBar
-            Width="380"
-            Margin="0,420,0,0"
-            IsIndeterminate="true"
-            Height="5"
-            Name="saveLoading"
-            Maximum="100"
-            Visibility="Hidden"
-            Minimum="0"/>
-    </Grid>
+                    <Button Width="60"  Content="重置" Name="reLoadBtn"  Click="reLoadBtn_Click" FontSize="14" Style="{DynamicResource MahApps.Styles.Button.Square.Accent}" Margin="10,0,0,0"/>
+
+                    <Button Width="60" Content="保存" Name="saveBtn"  Click="saveBtn_Click" FontSize="14" FontStyle="Normal" FontWeight="Bold" Style="{DynamicResource MahApps.Styles.Button.Square.Accent}" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="256,0,0,0"/>
+                </WrapPanel>
+                <ProgressBar
+                    Margin="0,5,0,0"
+                    Width="380"
+                    IsIndeterminate="true"
+                    Height="5"
+                    Name="saveLoading"
+                    Maximum="100"
+                    Visibility="Hidden"
+                    Minimum="0"/>
+            </StackPanel>
+    </StackPanel>
 </mah:MetroWindow>
