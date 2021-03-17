@@ -117,7 +117,7 @@ namespace Mijin.Library.App.Views
         {
             if (!string.IsNullOrWhiteSpace(this.LibraryManageUrlText.Text))
             {
-                this.ReaderActionUrlText.Text = this.LibraryManageUrlText.Text + @$"{(this.LibraryManageUrlText.Text.Last() == '/'?"":"/")}/terminal";
+                this.ReaderActionUrlText.Text = this.LibraryManageUrlText.Text + @$"{(this.LibraryManageUrlText.Text.Last() == '/'?"":"/")}terminal";
             }
         }
     }
