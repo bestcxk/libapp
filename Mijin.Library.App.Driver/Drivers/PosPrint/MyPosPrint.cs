@@ -23,21 +23,15 @@ namespace Mijin.Library.App.Driver
         /// 自动检测com口,，并初始化
         /// </summary>
         /// <returns></returns>
-        public MessageModel<bool> Init()
+        public MessageModel<bool> Init(string com = null)
         {
             var data = new MessageModel<bool>();
             var coms = SerialPort.GetPortNames();
 
-            if (coms.Length <= 0)
-            {
-                data.msg = "com口数量为0，无法初始化";
-                return data;
-            }
-
-            for (int i = 0; i < coms.Length; i++)
+            if (!com.IsNull())
             {
                 _handle = AutoReplyPrint.CP_Port_OpenCom(
-                        coms[i], 115200,
+                        com, 115200,
                         AutoReplyPrint.CP_ComDataBits_8,
                         AutoReplyPrint.CP_ComParity_NoParity,
                         AutoReplyPrint.CP_ComStopBits_One,
@@ -50,6 +44,32 @@ namespace Mijin.Library.App.Driver
                     return data;
                 }
             }
+            else
+            {
+                if (coms.Length <= 0)
+                {
+                    data.msg = "com口数量为0，无法初始化";
+                    return data;
+                }
+
+                for (int i = 0; i < coms.Length; i++)
+                {
+                    _handle = AutoReplyPrint.CP_Port_OpenCom(
+                            coms[i], 115200,
+                            AutoReplyPrint.CP_ComDataBits_8,
+                            AutoReplyPrint.CP_ComParity_NoParity,
+                            AutoReplyPrint.CP_ComStopBits_One,
+                            AutoReplyPrint.CP_ComFlowControl_XonXoff,
+                            0);
+
+                    if (AutoReplyPrint.CP_BlackMark_FullCutBlackMarkPaper(_handle) != 0)
+                    {
+                        data.success = true;
+                        return data;
+                    }
+                }
+            }
+            
             _handle = UIntPtr.Zero;
             data.msg = "未找到打票机com口，无法初始化";
             return data;

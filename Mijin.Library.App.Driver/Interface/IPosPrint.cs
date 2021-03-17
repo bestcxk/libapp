@@ -16,7 +16,7 @@ namespace Mijin.Library.App.Driver
         /// 初始化小票打印机
         /// </summary>
         /// <returns></returns>
-        MessageModel<bool> Init();
+        MessageModel<bool> Init(string com = null);
 
         /// <summary>
         /// 打印
