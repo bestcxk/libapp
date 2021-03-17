@@ -103,13 +103,13 @@ namespace Mijin.Library.App
         {
 
             #region 检测是否管理员启动
-            var isAdmin = IsAdministrator();
-            if (!isAdmin)
-            {
-                var res = MessageBox.Show("请以管理员权限运行！");
-                // 退出整个应用
-                Environment.Exit(0);
-            }
+            //var isAdmin = IsAdministrator();
+            //if (!isAdmin)
+            //{
+            //    var res = MessageBox.Show("请以管理员权限运行！");
+            //    // 退出整个应用
+            //    Environment.Exit(0);
+            //}
             #endregion
 
             #region 检测程序是否已启动
