@@ -76,9 +76,9 @@ namespace Mijin.Library.App.Driver.Drivers.Camera
             {
                 try
                 {
-                    MessageModel<Dictionary<string, string>> data = new MessageModel<Dictionary<string, string>>() { response = new Dictionary<string, string>() };
-                    data.response["method"] = "image";
-                    data.response["image"] = GetCameraImageForBase64();
+                    //MessageModel<Dictionary<string, string>> data = new MessageModel<Dictionary<string, string>>() { response = new Dictionary<string, string>() };
+                    //data.response["method"] = "OnCameraGetImage";
+                    //data.response["image"] = GetCameraImageForBase64();
 
                     var SendModel = new WebViewSendModel<string>()
                     {
