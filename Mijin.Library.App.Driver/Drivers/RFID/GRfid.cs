@@ -433,10 +433,10 @@ namespace Mijin.Library.App.Driver
             var result = new MessageModel<bool>();
             MsgAppSetGpo msgAppSetGpo = new MsgAppSetGpo()
             {
-                Gpo1 = dic.ContainsKey("Gpo1") ? dic["Gpo1"] : 0,
-                Gpo2 = dic.ContainsKey("Gpo2") ? dic["Gpo2"] : 0,
-                Gpo3 = dic.ContainsKey("Gpo3") ? dic["Gpo3"] : 0,
-                Gpo4 = dic.ContainsKey("Gpo4") ? dic["Gpo4"] : 0,
+                Gpo1 = (byte)(dic.ContainsKey("Gpo1") ? dic["Gpo1"] : 0),
+                Gpo2 = (byte)(dic.ContainsKey("Gpo2") ? dic["Gpo2"] : 0),
+                Gpo3 = (byte)(dic.ContainsKey("Gpo3") ? dic["Gpo3"] : 0),
+                Gpo4 = (byte)(dic.ContainsKey("Gpo4") ? dic["Gpo4"] : 0),
             };
             _gClient.SendSynMsg(msgAppSetGpo);
             result.success = msgAppSetGpo.RtCode == 0;
