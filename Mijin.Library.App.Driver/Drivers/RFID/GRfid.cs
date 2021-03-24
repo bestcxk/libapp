@@ -531,6 +531,37 @@ namespace Mijin.Library.App.Driver
             return result;
 
         }
+
+        /// <summary>
+        /// 调用版本
+        /// </summary>
+        /// <param name="gpiAction"></param>
+        /// <returns></returns>
+        public MessageModel<bool> StartInventory(Int64 gpiAction = 0)
+        {
+            MessageModel<bool> result = new MessageModel<bool>();
+            MsgAppSetGpiTrigger msg = new MsgAppSetGpiTrigger()
+            {
+                GpiPort = 0,
+                TriggerStart = 5,
+            };
+            _gClient.SendSynMsg(msg);
+            _gpiAction = (GpiAction)gpiAction;
+
+            // 不是 扫码枪，则直接开启读标签
+            if (_gpiAction != GpiAction.InventoryGun)
+            {
+                result = this.Read();
+            }
+            else
+            {
+                result.success = msg.RtCode == 0;
+                result.devMsg = msg.RtMsg;
+            }
+            result.msg = "开启盘点" + (result.success ? "成功" : "失败");
+            return result;
+
+        }
         #endregion
 
         #region 停止盘点(StopInventory)
