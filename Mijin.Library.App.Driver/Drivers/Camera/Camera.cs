@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Mijin.Library.App.Driver.Drivers.Camera
+namespace Mijin.Library.App.Driver
 {
     public class Camera : ICamera
     {
