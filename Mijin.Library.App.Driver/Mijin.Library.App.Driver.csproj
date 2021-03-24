@@ -6,16 +6,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Drivers\SystemFunc\Helpers\**" />
+    <EmbeddedResource Remove="Drivers\SystemFunc\Helpers\**" />
+    <None Remove="Drivers\SystemFunc\Helpers\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="System.Drawing.Common" Version="5.0.1" />
     <PackageReference Include="System.IO.Ports" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Mijin.Library.App.Model\Mijin.Library.App.Model.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Drivers\SystemFunc\Helpers\" />
   </ItemGroup>
 
   <ItemGroup>

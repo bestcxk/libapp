@@ -1,5 +1,4 @@
-﻿using Mijin.Library.App.Driver.Drivers.Camera;
-using Mijin.Library.App.Model;
+﻿using Mijin.Library.App.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +21,7 @@ namespace Mijin.Library.App.Driver
         public IKeyboard _keyboard { get; }
         private ISystemFunc _systemFunc { get; }
         private ICamera _camera { get; }
+        public ICardSender _cardSender { get; }
 
         /// <summary>
         /// 所有Driver模块的事件
@@ -57,7 +57,7 @@ namespace Mijin.Library.App.Driver
 
         #region 构造函数
 
-        public DriverHandle(ISystemFunc systemFunc, ISIP2Client sIP2Client, ICabinetLock cabinetLock, IPosPrint posPrint, IdentityReader identityReader, IHFReader HFReader, IRfid rfid, IRfidDoor rfidDoor, IKeyboard keyboard, ICamera camera)
+        public DriverHandle(ISystemFunc systemFunc, ISIP2Client sIP2Client, ICabinetLock cabinetLock, IPosPrint posPrint, IdentityReader identityReader, IHFReader HFReader, IRfid rfid, IRfidDoor rfidDoor, IKeyboard keyboard, ICamera camera,ICardSender cardSender)
         {
             _systemFunc = systemFunc;
             _sIP2Client = sIP2Client;
@@ -69,6 +69,7 @@ namespace Mijin.Library.App.Driver
             _rfidDoor = rfidDoor;
             _keyboard = keyboard;
             _camera = camera;
+            _cardSender = cardSender;
         }
 
         #endregion
@@ -86,7 +87,7 @@ namespace Mijin.Library.App.Driver
             Type[] parametersTypes = parameters == null ? new Type[] { } : parameters.Select(p => p.GetType()).ToArray();
 
             // 反射通过cls 获取 同名接口的 属性
-            var bindingFlags = BindingFlags.NonPublic | BindingFlags.Instance;
+            var bindingFlags = BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public;
             PropertyInfo propertyInfo = this.GetType().GetProperties(bindingFlags).Where(p => p.PropertyType.Name == cls).FirstOrDefault();
 
             // 匹配不到执行类
