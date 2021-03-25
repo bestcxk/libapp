@@ -4,35 +4,30 @@ using System.Collections.Generic;
 
 namespace Mijin.Library.App.Driver
 {
-    /// <summary>
-    /// 锁孔板接口
-    /// </summary>
     public interface ICabinetLock
     {
         /// <summary>
-        /// 是否已经打开串口
+        /// 串口是否已打开
         /// </summary>
         bool IsOpen { get; }
 
         /// <summary>
-        /// 开/关 状态事件 ,response 实际是List<bool>
+        /// 获取锁控板锁状态
         /// </summary>
-        event Action<MessageModel<List<bool>>> OnLockOnOff;
-
-
-        /// <summary>
-        /// 打开指定柜锁
-        /// </summary>
-        /// <param name="lockIndex">柜号 1开始</param>
         /// <returns></returns>
-        MessageModel<bool> OpenBox(string lockIndex);
-
+        MessageModel<List<bool>> GetLockStatus();
+        /// <summary>
+        /// 开指定柜号
+        /// </summary>
+        /// <param name="boxIndex">索引从1开始</param>
+        /// <returns></returns>
+        MessageModel<string> OpenBox(Int64 boxIndex);
         /// <summary>
         /// 打开串口
         /// </summary>
         /// <param name="com"></param>
         /// <param name="baud"></param>
         /// <returns></returns>
-        MessageModel<bool> OpenSerialPort(string com, string baud = "115200");
+        MessageModel<bool> OpenSerialPort(string com, Int64 baud);
     }
 }

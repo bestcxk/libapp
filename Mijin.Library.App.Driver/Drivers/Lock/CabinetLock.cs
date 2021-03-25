@@ -6,19 +6,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Util;
+using Util.Helpers;
+using Util.Maps;
 
-namespace Mijin.Library.App.Driver
+namespace Mijin.Library.App.Driver.Drivers.Lock
 {
-    /// <summary>
-    /// 柜锁
-    /// </summary>
     public class CabinetLock : ICabinetLock
     {
-        /// <summary>
-        /// 柜号索引 16个柜子
-        /// </summary>
-        public static byte[] lockNos = { 0xa1, 0xa2, 0xa3, 0xa4, 0xa5, 0xa6, 0xa7, 0xa8, 0xb1, 0xb2, 0xb3, 0xb4, 0xb5, 0xb6, 0xb7, 0xb8 };
-
         private SerialPort _serialPort = new SerialPort();
 
         /// <summary>
@@ -27,15 +21,9 @@ namespace Mijin.Library.App.Driver
         public bool IsOpen { get => _serialPort.IsOpen; }
 
         /// <summary>
-        /// 开/关 状态事件 ,response 实际是List<bool>
-        /// </summary>
-        public event Action<MessageModel<List<bool>>> OnLockOnOff;
-
-        /// <summary>
         /// 数据接收缓存
         /// </summary>
-        public byte[] buffer = new byte[100];
-
+        private byte[] buffer = new byte[100];
         /// <summary>
         /// 构造函数
         /// </summary>
@@ -43,7 +31,6 @@ namespace Mijin.Library.App.Driver
         {
 
         }
-
         /// <summary>
         /// 析构函数
         /// </summary>
@@ -67,14 +54,13 @@ namespace Mijin.Library.App.Driver
             }
         }
 
-
         /// <summary>
         /// 打开串口
         /// </summary>
         /// <param name="com"></param>
         /// <param name="baud"></param>
         /// <returns></returns>
-        public MessageModel<bool> OpenSerialPort(string com, string baud = "115200")
+        public MessageModel<bool> OpenSerialPort(string com, Int64 baud)
         {
             var data = new MessageModel<bool>();
             Console.WriteLine(@$"com:{com} baud:{baud}");
@@ -82,14 +68,13 @@ namespace Mijin.Library.App.Driver
                 ClosePort();
 
             _serialPort.PortName = com;
-            _serialPort.BaudRate = baud.ToInt();
+            _serialPort.BaudRate = (int)baud;
             _serialPort.DataBits = 8;//数据位：8
             _serialPort.StopBits = StopBits.One;//停止位：1
             _serialPort.Parity = Parity.None;
             _serialPort.Encoding = Encoding.Default;
-
-            _serialPort.DataReceived += ReceivedData;
-
+            //_serialPort.ReadBufferSize = 5;  // 读取缓冲区大小设置5
+            //_serialPort.DataReceived += ReceivedData;
             try
             {
                 _serialPort.Open();//打开串口
@@ -110,6 +95,135 @@ namespace Mijin.Library.App.Driver
             return data;
         }
 
+
+
+
+        /// <summary>
+        /// 开指定柜号
+        /// </summary>
+        /// <param name="boxIndex">1开始</param>
+        /// <returns></returns>
+        public MessageModel<string> OpenBox(Int64 boxIndex)
+        {
+            var res = new MessageModel<string>();
+            byte[] bytes = new byte[] { 0x8a, 0x01, (byte)boxIndex, 0x11 };
+
+            var data = Send(bytes);
+            if (!data.success)
+            {
+                return new(data);
+            }
+
+            if (data.response[3] != 0x11)
+            {
+                res.msg = "开锁柜失败";
+                return res;
+            }
+            res.msg = @$"开锁柜{boxIndex}成功";
+            res.success = true;
+            return res;
+
+        }
+
+        /// <summary>
+        /// 获取锁控板锁状态
+        /// </summary>
+        /// <returns></returns>
+        public MessageModel<List<bool>> GetLockStatus()
+        {
+            var res = new MessageModel<List<bool>>() { response = new List<bool>() };
+
+            for (byte i = 1; i <= 3; i++)
+            {
+                var data = GetLockStatus(i);
+                if (!data.success)
+                {
+                    return new(data);
+                }
+                res.response.AddRange(data.response);
+            }
+
+            res.msg = "获取成功";
+            res.success = true;
+            return res;
+        }
+
+        /// <summary>
+        /// 获取指定锁控地址 柜门状态命令
+        /// </summary>
+        /// <param name="lockAddr">0X01：对应 1-8 号锁位     0X02：对应 9-16 号锁位      0X03：对应 17-24 号锁</param>
+        /// <returns>true 为开 false 为关</returns>
+        private MessageModel<List<bool>> GetLockStatus(byte lockAddr)
+        {
+            var res = new MessageModel<List<bool>>() { response = new List<bool>() };
+            byte[] bytes = new byte[] { 0x81, 0x01, lockAddr, 0x33 };
+
+            if (!IsOpen)
+            {
+                res.msg = "串口未打开";
+                return res;
+            }
+
+
+            var data = Send(bytes);
+
+            if (!data.success)
+            {
+                return new(data);
+            }
+
+            for (int i = 0; i < 8; i++)
+            {
+                var isOpen = ((buffer[3] >> i) & 0x01) == 1;
+                res.response.Add(isOpen);
+            }
+
+            res.success = true;
+            res.msg = "获取锁控板状态成功";
+            return res;
+
+        }
+
+        private MessageModel<byte[]> Send(byte[] sendData)
+        {
+            int timeOut = 0;
+            var res = new MessageModel<byte[]>();
+            if (!IsOpen)
+            {
+                res.msg = "串口未打开";
+                return res;
+            }
+
+            sendData = sendData.Append(SerialPortHelper.Get_CheckXor(sendData)).ToArray(); // 添加校验和
+            try
+            {
+                _serialPort.Write(sendData, 0, sendData.Length);
+
+            }
+            catch (Exception)
+            {
+                res.msg = "端口可能被占用，通讯失败";
+                return res;
+            }
+            _serialPort.ReadTimeout = 500;
+            while (_serialPort.BytesToRead < 5)
+            {
+                Task.Delay(5).GetAwaiter().GetResult();
+                timeOut++;
+                if (timeOut == 200)
+                {
+                    res.msg = "读取超时";
+                    return res;
+                }
+            }
+            int len = _serialPort.Read(buffer, 0, buffer.Length);
+
+            res.response = buffer.Take(len).ToArray();
+            res.msg = "获取成功";
+            res.success = true;
+            return res;
+        }
+
         /// <summary>
         /// 关闭端口
         /// </summary>
@@ -120,7 +234,6 @@ namespace Mijin.Library.App.Driver
                 try
                 {
                     _serialPort.Close();
-                    _serialPort.DataReceived -= ReceivedData;
                 }
                 catch (Exception)
                 {
@@ -128,107 +241,5 @@ namespace Mijin.Library.App.Driver
             }
         }
 
-        /// <summary>
-        /// 接收数据处理
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <param name="args"></param>
-        private void ReceivedData(object obj, SerialDataReceivedEventArgs args)
-        {
-            var lockStatusList = ReceivedDataHandle();
-            if (lockStatusList != null)
-            {
-                var SendModel = new WebViewSendModel<List<bool>>()
-                {
-                    msg = "获取成功",
-                    success = true,
-                    response = lockStatusList,
-                    method = "OnLockOnOff"
-
-                };
-                OnLockOnOff.Invoke(SendModel);
-            }
-        }
-
-        /// <summary>
-        /// 数据接收处理
-        /// </summary>
-        /// <returns>失败时返回Null</returns>
-        private List<bool> ReceivedDataHandle()
-        {
-            Task.Delay(1000).GetAwaiter().GetResult();
-            if (!_serialPort.IsOpen)
-                return null;
-
-            int len = _serialPort.Read(buffer, 0, buffer.Length);
-            if (len == 4)
-            {
-                if (buffer[0] == 0x08 && buffer[1] == 0x81) // 检测头帧
-                {
-                    var lockStatus1 = new List<bool>();
-                    var lockStatus2 = new List<bool>();
-                    for (byte i = 0; i < 8; i++)
-                    {
-                        byte dt = (byte)(0x01 << i);
-                        lockStatus1.Add((buffer[2] & dt) != dt); // false:未打开  true:打开
-                        lockStatus2.Add((buffer[3] & dt) != dt);
-                    }
-                    lockStatus1.AddRange(lockStatus2);
-
-                    return lockStatus1;
-                }
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// 打开柜门
-        /// </summary>
-        /// <param name="lockIndex">柜号 1开始</param>
-        /// <returns></returns>
-        public MessageModel<bool> OpenBox(string lockIndex)
-        {
-            var data = new MessageModel<bool>();
-
-            int index = lockIndex.ToInt();
-
-            if (!_serialPort.IsOpen)
-            {
-                data.msg = "串口未打开";
-                return data;
-            }
-
-            try
-            {
-                _serialPort.DataReceived -= ReceivedData;
-
-                var sendBytes = new byte[] { lockNos[index - 1] };
-                Console.WriteLine(@$"发送数据：{string.Join(" ", sendBytes.Select(s => s.ToString()))}");
-                _serialPort.Write(sendBytes, 0, sendBytes.Length);
-                _serialPort.ReadTimeout = 500;
-                var lockStatusList = ReceivedDataHandle();
-
-                // 开柜失败
-                if (lockStatusList == null || lockStatusList[index - 1] == false)
-                {
-                    data.msg = "开柜失败";
-                    return data;
-                }
-            }
-            catch (Exception e)
-            {
-                data.msg = e.ToString();
-                return data;
-            }
-            finally
-            {
-                _serialPort.DataReceived += ReceivedData;
-            }
-            data.success = true;
-            data.msg = "开柜成功";
-
-            return data;
-        }
     }
 }
