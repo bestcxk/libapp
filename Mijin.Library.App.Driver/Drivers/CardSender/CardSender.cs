@@ -262,25 +262,20 @@ namespace Mijin.Library.App.Driver
             res.msg = "初始化失败";
             return res;
         }
+
         /// <summary>
-        /// 发卡
+        /// 发卡前检测是否可以发卡
         /// </summary>
         /// <returns></returns>
-        public MessageModel<string> SpitCard()
+        public MessageModel<string> CanSpitCard()
         {
             var res = new MessageModel<string>();
-            int i = 0;
-
             // 若未初始化，则进行初始化
             if (!inited)
             {
                 var resInit = Init();
                 if (!resInit.success) return resInit;
             }
-
-            int nRet = 0;
-            byte[] cmd = new byte[10];
-
             if (nowStatusRes == null)
             {
                 nowStatusRes = GetStatus();
@@ -292,6 +287,29 @@ namespace Mijin.Library.App.Driver
                 return res;
             }
 
+            res.msg = "可以发卡";
+            res.success = true;
+            return res;
+
+        }
+
+        /// <summary>
+        /// 发卡
+        /// </summary>
+        /// <returns></returns>
+        public MessageModel<string> SpitCard()
+        {
+            var res = new MessageModel<string>();
+            int i = 0;
+
+            var re = CanSpitCard(); // 发卡前检测
+            if (!re.success)
+            {
+                return re;
+            }
+
+            int nRet = 0;
+            byte[] cmd = new byte[10];
             #region 移动卡到读卡位置
             cmd = new byte[10];
             cmd[0] = 0x46;
