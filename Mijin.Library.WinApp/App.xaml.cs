@@ -35,7 +35,6 @@ namespace Mijin.Library.App
             // 程序启动检测
             this.BeforeStart();
 
-
             _serviceCollection = new ServiceCollection();
 
             ConfigureServices(_serviceCollection);
@@ -68,6 +67,7 @@ namespace Mijin.Library.App
         // 使用了ioc后，只能使用该方式进行启动,把app.xaml的StartupUrl 修改成 Startup = App_OnStartup
         private void App_OnStartup(object sender, StartupEventArgs e)
         {
+
             var mainWindow = _serviceProvider.GetService<MainWindow>();
             var webviewWindow = _serviceProvider.GetService<WebViewWindow>();
             var settings = _serviceProvider.GetService<ISystemFunc>().ClientSettings;
@@ -79,7 +79,8 @@ namespace Mijin.Library.App
             //TaskScheduler.UnobservedTaskException += TestException;
 
             // 其中一个窗口触发了关闭事件则直接退出全部程序
-            mainWindow.Closed += (s,e)=> {
+            mainWindow.Closed += (s, e) =>
+            {
                 // 退出整个应用
                 Environment.Exit(0);
             };
@@ -116,7 +117,7 @@ namespace Mijin.Library.App
             var prs = ProcessHelper.CheckSameAppRunProcess();
             if (prs != null)
             {
-                var result = MessageBox.Show("已有一个程序实例运行，是否要关闭已经在运行的实例并启动新的实例", "提示", MessageBoxButton.YesNoCancel);
+                var result = MessageBox.Show("已有一个程序实例运行，是否要关闭所有实例", "提示", MessageBoxButton.YesNoCancel);
 
                 if (result == MessageBoxResult.Yes)
                 {
@@ -131,10 +132,9 @@ namespace Mijin.Library.App
                         //ex.Log(Log.GetLog().Caption("BeforeStart"));
                     }
                 }
-                else
-                {
-                    Environment.Exit(0);
-                }
+                MessageBox.Show("关闭成功，请重新启动", "提示",MessageBoxButton.OK);
+                Environment.Exit(0);
+
             }
             #endregion
 
