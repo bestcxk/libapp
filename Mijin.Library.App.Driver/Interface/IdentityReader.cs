@@ -1,4 +1,5 @@
 ﻿using Mijin.Library.App.Model;
+using System;
 
 namespace Mijin.Library.App.Driver
 {
@@ -12,7 +13,7 @@ namespace Mijin.Library.App.Driver
         /// </summary>
         /// <param name="com">com口号，只用传com口的号码</param>
         /// <returns></returns>
-        MessageModel<string> ReadHFCardNo(int? com = null);
+        MessageModel<string> ReadHFCardNo(Int64? com = null);
         /// <summary>
         /// 读身份证信息
         /// </summary>

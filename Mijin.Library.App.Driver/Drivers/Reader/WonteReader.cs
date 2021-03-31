@@ -186,7 +186,7 @@ namespace Mijin.Library.App.Driver
         /// </summary>
         /// <param name="com">com口，不填则自动寻找，读卡一次成功则直接保存com口号直到关闭软件</param>
         /// <returns></returns>
-        public MessageModel<string> ReadHFCardNo(int? com = null)
+        public MessageModel<string> ReadHFCardNo(Int64? com = null)
         {
             var result = new MessageModel<string>();
             uint icNumber = 0;
