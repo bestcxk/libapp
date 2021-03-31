@@ -22,10 +22,11 @@ namespace Mijin.Library.Core.Common.Helper
             {
                 if (process.Id != current.Id)
                 {
-                    if (process.MainModule.FileName == current.MainModule.FileName)
-                    {
-                        return process;
-                    }
+                    return process;
+                    //if (process.MainModule.FileName == current.MainModule.FileName)
+                    //{
+                    //    return process;
+                    //}
                 }
             }
             return null;
