@@ -71,6 +71,8 @@ namespace Mijin.Library.App.Views
             this.ShowWindowTitleBarCheck.IsOn = _clientSettings.ShowWindowTitleBar;
             this.CanResizeCheck.IsOn = _clientSettings.CanResize;
             this.IsDevCheck.IsOn = _clientSettings.IsDev;
+            this.WindowOverhead.IsOn = _clientSettings.WindowOverhead;
+            this.CannotClosed.IsOn = _clientSettings.CannotClosed;
         }
 
         private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -103,6 +105,8 @@ namespace Mijin.Library.App.Views
                     _clientSettings.ShowWindowTitleBar = this.ShowWindowTitleBarCheck.IsOn;
                     _clientSettings.CanResize = this.CanResizeCheck.IsOn;
                     _clientSettings.IsDev = this.IsDevCheck.IsOn;
+                    _clientSettings.WindowOverhead = this.WindowOverhead.IsOn;
+                    _clientSettings.CannotClosed = this.CannotClosed.IsOn;
 
                     _clientSettings.Write();
                 }));
@@ -119,6 +123,18 @@ namespace Mijin.Library.App.Views
             {
                 this.ReaderActionUrlText.Text = this.LibraryManageUrlText.Text + @$"{(this.LibraryManageUrlText.Text.Last() == '/'?"":"/")}terminal";
             }
+        }
+
+        private void SetAutoLend_Click(object sender, RoutedEventArgs e)
+        {
+            this.NoSelectOpenUrlText.Text = _clientSettings.ReaderActionUrl;
+            this.WindowWidthText.Text = "0";
+            this.WindowHeightText.Text = "0";
+            this.ShowWindowTitleBarCheck.IsOn = false;
+            this.CanResizeCheck.IsOn = false;
+            this.IsDevCheck.IsOn = false;
+            this.WindowOverhead.IsOn = true;
+            this.CannotClosed.IsOn = true;
         }
     }
 }

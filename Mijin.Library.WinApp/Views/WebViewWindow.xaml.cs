@@ -32,7 +32,6 @@ namespace Mijin.Library.App.Views
             _driverHandle = driverHandle;
             _systemFunc = systemFunc;
             _clientSettings = systemFunc.ClientSettings;
-
             InitializeComponent();
 
             InitializeAsync(); // 初始化
@@ -111,6 +110,8 @@ namespace Mijin.Library.App.Views
                     ex.Log(Log.GetLog().Caption("退出时清空浏览器缓存"));
                 }
 
+
+                //ReStartApp();
                 #endregion
                 // 退出整个应用
                 Environment.Exit(0);
@@ -140,6 +141,16 @@ namespace Mijin.Library.App.Views
                 this.WindowState = System.Windows.WindowState.Normal;
                 this.WindowStyle = System.Windows.WindowStyle.None;
             }
+            else
+            {
+                this.ShowTitleBar = false;  // 不显示标题栏
+            }
+
+            //窗口顶置
+            if (_clientSettings.WindowOverhead)
+            { 
+               this.Topmost = true;    
+            }
 
             // 全屏
             if (_clientSettings.WindowWidth == 0 && _clientSettings.WindowHeight == 0)
@@ -148,12 +159,15 @@ namespace Mijin.Library.App.Views
                 if (_clientSettings.ShowWindowTitleBar)
                 {
                     this.WindowState = WindowState.Maximized;
+                    this.ShowTitleBar = true;  // 不显示标题栏
                 }
                 else  // 不显示标题栏
                 {
-                    this.WindowState = System.Windows.WindowState.Normal;
-                    this.WindowStyle = System.Windows.WindowStyle.None;
-                    this.Topmost = true;
+                    this.WindowState = System.Windows.WindowState.Normal;//还原窗口（非最小化和最大化）
+                    this.WindowStyle = System.Windows.WindowStyle.None; //仅工作区可见，不显示标题栏和边框
+                    this.ResizeMode = System.Windows.ResizeMode.NoResize;//不显示最大化和最小化按钮
+                    this.ShowTitleBar = false;  // 不显示标题栏
+
                     this.Left = 0.0;
                     this.Top = 0.0;
                     this.Width = System.Windows.SystemParameters.PrimaryScreenWidth;
@@ -164,11 +178,13 @@ namespace Mijin.Library.App.Views
             {
                 this.Width = _clientSettings.WindowWidth;
                 this.Height = _clientSettings.WindowHeight;
+
+                // 窗口显示在屏幕中央
+                Rect workArea = SystemParameters.WorkArea;
+                Left = (workArea.Width - this.Width) / 2 + workArea.Left;
+                Top = (workArea.Height - this.Height) / 2 + workArea.Top;
             }
-            // 窗口显示在屏幕中央
-            Rect workArea = SystemParameters.WorkArea;
-            Left = (workArea.Width - this.Width) / 2 + workArea.Left;
-            Top = (workArea.Height - this.Height) / 2 + workArea.Top;
+            
             // 显示到最前端
             //this.Topmost = true;
             #endregion
@@ -183,8 +199,22 @@ namespace Mijin.Library.App.Views
         }
 
 
+
         #endregion
 
+        private void FullWindow()
+        {
+            this.WindowState = System.Windows.WindowState.Normal;//还原窗口（非最小化和最大化）
+            this.WindowStyle = System.Windows.WindowStyle.None; //仅工作区可见，不显示标题栏和边框
+            this.ResizeMode = System.Windows.ResizeMode.NoResize;//不显示最大化和最小化按钮
+            this.Topmost = true;    //窗口在最前
+            this.ShowTitleBar = false;  // 不显示标题栏
+
+            this.Left = 0.0;
+            this.Top = 0.0;
+            this.Width = System.Windows.SystemParameters.PrimaryScreenWidth;
+            this.Height = System.Windows.SystemParameters.PrimaryScreenHeight;
+        }
         #region Driver 模块事件 发送
         private void OnDriverEvent(object obj)
         {

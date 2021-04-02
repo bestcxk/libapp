@@ -27,6 +27,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Mijin.Library.App.Common\Mijin.Library.App.Common.csproj" />
+    <ProjectReference Include="..\Mijin.Library.App.Daemon\Mijin.Library.App.Daemon.csproj" />
     <ProjectReference Include="..\Mijin.Library.App.Driver\Mijin.Library.App.Driver.csproj" />
   </ItemGroup>
 

@@ -15,6 +15,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Mijin.Library.Core.Common.Helper;
+using System.Linq;
 
 namespace Mijin.Library.App
 {
@@ -85,6 +86,18 @@ namespace Mijin.Library.App
                 Environment.Exit(0);
             };
             //webviewWindow.Closed += ExitApplication;
+
+            // 不可被关闭
+            if (settings.CannotClosed)
+            {
+                Process.Start(@$"Mijin.Library.App.Daemon.exe");
+                Console.WriteLine("启动守护进程");
+            }
+            else // 可以被关闭 
+            {
+                Process pro = Process.GetProcessesByName("Mijin.Library.App.Daemon").FirstOrDefault();
+                pro?.Kill();
+            }
 
             // 是否直接打开webview
             if (!string.IsNullOrEmpty(settings.NoSelectOpenUrl))
