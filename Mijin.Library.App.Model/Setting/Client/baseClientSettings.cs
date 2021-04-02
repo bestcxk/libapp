@@ -61,6 +61,16 @@ namespace Mijin.Library.App.Model
         /// 开发者模式
         /// </summary>
         public bool IsDev { get; set; }
+
+        /// <summary>
+        /// 窗口顶置
+        /// </summary>
+        public bool WindowOverhead { get; set; }
+
+        /// <summary>
+        /// 窗口被关闭后自动重启
+        /// </summary>
+        public bool CannotClosed { get; set; }
     }
 
     /// <summary>
