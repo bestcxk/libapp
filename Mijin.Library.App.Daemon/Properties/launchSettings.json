@@ -1,0 +1,7 @@
+{
+  "profiles": {
+    "Mijin.Library.App.Daemon": {
+      "commandName": "Project"
+    }
+  }
+}
