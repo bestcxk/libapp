@@ -2,6 +2,7 @@
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Mijin.Library.App.Daemon
@@ -19,17 +20,39 @@ namespace Mijin.Library.App.Daemon
                 return;
             }
 
-            while (true)
+
+            try
             {
-                Task.Delay(500).GetAwaiter().GetResult();
-                Process pro = Process.GetProcessesByName("Mijin.Library.App").FirstOrDefault();
-                if (pro == null)
+                while (true)
                 {
-                    Process.Start(@$"Mijin.Library.App.exe");
-                    Console.WriteLine("启动成功");
+                    Thread.Sleep(10);
+                    Process pro = Process.GetProcessesByName("Mijin.Library.App").FirstOrDefault();
+                    if (pro == null)
+                    {
+                        //Process proc = new Process();
+                        //proc.StartInfo.FileName = @$"Mijin.Library.App.exe";
+                        //proc.StartInfo.UseShellExecute = false;
+                        //proc.StartInfo.RedirectStandardInput = true;
+                        //proc.StartInfo.RedirectStandardOutput = true;
+                        //proc.StartInfo.RedirectStandardError = true;
+                        //proc.StartInfo.CreateNoWindow = false;
+                        //proc.Start();
+                        //proc.WaitForExit();
+                        var mPro = Process.Start(@$"Mijin.Library.App.exe");
+                        Console.WriteLine("启动成功");
+                        mPro.WaitForExit();
+                        //Thread.Sleep(2000);
+                    }
+                    Console.WriteLine("守护进程执行中");
                 }
-                Console.WriteLine("守护进程执行中");
+
             }
+            catch (Exception e)
+            {
+                Console.WriteLine("异常");
+                Console.WriteLine(e.ToString());
+            }
+
         }
     }
 }
