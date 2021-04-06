@@ -51,7 +51,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy &quot;$(SolutionDir)DLL\*.*&quot; &quot;$(TargetDir)&quot;" />
+    <!--<Exec Command="copy &quot;$(SolutionDir)DLL\*.*&quot; &quot;$(TargetDir)&quot;" />-->
   </Target>
 
 </Project>
