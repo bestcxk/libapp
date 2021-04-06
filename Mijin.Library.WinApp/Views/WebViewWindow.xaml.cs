@@ -138,12 +138,15 @@ namespace Mijin.Library.App.Views
             // 标题栏设置
             if (!_clientSettings.ShowWindowTitleBar)
             {
-                this.WindowState = System.Windows.WindowState.Normal;
-                this.WindowStyle = System.Windows.WindowStyle.None;
+                this.ShowTitleBar = false;
+                //this.WindowState = System.Windows.WindowState.Normal;
+                //this.WindowStyle = System.Windows.WindowStyle.None;
             }
             else
             {
-                this.ShowTitleBar = false;  // 不显示标题栏
+                // 不显示标题栏
+                this.WindowState = System.Windows.WindowState.Normal;//还原窗口（非最小化和最大化）
+                this.WindowStyle = System.Windows.WindowStyle.ThreeDBorderWindow; //仅工作区可见，不显示标题栏和边框
             }
 
             //窗口顶置
