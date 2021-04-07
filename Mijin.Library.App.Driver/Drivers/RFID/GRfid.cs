@@ -137,6 +137,10 @@ namespace Mijin.Library.App.Driver
                 _gClient.OnEncapedTagEpcLog += OnEncapedTagEpcLog;  //标签读取时间
                 _gClient.OnEncapedGpiStart += new delegateEncapedGpiStart(OnEncapedGpiStart);
             }
+            else
+            { 
+                _gClient.Close();
+            }
 
             result.msg = "连接" + (result.success ? "成功" : "失败");
             result.devMsg = status.ToString();
