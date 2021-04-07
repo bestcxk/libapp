@@ -220,6 +220,14 @@ namespace Mijin.Library.App.Driver
         {
             var res = new MessageModel<string>();
             var coms = System.IO.Ports.SerialPort.GetPortNames().OrderBy(c => c);
+            if (inited)
+            {
+                res.msg = "已经初始化，无需再次初始化";
+                res.success = true;
+                return res;
+            }
+
+
             foreach (var item in coms)
             {
                 try
@@ -259,7 +267,7 @@ namespace Mijin.Library.App.Driver
             }
 
             ComHandle = 0;
-            res.msg = "初始化失败";
+            res.msg = "初始化发卡器失败 ";
             return res;
         }
 
