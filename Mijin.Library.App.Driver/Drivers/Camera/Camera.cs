@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Util;
 
 namespace Mijin.Library.App.Driver
 {
@@ -104,7 +105,7 @@ namespace Mijin.Library.App.Driver
         private string GetCameraImageForBase64()
         {
             //var image = _capture.QueryFrame().ToImage<Bgr, byte>().ToBitmap();
-            var bitmap = _capture.QueryFrame().Bitmap;
+            var bitmap = _capture.QueryFrame()?.Bitmap;
             return ToBase64Str(bitmap);
         }
 
@@ -115,6 +116,10 @@ namespace Mijin.Library.App.Driver
         /// <returns></returns>
         private string ToBase64Str(Bitmap bmp)
         {
+            if (bmp.IsNull())
+            {
+                return null;
+            }
             try
             {
                 MemoryStream ms = new MemoryStream();
