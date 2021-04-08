@@ -114,21 +114,37 @@ namespace Mijin.Library.App.Driver
         public MessageModel<bool> Connect(string mode, string conStr)
         {
             var result = new MessageModel<bool>();
-            eConnectionAttemptEventStatusType status;
+            eConnectionAttemptEventStatusType status = eConnectionAttemptEventStatusType.NoResponse;
             _gClient.Close();
             if ("tcp".Equals(mode))
             {
-                if (_gClient.OpenTcp(conStr, 500, out status))
+                try
                 {
-                    result.success = GetPower().success;
+                    if (_gClient.OpenTcp(conStr, 500, out status))
+                    {
+                        result.success = GetPower().success;
+                    }
                 }
+                catch (Exception)
+                {
+
+                }
+                
             }
             else
             {
-                if (_gClient.OpenSerial(conStr, 500, out status))
+                try
                 {
-                    result.success = GetPower().success;
+                    if (_gClient.OpenSerial(conStr, 500, out status))
+                    {
+                        result.success = GetPower().success;
+                    }
                 }
+                catch (Exception)
+                {
+
+                }
+                
             }
             if (result.success)
             {
