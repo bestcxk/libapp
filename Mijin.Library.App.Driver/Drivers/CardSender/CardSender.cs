@@ -598,7 +598,7 @@ namespace Mijin.Library.App.Driver
                     {
                         nowStatusRes = GetStatus();
                         OnCardSenderStatus?.Invoke(nowStatusRes);
-                        await Task.Delay(100);
+                        await Task.Delay(300);
                     }
                     catch (Exception)
                     {
