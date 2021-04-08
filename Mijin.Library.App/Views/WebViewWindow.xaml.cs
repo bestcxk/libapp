@@ -27,7 +27,7 @@ namespace Mijin.Library.App.Views
         public ISystemFunc _systemFunc { get; }
 
         #region 构造函数
-        public WebViewWindow(IDriverHandle driverHandle,ISystemFunc systemFunc)
+        public WebViewWindow(IDriverHandle driverHandle, ISystemFunc systemFunc)
         {
             _driverHandle = driverHandle;
             _systemFunc = systemFunc;
@@ -151,8 +151,8 @@ namespace Mijin.Library.App.Views
 
             //窗口顶置
             if (_clientSettings.WindowOverhead)
-            { 
-               this.Topmost = true;    
+            {
+                this.Topmost = true;
             }
 
             // 全屏
@@ -187,7 +187,7 @@ namespace Mijin.Library.App.Views
                 Left = (workArea.Width - this.Width) / 2 + workArea.Left;
                 Top = (workArea.Height - this.Height) / 2 + workArea.Top;
             }
-            
+
             // 显示到最前端
             //this.Topmost = true;
             #endregion
@@ -234,67 +234,70 @@ namespace Mijin.Library.App.Views
         private void WebMessageReceived(object sender, CoreWebView2WebMessageReceivedEventArgs receivedEvent)
         {
             var result = new WebViewSendModel<object>();
-            try
+            // 获取请求字符串
+            string reqStr = receivedEvent.WebMessageAsJson;
+            Task.Run(() =>
             {
-                // 获取请求字符串
-                string reqStr = receivedEvent.WebMessageAsJson;
-
-                // 检查请求字符串
-                if (string.IsNullOrEmpty(reqStr))
+                try
                 {
-                    result.msg = "无法序列化成对象";
-                    result.devMsg = @$"请求字符串 ： [{reqStr}]";
-                    Send(result);
-                    return;
+
+                    // 检查请求字符串
+                    if (string.IsNullOrEmpty(reqStr))
+                    {
+                        result.msg = "无法序列化成对象";
+                        result.devMsg = @$"请求字符串 ： [{reqStr}]";
+                        Send(result);
+                        return;
+                    }
+
+                    // 请求model序列化, 一定要序列化成 object[]
+                    var req = Util.Json.ToObject<ReqMessageModel<object[]>>(reqStr);
+                    // 请求method guid 赋值
+                    result.method = req.method;
+                    result.guid = req.guid;
+
+                    string interfaceName = req.method.Split('.')[0]; // 执行的接口名
+                    string methodName = req.method.Split('.')[1];    // 执行的方法
+                    object[] parameters = req.@params;            // 执行参数处理
+                                                                  // 把请求参数中的 JArray 转换为 List<List<string> ,否则会匹配不到方法
+                    for (int i = 0; i < parameters?.Length; i++)
+                    {
+                        var item = parameters[i];
+                        if (item.GetType().Name == "JArray")
+                            item = item.JsonMapTo<List<string>>();
+                    }
+
+                    // 反射执行指定方法并赋值
+                    var resultObj = _driverHandle.Invoke(interfaceName, methodName, parameters);
+
+                    // 赋值
+                    result.devMsg = resultObj?.devMsg;
+                    result.msg = resultObj?.msg;
+                    result.status = resultObj?.status ?? 0;
+                    result.success = resultObj?.success ?? false;
+                    result.response = resultObj?.response;
+
+
+                }
+                catch (Exception ex)
+                {
+                    ILog log = Log.GetLog();
+                    // 设置日志等级为 警告
+                    log.Warn();
+                    // 设置内容为 WebMessageReceived捕获异常
+                    log.Content("WebMessageReceived捕获异常");
+                    // 写入日志
+                    ex.Log(log);
+
+                    // 设置devMsg
+                    result.devMsg = ex.ToString();
+                    result.msg = "操作异常";
+                    result.success = false;
                 }
 
-                // 请求model序列化, 一定要序列化成 object[]
-                var req = Util.Json.ToObject<ReqMessageModel<object[]>>(reqStr);
-                // 请求method guid 赋值
-                result.method = req.method;
-                result.guid = req.guid;
-
-                string interfaceName = req.method.Split('.')[0]; // 执行的接口名
-                string methodName = req.method.Split('.')[1];    // 执行的方法
-                object[] parameters = req.@params;            // 执行参数处理
-                // 把请求参数中的 JArray 转换为 List<List<string> ,否则会匹配不到方法
-                for (int i = 0; i < parameters?.Length; i++)
-                {
-                    var item = parameters[i];
-                    if (item.GetType().Name == "JArray")
-                        item = item.JsonMapTo<List<string>>();
-                }
-
-                // 反射执行指定方法并赋值
-                var resultObj = _driverHandle.Invoke(interfaceName, methodName, parameters);
-
-                // 赋值
-                result.devMsg = resultObj?.devMsg;
-                result.msg = resultObj?.msg;
-                result.status = resultObj?.status ?? 0;
-                result.success = resultObj?.success ?? false;
-                result.response = resultObj?.response;
-
-
-            }
-            catch (Exception ex)
-            {
-                ILog log = Log.GetLog();
-                // 设置日志等级为 警告
-                log.Warn();
-                // 设置内容为 WebMessageReceived捕获异常
-                log.Content("WebMessageReceived捕获异常");
-                // 写入日志
-                ex.Log(log);
-
-                // 设置devMsg
-                result.devMsg = ex.ToString();
-                result.msg = "操作异常";
-                result.success = false;
-            }
-
-            // 发送信息给前端页面
-            Send(result);
+                // 发送信息给前端页面
+                Send(result);
+            });
         }
         #endregion
 
@@ -305,10 +308,11 @@ namespace Mijin.Library.App.Views
         /// <param name="obj"></param>
         private void Send(object obj)
         {
-            this.Dispatcher.Invoke(new Action(() => {
+            this.Dispatcher.Invoke(new Action(() =>
+            {
                 this.webView.CoreWebView2.PostWebMessageAsString(Json.ToJson(obj));
             }));
-            
+
         }
         #endregion
 
