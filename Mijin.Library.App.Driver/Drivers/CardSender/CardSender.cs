@@ -291,7 +291,7 @@ namespace Mijin.Library.App.Driver
 
             if (nowStatusRes.response.Box.Contains("卡箱预空"))
             {
-                res.msg = "卡箱预空，请联系管理员";
+                res.msg = "卡箱预空，请联系管理员加卡";
                 return res;
             }
 
