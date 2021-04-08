@@ -21,7 +21,7 @@ namespace Mijin.Library.App.Driver
         public IKeyboard _keyboard { get; }
         private ISystemFunc _systemFunc { get; }
         private ICamera _camera { get; }
-        public ICardSender _cardSender { get; }
+        private ICardSender _cardSender { get; }
 
         /// <summary>
         /// 所有Driver模块的事件
