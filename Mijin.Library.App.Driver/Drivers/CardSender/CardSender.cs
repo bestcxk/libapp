@@ -226,8 +226,6 @@ namespace Mijin.Library.App.Driver
                 res.success = true;
                 return res;
             }
-
-
             foreach (var item in coms)
             {
                 try
@@ -265,6 +263,72 @@ namespace Mijin.Library.App.Driver
 
                 }
             }
+
+            ComHandle = 0;
+            res.msg = "初始化发卡器失败 ";
+            return res;
+        }
+
+        /// <summary>
+        /// 初始化
+        /// </summary>
+        /// <returns></returns>
+        public MessageModel<string> Init(string com = null)
+        {
+            var res = new MessageModel<string>();
+            var coms = System.IO.Ports.SerialPort.GetPortNames().OrderBy(c => c);
+            if (inited)
+            {
+                res.msg = "已经初始化，无需再次初始化";
+                res.success = true;
+                return res;
+            }
+
+            if (com == null)
+            {
+                return Init();
+            }
+            else
+            {
+
+                try
+                {
+                    int nRet = 0, i;
+                    ComHandle = K720_CommOpenWithBaud(com, 9600);
+                    if (ComHandle > 0)
+                    {
+                        for (i = 0; i < 16; i++)
+                        {
+                            nRet = K720_AutoTestMac(ComHandle, (byte)i, recordInfo);
+                            if (nRet == 0)
+                            {
+                                MacAddr = (byte)i;
+                                break;
+                            }
+                        }
+                        if (nRet == 0)
+                        {
+                            res.msg = "连接成功";
+                            res.success = true;
+                            inited = true;
+                            Task.Delay(1000).GetAwaiter().GetResult();
+                            return res;
+
+                        }
+                        else
+                        {
+                            K720_CommClose(ComHandle);
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+
+                }
+
+            }
+
+
 
             ComHandle = 0;
             res.msg = "初始化发卡器失败 ";
