@@ -33,6 +33,16 @@ namespace Mijin.Library.App.Driver
         /// 用户身份证
         /// </summary>
         public string UserIdentity { get; set; }
+
+        /// <summary>
+        /// 支付金额
+        /// </summary>
+        public decimal Pay { get; set; }
+
+        /// <summary>
+        /// 订单号
+        /// </summary>
+        public string OrderNo { get; set; }
     }
 
     /// <summary>
@@ -61,6 +71,7 @@ namespace Mijin.Library.App.Driver
         /// 应还时间
         /// </summary>
         public DateTime ShouldBackTime { get; set; }
+
     }
 
     /// <summary>
@@ -70,6 +81,8 @@ namespace Mijin.Library.App.Driver
     {
         借阅 = 1,
         续借 = 2,
-        归还 = 3
+        归还 = 3,
+        办证缴费 = 4,
+        逾期缴费 = 5,
     }
 }
