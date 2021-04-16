@@ -148,7 +148,7 @@ namespace Mijin.Library.App.Driver
             AutoReplyPrint.CP_Pos_PrintText(_handle, $@"身份证  ：{print.UserIdentity ?? ""}" + "\r\n");
 
 
-            if ((int)print.Action < 3)
+            if ((int)print.Action <= 3)
             {
                 AutoReplyPrint.CP_Pos_PrintText(_handle, "-----------书籍信息-----------" + "\r\n");
                 AutoReplyPrint.CP_Pos_PrintText(_handle, $@"书籍数量：{print.BookInfos?.Count}" + "\r\n" + (print.BookInfos.Count > 1 ? "\r\n" : ""));
