@@ -98,7 +98,6 @@ namespace Mijin.Library.App.Driver
                     msg = "未匹配到执行的类名"
                 };
             }
-
             // 获取执行类实体
             var acionInstance = propertyInfo.GetValue(this);
 
@@ -108,6 +107,7 @@ namespace Mijin.Library.App.Driver
             {
                 return new MessageModel<object>()
                 {
+                    devMsg = "因为该属性是参数，请不要判断 success，请判断 response",
                     success = true,
                     msg = "参数获取成功",
                     response = proInfo.GetValue(acionInstance)
