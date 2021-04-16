@@ -1,6 +1,7 @@
 ﻿using GDotnet.Reader.Api.DAL;
 using GDotnet.Reader.Api.Protocol.Gx;
 using Mijin.Library.App.Model;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -231,20 +232,20 @@ namespace Mijin.Library.App.Driver
         public MessageModel<bool> Stop()
         {
             var result = new MessageModel<bool>();
-            // 停止指令，空闲态
-            MsgBaseStop msgBaseStop = new MsgBaseStop();
+            
             try
             {
+                // 停止指令，空闲态
+                MsgBaseStop msgBaseStop = new MsgBaseStop();
                 _gClient.SendSynMsg(msgBaseStop, 500);
                 result.success = msgBaseStop.RtCode == 0;
+                result.devMsg = msgBaseStop.RtMsg;
             }
             catch (Exception e)
             {
                 result.success = false;
             }
             result.msg = "停止" + (result.success ? "成功" : "失败");
-            result.devMsg = msgBaseStop.RtMsg;
-
             return result;
         }
 
@@ -378,6 +379,17 @@ namespace Mijin.Library.App.Driver
             result.devMsg = msgBaseInventoryEpc.RtMsg;
             return result;
         }
+
+        /// <summary>
+        /// 开启指定天线读标签
+        /// </summary>
+        /// <param name="jsonStr"></param>
+        /// <returns></returns>
+        public MessageModel<bool> ReadByAntId(string jsonStr)
+        {
+            //var list = jArray.Select(j => j.ToString()).ToList();
+            return ReadByAntId(Json.ToObject<List<string>>(jsonStr));
+        }
         #endregion
 
         #region 开启所有天线读标签(Read)
@@ -433,6 +445,8 @@ namespace Mijin.Library.App.Driver
 
             return result;
         }
+
+        
         #endregion
 
         #region 只读一个标签(ReadOnce)
