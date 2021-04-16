@@ -14,11 +14,16 @@ namespace Mijin.Library.App.Driver.Drivers.Lock
     public class CabinetLock : ICabinetLock
     {
         private SerialPort _serialPort = new SerialPort();
-
+        private readonly static object openLockObj = new object();
+        private readonly static object sendLockObj = new object();
         /// <summary>
         /// 串口是否打开
         /// </summary>
         public bool IsOpen { get => _serialPort.IsOpen; }
+
+        public event Action<WebViewSendModel<List<bool>>> OnLockEvent;
+
+        public Task task;
 
         /// <summary>
         /// 数据接收缓存
@@ -29,7 +34,7 @@ namespace Mijin.Library.App.Driver.Drivers.Lock
         /// </summary>
         public CabinetLock()
         {
-
+            task = Task.Run(LockEvent);
         }
         /// <summary>
         /// 析构函数
@@ -54,6 +59,38 @@ namespace Mijin.Library.App.Driver.Drivers.Lock
             }
         }
 
+        public async void LockEvent()
+        {
+            while (true)
+            {
+                await Task.Delay(1500);
+                if (IsOpen)
+                {
+                    try
+                    {
+                        var dt = GetLockStatus();
+                        if (dt.response.Any(s => s == true))
+                        {
+
+                        }
+                        if (dt.success)
+                        {
+                            OnLockEvent?.Invoke(new()
+                            {
+                                method = "OnLockEvent",
+                                response = dt.response,
+                                msg = "获取锁孔板状态成功"
+                            });
+                        }
+                    }
+                    catch (Exception e)
+                    {
+
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// 打开串口
         /// </summary>
@@ -62,41 +99,41 @@ namespace Mijin.Library.App.Driver.Drivers.Lock
         /// <returns></returns>
         public MessageModel<bool> OpenSerialPort(string com, Int64 baud)
         {
-            var data = new MessageModel<bool>();
-            Console.WriteLine(@$"com:{com} baud:{baud}");
-            if (_serialPort.IsOpen)
-                ClosePort();
+            lock (openLockObj)
+            {
+                var data = new MessageModel<bool>();
+                Console.WriteLine(@$"com:{com} baud:{baud}");
+                if (_serialPort.IsOpen)
+                    ClosePort();
 
-            _serialPort.PortName = com;
-            _serialPort.BaudRate = (int)baud;
-            _serialPort.DataBits = 8;//数据位：8
-            _serialPort.StopBits = StopBits.One;//停止位：1
-            _serialPort.Parity = Parity.None;
-            _serialPort.Encoding = Encoding.Default;
-            //_serialPort.ReadBufferSize = 5;  // 读取缓冲区大小设置5
-            //_serialPort.DataReceived += ReceivedData;
-            try
-            {
-                _serialPort.Open();//打开串口
-            }
-            catch (Exception e)
-            {
-                data.msg = e.ToString();
+                _serialPort.PortName = com;
+                _serialPort.BaudRate = (int)baud;
+                _serialPort.DataBits = 8;//数据位：8
+                _serialPort.StopBits = StopBits.One;//停止位：1
+                _serialPort.Parity = Parity.None;
+                _serialPort.Encoding = Encoding.Default;
+                //_serialPort.ReadBufferSize = 5;  // 读取缓冲区大小设置5
+                //_serialPort.DataReceived += ReceivedData;
+                try
+                {
+                    _serialPort.Open();//打开串口
+                }
+                catch (Exception e)
+                {
+                    data.msg = e.ToString();
+                    return data;
+                }
+                Task.Delay(1000).GetAwaiter().GetResult();
+                if (_serialPort.IsOpen)
+                {
+                    data.success = true;
+                    data.msg = "连接成功";
+                }
+
+
                 return data;
             }
-            Task.Delay(1000).GetAwaiter().GetResult();
-            if (_serialPort.IsOpen)
-            {
-                data.success = true;
-                data.msg = "连接成功";
-            }
-
-
-            return data;
         }
-
-
-
 
         /// <summary>
         /// 开指定柜号
@@ -164,29 +201,40 @@ namespace Mijin.Library.App.Driver.Drivers.Lock
                 return res;
             }
 
-
-            var data = Send(bytes);
-
-            if (!data.success)
+            try
             {
-                return new(data);
-            }
+                var data = Send(bytes);
 
-            for (int i = 0; i < 8; i++)
+                if (!data.success)
+                {
+                    return new(data);
+                }
+
+                for (int i = 0; i < 8; i++)
+                {
+                    var isOpen = ((buffer[3] >> i) & 0x01) == 1;
+                    res.response.Add(isOpen);
+                }
+
+                res.success = true;
+                res.msg = "获取锁控板状态成功";
+                return res;
+            }
+            catch (Exception e)
             {
-                var isOpen = ((buffer[3] >> i) & 0x01) == 1;
-                res.response.Add(isOpen);
+
+                return new()
+                {
+                    success = false,
+                    devMsg = e.ToString(),
+                    msg = "获取锁孔板状态失败"
+                };
             }
-
-            res.success = true;
-            res.msg = "获取锁控板状态成功";
-            return res;
-
         }
 
         private MessageModel<byte[]> Send(byte[] sendData)
         {
-            int timeOut = 0;
+            
             var res = new MessageModel<byte[]>();
             if (!IsOpen)
             {
@@ -194,34 +242,75 @@ namespace Mijin.Library.App.Driver.Drivers.Lock
                 return res;
             }
 
-            sendData = sendData.Append(SerialPortHelper.Get_CheckXor(sendData)).ToArray(); // 添加校验和
-            try
+            lock (sendLockObj)
             {
-                _serialPort.Write(sendData, 0, sendData.Length);
+                sendData = sendData.Append(SerialPortHelper.Get_CheckXor(sendData)).ToArray(); // 添加校验和
+                int timeOut = 0;
+                int time = 5, len = 0;
+                while (--time > 0)
+                {
+                    ClearTempRead();
+                    try
+                    {
+                        _serialPort.Write(sendData, 0, sendData.Length);
 
-            }
-            catch (Exception)
-            {
-                res.msg = "端口可能被占用，通讯失败";
+                    }
+                    catch (Exception)
+                    {
+                        continue;
+                        //res.msg = "端口可能被占用，通讯失败";
+                        //return res;
+                    }
+                    Task.Delay(50).GetAwaiter().GetResult();
+                    while (_serialPort.BytesToRead < 5)
+                    {
+                        Task.Delay(10).GetAwaiter().GetResult();
+                        timeOut++;
+                        if (timeOut == 50)
+                        {
+                            break;
+                            //res.msg = "读取超时";
+                            //return res;
+                        }
+                    }
+                    if (_serialPort.BytesToRead < 5)
+                    {
+                        continue;
+                    }
+
+
+                    _serialPort.ReadTimeout = 500;
+                    len = _serialPort.Read(buffer, 0, buffer.Length);
+                    break;
+                }
+
+
+                res.response = buffer.Take(len).ToArray();
+                res.msg = "获取成功";
+                res.success = true;
                 return res;
             }
-            _serialPort.ReadTimeout = 500;
-            while (_serialPort.BytesToRead < 5)
+
+        }
+
+        /// <summary>
+        /// 清空串口缓冲区
+        /// </summary>
+        private void ClearTempRead()
+        {
+            var tempbuf = new byte[100];
+            if (_serialPort.BytesToRead > 0)
             {
-                Task.Delay(5).GetAwaiter().GetResult();
-                timeOut++;
-                if (timeOut == 200)
+                try
                 {
-                    res.msg = "读取超时";
-                    return res;
+                    _serialPort.Read(tempbuf, 0, tempbuf.Length);
+                }
+                catch (Exception)
+                {
+
                 }
             }
-            int len = _serialPort.Read(buffer, 0, buffer.Length);
-
-            res.response = buffer.Take(len).ToArray();
-            res.msg = "获取成功";
-            res.success = true;
-            return res;
+            
         }
 
         /// <summary>
