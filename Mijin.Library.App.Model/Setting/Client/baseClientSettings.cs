@@ -71,6 +71,11 @@ namespace Mijin.Library.App.Model
         /// 窗口被关闭后自动重启
         /// </summary>
         public bool CannotClosed { get; set; }
+
+        /// <summary>
+        /// 开机自启
+        /// </summary>
+        public bool FollowSystemRun { get; set; }
     }
 
     /// <summary>
