@@ -115,7 +115,6 @@ namespace Mijin.Library.App
         // 启动程序前检测
         private void BeforeStart()
         {
-
             #region 检测是否管理员启动
             //var isAdmin = IsAdministrator();
             //if (!isAdmin)
@@ -145,7 +144,7 @@ namespace Mijin.Library.App
                         //ex.Log(Log.GetLog().Caption("BeforeStart"));
                     }
                 }
-                MessageBox.Show("关闭成功，请重新启动", "提示",MessageBoxButton.OK);
+                MessageBox.Show("关闭成功，请重新启动", "提示", MessageBoxButton.OK);
                 Environment.Exit(0);
 
             }
