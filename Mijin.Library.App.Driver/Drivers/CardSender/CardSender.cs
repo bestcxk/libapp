@@ -192,13 +192,16 @@ namespace Mijin.Library.App.Driver
 
         private bool inited = false;
 
+        private static readonly string CacheDirPath = Path.Combine(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase, "CacheFiles");
+        private static readonly string CacheFilePath = Path.Combine(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase, "CacheFiles", "CardSender-CardInOut.json");
+
         public CardSender(ISystemFunc systemFunc)
         {
-            if (!Directory.Exists("CacheFiles"))
+            if (!Directory.Exists(CacheDirPath))
             {
-                Directory.CreateDirectory("CacheFiles");
+                Directory.CreateDirectory(CacheDirPath);
             }
-            var path = "CacheFiles/CardSender-CardInOut.json";
+            var path = CacheFilePath;
             if (File.Exists(path))
             {
                 cardInOut = Json.ToObject<CardSenderInOut>(FileHelper.ReadFile(path, Encoding.UTF8));
@@ -382,6 +385,39 @@ namespace Mijin.Library.App.Driver
 
             int nRet = 0;
             byte[] cmd = new byte[10];
+
+            res = ReadLocation();
+            if (!res.success) return res;
+
+            var cardNo = res.response;
+
+            res = TakeCardLocation();
+            if (!res.success) return res;
+
+            res.response = res.response;
+            res.msg = "发卡成功";
+
+            cardInOut.OutPutNum++;
+            cardInOut.Save(CacheFilePath);
+            res.msg = "发卡成功";
+            res.success = true;
+            return res;
+        }
+
+        /// <summary>
+        /// 发卡到读卡位置并读卡
+        /// </summary>
+        /// <returns>response:卡号</returns>
+        public MessageModel<string> ReadLocation()
+        {
+            var res = new MessageModel<string>();
+            var re = CanSpitCard(); // 发卡前检测
+            if (!re.success)
+            {
+                return re;
+            }
+            int nRet = 0, i = 0;
+            byte[] cmd = new byte[10];
             #region 移动卡到读卡位置
             cmd = new byte[10];
             cmd[0] = 0x46;
@@ -420,21 +456,16 @@ namespace Mijin.Library.App.Driver
             if (nRet != 0) // 读卡失败
             {
                 res.msg = "读卡失败";
-                cmd[0] = 0x43;
-                cmd[1] = 0x50;
+                var nouseRes = NoUseLocation();
+                if (!nouseRes.success)
+                {
+                    return nouseRes;
 
-                nRet = K720_SendCmd(ComHandle, MacAddr, cmd, 2, recordInfo); // 读卡失败则收卡至卡槽
-                if (nRet == 0)
-                {
-                    cardInOut.SlotNum++;
-                    cardInOut.Save();
-                    return SpitCard(); // 收卡成功后再一次发卡
                 }
-                else
-                {
-                    res.msg = "收卡至卡槽失败，请联系管理员！";
-                }
-                return res;
+                cardInOut.SlotNum++;
+                cardInOut.Save();
+                return ReadLocation(); // 收卡成功后再一次发卡
+
             }
 
             #region 卡号转换
@@ -454,7 +485,49 @@ namespace Mijin.Library.App.Driver
             #endregion
 
             #endregion
-            #region 发卡到出卡口
+
+            res.msg = "发卡成功";
+            res.success = true;
+            return res;
+        }
+
+        /// <summary>
+        /// 收卡至废卡槽
+        /// </summary>
+        /// <returns></returns>
+        public MessageModel<string> NoUseLocation()
+        {
+            var res = new MessageModel<string>();
+            int nRet = 0, i = 0;
+            byte[] cmd = new byte[10];
+            cmd[0] = 0x43;
+            cmd[1] = 0x50;
+
+            nRet = K720_SendCmd(ComHandle, MacAddr, cmd, 2, recordInfo); // 读卡失败则收卡至卡槽
+            if (nRet != 0)
+            {
+                res.msg = "收卡至卡槽失败，请联系管理员！";
+                return res;
+            }
+
+            cardInOut.SlotNum++;
+            cardInOut.Save();
+
+            res.msg = "收卡至废卡槽成功";
+            res.success = true;
+            return res;
+        }
+
+        /// <summary>
+        /// 发卡到取卡位置
+        /// </summary>
+        /// <returns></returns>
+        public MessageModel<string> TakeCardLocation()
+        {
+            var res = new MessageModel<string>();
+            int nRet = 0, i = 0;
+            byte[] cmd = new byte[10];
+
             cmd = new byte[10];
             cmd[0] = 0x46;
             cmd[1] = 0x43;
@@ -464,14 +537,10 @@ namespace Mijin.Library.App.Driver
             if (nRet != 0)
             {
                 res.msg = "送卡到出卡口失败";
-
                 return res;
             }
-            #endregion
 
-            cardInOut.OutPutNum++;
-            cardInOut.Save();
-            res.msg = "发卡成功";
+            res.msg = "发卡至取卡口成功";
             res.success = true;
             return res;
         }
@@ -733,10 +802,9 @@ namespace Mijin.Library.App.Driver
         /// </summary>
         public int SlotNum { get; set; }
 
-        public void Save()
+        public void Save(string savePath = "CacheFiles/CardSender-CardInOut.json")
         {
-            var path = "CacheFiles/CardSender-CardInOut.json";
-            FileHelper.WriteFile(path, Json.ToJson(this), Encoding.UTF8);
+            FileHelper.WriteFile(savePath, Json.ToJson(this), Encoding.UTF8);
         }
 
     }

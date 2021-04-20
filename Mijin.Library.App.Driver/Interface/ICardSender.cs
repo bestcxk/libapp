@@ -31,5 +31,21 @@ namespace Mijin.Library.App.Driver
         /// </summary>
         /// <returns>response:[卡号]</returns>
         MessageModel<string> SpitCard();
+
+        /// <summary>
+        /// 发卡到读卡位置并读卡
+        /// </summary>
+        /// <returns></returns>
+        MessageModel<string> ReadLocation();
+        /// <summary>
+        /// 收卡至废卡槽
+        /// </summary>
+        /// <returns></returns>
+        MessageModel<string> NoUseLocation();
+        /// <summary>
+        /// 发卡到取卡位置
+        /// </summary>
+        /// <returns></returns>
+        MessageModel<string> TakeCardLocation();
     }
 }
