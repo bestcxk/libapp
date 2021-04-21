@@ -22,6 +22,7 @@ namespace Mijin.Library.App.Driver
         private ISystemFunc _systemFunc { get; }
         private ICamera _camera { get; }
         private ICardSender _cardSender { get; }
+        public IDoorController _doorController { get; }
 
         /// <summary>
         /// 所有Driver模块的事件
@@ -57,7 +58,7 @@ namespace Mijin.Library.App.Driver
 
         #region 构造函数
 
-        public DriverHandle(ISystemFunc systemFunc, ISIP2Client sIP2Client, ICabinetLock cabinetLock, IPosPrint posPrint, IdentityReader identityReader, IHFReader HFReader, IRfid rfid, IRfidDoor rfidDoor, IKeyboard keyboard, ICamera camera,ICardSender cardSender)
+        public DriverHandle(ISystemFunc systemFunc, ISIP2Client sIP2Client, ICabinetLock cabinetLock, IPosPrint posPrint, IdentityReader identityReader, IHFReader HFReader, IRfid rfid, IRfidDoor rfidDoor, IKeyboard keyboard, ICamera camera,ICardSender cardSender,IDoorController doorController)
         {
             _systemFunc = systemFunc;
             _sIP2Client = sIP2Client;
@@ -70,6 +71,7 @@ namespace Mijin.Library.App.Driver
             _keyboard = keyboard;
             _camera = camera;
             _cardSender = cardSender;
+            _doorController = doorController;
         }
 
         #endregion

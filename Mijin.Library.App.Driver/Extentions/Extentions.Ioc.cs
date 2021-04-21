@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Mijin.Library.App.Driver.Drivers.Lock;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +23,7 @@ namespace Mijin.Library.App.Driver.Extentions
             services.AddSingleton<ICamera, Camera>();
             services.AddSingleton<IDriverHandle, DriverHandle>();
             services.AddSingleton<ICardSender, CardSender>();
+            services.AddSingleton<IDoorController, ZktDoorController>();
         }
     }
 }
