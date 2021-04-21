@@ -55,10 +55,6 @@ namespace Mijin.Library.App.Driver
         /// </summary>
         public string Title { get; set; }
 
-        ///// <summary>
-        ///// 图书UHF值
-        ///// </summary>
-        //public string UHF { get; set; }
         /// <summary>
         /// 图书一维码值
         /// </summary>

@@ -9,7 +9,7 @@ using Util;
 using Util.Helpers;
 using Util.Maps;
 
-namespace Mijin.Library.App.Driver.Drivers.Lock
+namespace Mijin.Library.App.Driver
 {
     public class CabinetLock : ICabinetLock
     {
