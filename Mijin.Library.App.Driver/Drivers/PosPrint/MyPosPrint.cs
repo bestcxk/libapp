@@ -166,7 +166,7 @@ namespace Mijin.Library.App.Driver
                     //if(!string.IsNullOrWhiteSpace(book.Serial))
                     //AutoReplyPrint.CP_Pos_PrintText(_handle, $@"书籍编号：{book.Serial}" + "\r\n");
 
-                    if (print.Action != ActionType.归还)
+                    if (print.Action != ActionType.归还 && !book.ShouldBackTime.IsNull())
                         AutoReplyPrint.CP_Pos_PrintText(_handle, $@"应还时间：{book.ShouldBackTime.ToString("yyyy-MM-dd HH:mm:ss")}" + "\r\n");
 
                     // 一维码
