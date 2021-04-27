@@ -69,11 +69,11 @@ namespace Util
         /// <param name="dictionary">数据</param>
         public static bool IsEmpty<TKey, TValue>(this IDictionary<TKey, TValue> dictionary) => null == dictionary || dictionary.Count == 0;
 
-        /// <summary>
-        /// 判断 字典 是否为空
-        /// </summary>
-        /// <param name="dictionary">数据</param>
-        public static bool IsEmpty(this IDictionary dictionary) => null == dictionary || dictionary.Count == 0;
+        ///// <summary>
+        ///// 判断 字典 是否为空
+        ///// </summary>
+        ///// <param name="dictionary">数据</param>
+        //public static bool IsEmpty(this IDictionary dictionary) => null == dictionary || dictionary.Count == 0;
 
         #endregion
 
