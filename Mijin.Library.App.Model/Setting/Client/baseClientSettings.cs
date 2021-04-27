@@ -76,6 +76,11 @@ namespace Mijin.Library.App.Model
         /// 开机自启
         /// </summary>
         public bool FollowSystemRun { get; set; }
+
+        /// <summary>
+        /// 显示标题栏多项按钮
+        /// </summary>
+        public bool ShowTitleBarBtns { get; set; }
     }
 
     /// <summary>
