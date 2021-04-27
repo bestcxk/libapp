@@ -394,12 +394,12 @@ namespace Mijin.Library.App.Driver
             res = TakeCardLocation();
             if (!res.success) return res;
 
-            res.response = res.response;
             res.msg = "发卡成功";
 
             cardInOut.OutPutNum++;
             cardInOut.Save(CacheFilePath);
             res.msg = "发卡成功";
+            res.response = cardNo;
             res.success = true;
             return res;
         }
