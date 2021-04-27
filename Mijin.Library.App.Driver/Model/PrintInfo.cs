@@ -16,7 +16,7 @@ namespace Mijin.Library.App.Driver
         /// <summary>
         /// 创建时间
         /// </summary>
-        public DateTime CreateTime { get; set; }
+        public DateTime? CreateTime { get; set; }
         /// <summary>
         /// 书籍信息列表
         /// </summary>
@@ -66,7 +66,7 @@ namespace Mijin.Library.App.Driver
         /// <summary>
         /// 应还时间
         /// </summary>
-        public DateTime ShouldBackTime { get; set; }
+        public DateTime? ShouldBackTime { get; set; }
 
     }
 

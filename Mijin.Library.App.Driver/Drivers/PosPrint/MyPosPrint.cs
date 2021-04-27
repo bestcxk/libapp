@@ -138,7 +138,8 @@ namespace Mijin.Library.App.Driver
             // 借阅信息
             AutoReplyPrint.CP_Pos_PrintText(_handle, "-----------操作信息-----------" + "\r\n");
             AutoReplyPrint.CP_Pos_PrintText(_handle, $@"操作类型：{print.Action.ToString()}" + "\r\n");
-            AutoReplyPrint.CP_Pos_PrintText(_handle, $@"操作时间：{print.CreateTime.ToString("yyyy-MM-dd HH:mm:ss")}" + "\r\n");
+            if (!print.CreateTime.IsNull())
+                AutoReplyPrint.CP_Pos_PrintText(_handle, $@"操作时间：{print.CreateTime?.ToString("yyyy-MM-dd HH:mm:ss")}" + "\r\n");
             AutoReplyPrint.CP_Pos_PrintText(_handle, $@"支付金额：{print.Pay.ToString("#0.00")} 元" + "\r\n");
             AutoReplyPrint.CP_Pos_PrintText(_handle, $@"订单号：{print.OrderNo}" + "\r\n");
 
@@ -167,7 +168,7 @@ namespace Mijin.Library.App.Driver
                     //AutoReplyPrint.CP_Pos_PrintText(_handle, $@"书籍编号：{book.Serial}" + "\r\n");
 
                     if (print.Action != ActionType.归还 && !book.ShouldBackTime.IsNull())
-                        AutoReplyPrint.CP_Pos_PrintText(_handle, $@"应还时间：{book.ShouldBackTime.ToString("yyyy-MM-dd HH:mm:ss")}" + "\r\n");
+                        AutoReplyPrint.CP_Pos_PrintText(_handle, $@"应还时间：{book.ShouldBackTime?.ToString("yyyy-MM-dd HH:mm:ss")}" + "\r\n");
 
                     // 一维码
                     AutoReplyPrint.CP_Pos_PrintText(_handle, $@"书籍ISBN：" + "\r\n");

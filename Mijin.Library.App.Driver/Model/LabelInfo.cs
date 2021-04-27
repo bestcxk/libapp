@@ -21,6 +21,7 @@ namespace Mijin.Library.App.Driver
             Tid = logBaseEpcInfo.Tid;
             AntId = logBaseEpcInfo.AntId;
             Rssi = logBaseEpcInfo.Rssi;
+
         }
 
         public string Epc { get; set; }
@@ -33,5 +34,10 @@ namespace Mijin.Library.App.Driver
         /// 标签 Rssi 值
         /// </summary>
         public byte Rssi { get; set; }
+
+        /// <summary>
+        /// 通道门Key
+        /// </summary>
+        public int DoorKey { get; set; }
     }
 }
