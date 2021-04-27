@@ -23,15 +23,22 @@ namespace Mijin.Library.App.Tests.Driver
         [Fact, TestPriority(1)]
         public void Init_Test()
         {
-            var res = cardSender.Init();
+            var res = cardSender.Init("COM3");
             Assert.True(res.success);
         }
 
         [Fact, TestPriority(2)]
         public void SpitCard_Test()
         {
-            var res = cardSender.SpitCard();
-            Assert.True(res.success);
+            {
+                var res = cardSender.Init("COM3");
+                Assert.True(res.success);
+            }
+            {
+                var res = cardSender.SpitCard();
+                Assert.True(res.success);
+            }
+
         }
     }
 }

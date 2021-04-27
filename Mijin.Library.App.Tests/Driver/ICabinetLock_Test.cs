@@ -1,4 +1,4 @@
-﻿using Mijin.Library.App.Driver.Drivers.Lock;
+﻿using Mijin.Library.App.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +19,7 @@ namespace Mijin.Library.App.Tests.Driver
         [Fact]
         public void Test()
         {
-            var rs = _cabinetLockNew.OpenSerialPort("COM7",9600);
+            var rs = _cabinetLockNew.OpenSerialPort("COM13",9600);
             var ass = _cabinetLockNew.GetLockStatus();
             var dt = _cabinetLockNew.OpenBox(1);
         }
