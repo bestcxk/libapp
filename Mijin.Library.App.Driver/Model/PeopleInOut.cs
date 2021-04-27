@@ -22,13 +22,14 @@ namespace Mijin.Library.App.Driver
         public InOut InOut { get; set; }
         public int InCount { get; set; }
         public int OutCount { get; set; }
+        public int DoorKey { get; set; }
     }
     public enum InOut
     {
         /// <summary>
         /// 出馆
         /// </summary>
-        Out, 
+        Out,
         /// <summary>
         /// 进馆
         /// </summary>
