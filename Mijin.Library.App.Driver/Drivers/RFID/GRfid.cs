@@ -111,8 +111,9 @@ namespace Mijin.Library.App.Driver
         /// </summary>
         /// <param name="mode"></param>
         /// <param name="conStr"></param>
+        /// <param name="timeOutMs">超时毫秒</param>
         /// <returns></returns>
-        public MessageModel<bool> Connect(string mode, string conStr)
+        public MessageModel<bool> Connect(string mode, string conStr,Int64 timeOutMs = 1500)
         {
             var result = new MessageModel<bool>();
             eConnectionAttemptEventStatusType status = eConnectionAttemptEventStatusType.NoResponse;
@@ -121,7 +122,7 @@ namespace Mijin.Library.App.Driver
             {
                 try
                 {
-                    if (_gClient.OpenTcp(conStr, 500, out status))
+                    if (_gClient.OpenTcp(conStr, (int)timeOutMs, out status))
                     {
                         result.success = GetPower().success;
                     }
@@ -136,7 +137,7 @@ namespace Mijin.Library.App.Driver
             {
                 try
                 {
-                    if (_gClient.OpenSerial(conStr, 500, out status))
+                    if (_gClient.OpenSerial(conStr, (int)timeOutMs, out status))
                     {
                         result.success = GetPower().success;
                     }

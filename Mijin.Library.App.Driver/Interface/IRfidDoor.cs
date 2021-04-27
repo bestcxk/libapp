@@ -13,6 +13,14 @@ namespace Mijin.Library.App.Driver
     public interface IRfidDoor : IRfid
     {
         /// <summary>
+        /// 进人数
+        /// </summary>
+        int inCount { get; set; }
+        /// <summary>
+        /// 出人数
+        /// </summary>
+        int outCount { get; set; }
+        /// <summary>
         /// 人进出事件
         /// </summary>
         event Action<WebViewSendModel<PeopleInOut>> OnPeopleInOut;
@@ -22,7 +30,7 @@ namespace Mijin.Library.App.Driver
         /// </summary>
         /// <param name="clear">清空人数缓存统计</param>
         /// <returns></returns>
-        MessageModel<bool> StartWatchPeopleInOut(string clear = "false");
+        MessageModel<bool> StartWatchPeopleInOut(bool clear = false);
 
         /// <summary>
         /// 停止监听人员进出

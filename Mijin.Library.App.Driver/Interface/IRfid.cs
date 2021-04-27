@@ -28,7 +28,7 @@ namespace Mijin.Library.App.Driver
         /// <param name="mode"></param>
         /// <param name="conStr"></param>
         /// <returns></returns>
-        MessageModel<bool> Connect(string mode, string conStr);
+        MessageModel<bool> Connect(string mode, string conStr, Int64 timeOutMs = 1500);
         /// <summary>
         /// 获取当前读写器频段
         /// </summary>

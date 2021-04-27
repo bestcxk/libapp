@@ -17,12 +17,12 @@ namespace Mijin.Library.App.Driver
         private IdentityReader _identityReader { get; }
         private IHFReader _hFReader { get; }
         private IRfid _rfid { get; }
-        private IRfidDoor _rfidDoor { get; }
         public IKeyboard _keyboard { get; }
         private ISystemFunc _systemFunc { get; }
         private ICamera _camera { get; }
         private ICardSender _cardSender { get; }
-        public IDoorController _doorController { get; }
+        private IDoorController _doorController { get; }
+        private IGRfidDoorController _gRfidDoorController { get; }
 
         /// <summary>
         /// 所有Driver模块的事件
@@ -58,7 +58,7 @@ namespace Mijin.Library.App.Driver
 
         #region 构造函数
 
-        public DriverHandle(ISystemFunc systemFunc, ISIP2Client sIP2Client, ICabinetLock cabinetLock, IPosPrint posPrint, IdentityReader identityReader, IHFReader HFReader, IRfid rfid, IRfidDoor rfidDoor, IKeyboard keyboard, ICamera camera,ICardSender cardSender,IDoorController doorController)
+        public DriverHandle(ISystemFunc systemFunc, ISIP2Client sIP2Client, ICabinetLock cabinetLock, IPosPrint posPrint, IdentityReader identityReader, IHFReader HFReader, IRfid rfid, IKeyboard keyboard, ICamera camera,ICardSender cardSender,IDoorController doorController, IGRfidDoorController gRfidDoorController)
         {
             _systemFunc = systemFunc;
             _sIP2Client = sIP2Client;
@@ -67,11 +67,11 @@ namespace Mijin.Library.App.Driver
             _identityReader = identityReader;
             _hFReader = HFReader;
             _rfid = rfid;
-            _rfidDoor = rfidDoor;
             _keyboard = keyboard;
             _camera = camera;
             _cardSender = cardSender;
             _doorController = doorController;
+            _gRfidDoorController = gRfidDoorController;
         }
 
         #endregion
@@ -131,7 +131,7 @@ namespace Mijin.Library.App.Driver
         /// </summary>
         private void ReflectionRegiesterEvents()
         {
-            var bindingFlags = BindingFlags.NonPublic | BindingFlags.Instance;
+            var bindingFlags = BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public;
             PropertyInfo[] propertyInfos = this.GetType().GetProperties(bindingFlags);
 
             foreach (var propertyInfo in propertyInfos)

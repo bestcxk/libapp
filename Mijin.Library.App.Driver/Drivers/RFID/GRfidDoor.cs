@@ -16,8 +16,8 @@ namespace Mijin.Library.App.Driver
         private int gpiInIndex = 0;              // 通道门入口的gpi 索引值
         private int gpiOutIndex = 1;             // 通道门出口的gpi 索引值
 
-        private int inCount = 0;
-        private int outCount = 0;
+        public int inCount { get; set; } = 0;
+        public int outCount { get; set; } = 0;
         private System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
         private int intervalTime = 3000;          // 触发器之间的间隔
         private int firstTrigger = -1;            // 首先触发GPI索引
@@ -27,7 +27,7 @@ namespace Mijin.Library.App.Driver
 
         public GRfidDoor() : base()
         {
-
+            _gpiAction = GpiAction.WatchPeopleInOut;
         }
 
         // 人员进出事件(需要先设置 _gpiAction 为 InventoryGun 模式)
@@ -38,7 +38,7 @@ namespace Mijin.Library.App.Driver
         /// <param name="msg"></param>
         protected override void OnEncapedGpiStart(EncapedLogBaseGpiStart msg)
         {
-            if (null == msg) { return; }
+            if (null == msg || !isStartWatch) { return; }
             // 进馆/出馆 处理
             if (_gpiAction == GpiAction.WatchPeopleInOut)
             {
@@ -108,38 +108,44 @@ namespace Mijin.Library.App.Driver
         /// </summary>
         /// <param name="clear"></param>
         /// <param name="ms"></param>
-        /// <returns></returns>
-        public MessageModel<bool> StartWatchPeopleInOut(string clear = "false")
+        public MessageModel<bool> StartWatchPeopleInOut(bool clear = false)
         {
             var result = new MessageModel<bool>();
-
             //TriggerStart: 触发开始（0 触发关闭， 1 低电平触发， 2 高电平触发， 3 上升沿触发， 4 下降沿触发， 5 任意边沿触发）
-            MsgAppSetGpiTrigger msg1 = new MsgAppSetGpiTrigger()
-            {
-                GpiPort = 0,
-                TriggerStart = 5,
-            };
-            MsgAppSetGpiTrigger msg2 = new MsgAppSetGpiTrigger()
-            {
-                GpiPort = 1,
-                TriggerStart = 5,
-            };
+            //MsgAppSetGpiTrigger msg1 = new MsgAppSetGpiTrigger()
+            //{
+            //    GpiPort = 0,
+            //    TriggerStart = 5,
+            //    TriggerCommand = "0001021000080000000101020006",
+            //    TriggerOver = 6,
+            //    OverDelayTime = 200  // 单位 10ms
+
+            //};
+            //MsgAppSetGpiTrigger msg2 = new MsgAppSetGpiTrigger()
+            //{
+            //    GpiPort = 1,
+            //    TriggerStart = 5,
+            //    TriggerCommand = "0001021000080000000101020006",
+            //    TriggerOver = 6,
+            //    OverDelayTime = 200
+            //};
             if (!isStartWatch)
             {
-                base._gClient.SendSynMsg(msg1);
-                base._gClient.SendSynMsg(msg2);
+                //base._gClient.SendSynMsg(msg1);
+                //base._gClient.SendSynMsg(msg2);
 
-                if (clear.ToBool())
+                if (clear)
                     inCount = outCount = 0;
 
-                result.success = msg2.RtCode == 0;
+                //result.success = msg2.RtCode == 0;
             }
             else
             {
                 result.success = true;
             }
+            result.success = true;
             result.msg = "开启出入馆进出判断" + (result.success ? "成功" : "失败");
-            result.devMsg = msg2.RtMsg;
+            //result.devMsg = msg2.RtMsg;
 
             isStartWatch = true;
 
@@ -157,28 +163,30 @@ namespace Mijin.Library.App.Driver
             var result = new MessageModel<bool>();
 
             //TriggerStart: 触发开始（0 触发关闭， 1 低电平触发， 2 高电平触发， 3 上升沿触发， 4 下降沿触发， 5 任意边沿触发）
-            MsgAppSetGpiTrigger msg1 = new MsgAppSetGpiTrigger()
-            {
-                GpiPort = 0,
-                TriggerStart = 0,
-            };
-            MsgAppSetGpiTrigger msg2 = new MsgAppSetGpiTrigger()
-            {
-                GpiPort = 1,
-                TriggerStart = 0,
-            };
+            //MsgAppSetGpiTrigger msg1 = new MsgAppSetGpiTrigger()
+            //{
+            //    GpiPort = 0,
+            //    TriggerStart = 0,
+            //};
+            //MsgAppSetGpiTrigger msg2 = new MsgAppSetGpiTrigger()
+            //{
+            //    GpiPort = 1,
+            //    TriggerStart = 0,
+            //};
 
-            base._gClient.SendSynMsg(msg1);
-            base._gClient.SendSynMsg(msg2);
+            //base._gClient.SendSynMsg(msg1);
+            //base._gClient.SendSynMsg(msg2);
 
-            result.success = msg2.RtCode == 0;
+            //result.success = msg2.RtCode == 0;
+            result.success = true;
             result.msg = "停止出入馆进出判断" + (result.success ? "成功" : "失败");
-            result.devMsg = msg2.RtMsg;
-
-            isStartWatch = true;
+            //result.devMsg = msg2.RtMsg;
+            isStartWatch = false;
 
             return result;
         }
         #endregion
+
+
     }
 }

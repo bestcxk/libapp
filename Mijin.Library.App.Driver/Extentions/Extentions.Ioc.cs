@@ -11,17 +11,17 @@ namespace Mijin.Library.App.Driver.Extentions
     {
         public static void AddDriver(this IServiceCollection services)
         {
+            services.AddSingleton<IDriverHandle, DriverHandle>();
             services.AddSingleton<ISIP2Client, WenhuaSIP2Client>();
             services.AddSingleton<ICabinetLock, CabinetLock>();
             services.AddSingleton<IPosPrint, MyPosPrint>();
             services.AddSingleton<IdentityReader, WonteReader>();
             services.AddSingleton<IHFReader, BlackHFReader>();
             services.AddSingleton<IRfid, GRfid>();
-            services.AddSingleton<IRfidDoor, GRfidDoor>();
+            services.AddSingleton<IGRfidDoorController, GRfidDoorController>();
             services.AddSingleton<IKeyboard, Keyboard>();
             services.AddSingleton<ISystemFunc, SystemFunc>();
             services.AddSingleton<ICamera, Camera>();
-            services.AddSingleton<IDriverHandle, DriverHandle>();
             services.AddSingleton<ICardSender, CardSender>();
             services.AddSingleton<IDoorController, ZktDoorController>();
         }

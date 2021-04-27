@@ -76,7 +76,7 @@ namespace Mijin.Library.App.Driver
             }
             else
             {
-
+                
             }
             res.msg = "已连接门控成功，无需再次连接";
             res.success = true;
@@ -97,7 +97,7 @@ namespace Mijin.Library.App.Driver
                 return res;
             }
             var ret = ControlDevice(h, 1, 1, 1, (int)openTime, 0, "");
-            if (ret > 0)
+            if (ret >= 0)
             {
                 res.msg = "开门操作成功";
                 res.success = true;

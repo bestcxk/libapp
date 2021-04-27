@@ -1,4 +1,5 @@
 ﻿using Mijin.Library.App.Model;
+using System;
 
 namespace Mijin.Library.App.Driver
 {
@@ -11,12 +12,12 @@ namespace Mijin.Library.App.Driver
         /// <param name="port">端口号</param>
         /// <param name="timeout">超时时间</param>
         /// <returns></returns>
-        MessageModel<bool> Connect(string ip, long port, long timeout);
+        MessageModel<bool> Connect(string ip, Int64 port, Int64 timeout);
         /// <summary>
         /// 开门
         /// </summary>
         /// <param name="openTime">(0:, 255:Hormal-open, value range : 1~60 seconds)</param>
         /// <returns></returns>
-        MessageModel<bool> OpenDoor(long openTime = 5);
+        MessageModel<bool> OpenDoor(Int64 openTime = 5);
     }
 }
