@@ -78,6 +78,7 @@ namespace Mijin.Library.App.Views
             this.WindowOverhead.IsOn = _clientSettings.WindowOverhead;
             this.CannotClosed.IsOn = _clientSettings.CannotClosed;
             this.FollowSystemRunCheck.IsOn = _clientSettings.FollowSystemRun;
+            this.ShowTitleBarBtnsCheck.IsOn = _clientSettings.ShowTitleBarBtns;
         }
 
         private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -114,6 +115,7 @@ namespace Mijin.Library.App.Views
                     _clientSettings.WindowOverhead = this.WindowOverhead.IsOn;
                     _clientSettings.CannotClosed = this.CannotClosed.IsOn;
                     _clientSettings.FollowSystemRun = this.FollowSystemRunCheck.IsOn;
+                    _clientSettings.ShowTitleBarBtns = this.ShowTitleBarBtnsCheck.IsOn;
                     // 开启启动项设置
                     try
                     {
@@ -215,6 +217,8 @@ namespace Mijin.Library.App.Views
             this.IsDevCheck.IsOn = false;
             this.WindowOverhead.IsOn = true;
             this.CannotClosed.IsOn = true;
+            this.FollowSystemRunCheck.IsOn = true;
+            this.ShowTitleBarBtnsCheck.IsOn = false;
         }
     }
 }

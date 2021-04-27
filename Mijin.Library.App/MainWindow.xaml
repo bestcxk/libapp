@@ -23,6 +23,9 @@
 
     <mah:MetroWindow.RightWindowCommands>
         <Controls:WindowCommands>
+            <Button Click="doorViewBtn" Name="doorBtn">
+                <Label Content="通道门"></Label>
+            </Button>
             <Button>
                 <Label x:Name="versionLabel" Content="版本信息"></Label>
             </Button>

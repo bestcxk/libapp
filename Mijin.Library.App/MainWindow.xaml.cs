@@ -30,7 +30,7 @@ namespace Mijin.Library.App
         public SettingsWindow _settingsWindow { get; }
         public ISystemFunc _systemFunc { get; }
 
-        public MainWindow(WebViewWindow webView,SettingsWindow settingsWindow,ISystemFunc systemFunc)
+        public MainWindow(WebViewWindow webView, SettingsWindow settingsWindow, ISystemFunc systemFunc)
         {
             //显示在显示器最中间
             this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
@@ -39,12 +39,11 @@ namespace Mijin.Library.App
             InitializeComponent();
             _webView = webView;
             _clientSettings = systemFunc.ClientSettings;
-            _webView = webView;
             _settingsWindow = settingsWindow;
             _systemFunc = systemFunc;
         }
 
-        private void  MetroWindow_Loaded(object sender, RoutedEventArgs e)
+        private void MetroWindow_Loaded(object sender, RoutedEventArgs e)
         {
 
         }
@@ -74,6 +73,12 @@ namespace Mijin.Library.App
                 this._webView.Show();
                 this.Hide();
             }
+        }
+        private void doorViewBtn(object sender, RoutedEventArgs e)
+        {
+
+            this.Hide();
+            _webView.ShowDoorViewBtn(null, null);
         }
     }
 }

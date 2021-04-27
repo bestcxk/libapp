@@ -73,6 +73,8 @@ namespace Mijin.Library.App
             var webviewWindow = _serviceProvider.GetService<WebViewWindow>();
             var settings = _serviceProvider.GetService<ISystemFunc>().ClientSettings;
 
+            WebViewWindow._webViewWindow = webviewWindow;
+
             // 全局异常处理
             this.DispatcherUnhandledException += GlobalExceptionsFilter.OnException;
             //AppDomain.CurrentDomain.UnhandledException += TestException;

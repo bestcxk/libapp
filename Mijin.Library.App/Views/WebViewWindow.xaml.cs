@@ -13,6 +13,7 @@ using MahApps.Metro.Controls;
 using System.IO;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Util;
 
 namespace Mijin.Library.App.Views
 {
@@ -23,8 +24,11 @@ namespace Mijin.Library.App.Views
     {
         private readonly IDriverHandle _driverHandle;
         private readonly ClientSettings _clientSettings;
-
+        public static WebViewWindow _doorViewWindow { get; set; } = null;
+        public static WebViewWindow _webViewWindow { get; set; } = null;
         public ISystemFunc _systemFunc { get; }
+
+        static private bool hasRegisterEvent = false;
 
         #region 构造函数
         public WebViewWindow(IDriverHandle driverHandle, ISystemFunc systemFunc)
@@ -33,8 +37,10 @@ namespace Mijin.Library.App.Views
             _systemFunc = systemFunc;
             _clientSettings = systemFunc.ClientSettings;
             InitializeComponent();
-
             InitializeAsync(); // 初始化
+
+
+
         }
         #endregion
 
@@ -48,7 +54,11 @@ namespace Mijin.Library.App.Views
             this.webView.CoreWebView2.WebMessageReceived += WebMessageReceived;
 
             // 注册事件
-            _driverHandle.OnDriverEvent += OnDriverEvent;
+            if (!hasRegisterEvent)
+            {
+                hasRegisterEvent = true;
+                _driverHandle.OnDriverEvent += OnDriverEvent;
+            }
 
             // 窗口关闭时
             this.Closed += async (s, e) =>
@@ -56,6 +66,11 @@ namespace Mijin.Library.App.Views
                 #region 退出时清空浏览器缓存
                 try
                 {
+                    if ((!_doorViewWindow.IsNull() && _doorViewWindow.IsVisible) || _webViewWindow.IsVisible)
+                    {
+                        return;
+                    }
+
                     // 获取webview 进程id 并杀掉，否则无法删除文件
                     var process = Process.GetProcessById((int)this.webView.CoreWebView2.BrowserProcessId);
                     process.Kill();
@@ -198,6 +213,10 @@ namespace Mijin.Library.App.Views
                 this.webView.Source = new Uri(_clientSettings.NoSelectOpenUrl);
             }
 
+            if (!_clientSettings.ShowTitleBarBtns)
+            {
+                this.doorBtn.Visibility = Visibility.Hidden;
+            }
             this.Show();
         }
 
@@ -205,23 +224,10 @@ namespace Mijin.Library.App.Views
 
         #endregion
 
-        private void FullWindow()
-        {
-            this.WindowState = System.Windows.WindowState.Normal;//还原窗口（非最小化和最大化）
-            this.WindowStyle = System.Windows.WindowStyle.None; //仅工作区可见，不显示标题栏和边框
-            this.ResizeMode = System.Windows.ResizeMode.NoResize;//不显示最大化和最小化按钮
-            this.Topmost = true;    //窗口在最前
-            this.ShowTitleBar = false;  // 不显示标题栏
-
-            this.Left = 0.0;
-            this.Top = 0.0;
-            this.Width = System.Windows.SystemParameters.PrimaryScreenWidth;
-            this.Height = System.Windows.SystemParameters.PrimaryScreenHeight;
-        }
         #region Driver 模块事件 发送
-        private void OnDriverEvent(object obj)
+        public void OnDriverEvent(object obj)
         {
-            Send(obj);
+            Send(obj, true);
         }
         #endregion
 
@@ -236,6 +242,7 @@ namespace Mijin.Library.App.Views
             var result = new WebViewSendModel<object>();
             // 获取请求字符串
             string reqStr = receivedEvent.WebMessageAsJson;
+
             Task.Run(() =>
             {
                 try
@@ -263,7 +270,7 @@ namespace Mijin.Library.App.Views
                     for (int i = 0; i < parameters?.Length; i++)
                     {
                         var item = parameters[i];
-                        if (item.GetType().Name == "JArray")
+                        if (!item.IsNull() && item.GetType().Name == "JArray")
                             item = item.JsonMapTo<List<string>>();
                     }
 
@@ -306,46 +313,37 @@ namespace Mijin.Library.App.Views
         /// 发送信息给前端页面
         /// </summary>
         /// <param name="obj"></param>
-        private void Send(object obj)
+        private void Send(dynamic obj, bool isEvent = false)
         {
-            this.Dispatcher.Invoke(new Action(() =>
+            try
             {
-                this.webView.CoreWebView2.PostWebMessageAsString(Json.ToJson(obj));
-            }));
-
+                // 事件处理
+                if (isEvent)
+                {
+                    if (obj.status == 1001)
+                        this.Dispatcher.Invoke(new Action(() => _doorViewWindow.webView.CoreWebView2.PostWebMessageAsString(Util.Json.ToJson(obj))));
+                    else
+                        this.Dispatcher.Invoke(new Action(() => _webViewWindow.webView.CoreWebView2.PostWebMessageAsString(Util.Json.ToJson(obj))));
+                }
+                else
+                    this.Dispatcher.Invoke(new Action(() => this.webView.CoreWebView2.PostWebMessageAsString(Util.Json.ToJson(obj))));
+            }
+            catch (Exception)
+            {
+            }
         }
         #endregion
 
-        #region web前端 发送/接收 实体类
-        /// <summary>
-        /// web 前端接收类
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        private class ReqMessageModel<T> : baseMessageModel
+        public void ShowDoorViewBtn(object sender, RoutedEventArgs e)
         {
-            public ReqMessageModel()
+            if (_doorViewWindow == null)
             {
+                _doorViewWindow = new WebViewWindow(_driverHandle, _systemFunc);
+                var url = this._clientSettings.LibraryManageUrl + (this._clientSettings.LibraryManageUrl.Last() == '/' ? "door" : "/door");
+                _doorViewWindow.webView.Source = new Uri(url);
+                _doorViewWindow.Title = "通道门";
             }
-
-            public ReqMessageModel(baseMessageModel @base) : base(@base)
-            {
-            }
-
-
-            /// <summary>
-            /// 执行方法 sample : ISIP2Client.Connect
-            /// </summary>
-            public string method { get; set; }
-            /// <summary>
-            /// 请求参数
-            /// </summary>
-            public object[] @params { get; set; }
-            /// <summary>
-            /// guid，确保唯一性
-            /// </summary>
-            public string guid { get; set; }
-
+            _doorViewWindow.Show();
         }
-        #endregion
     }
 }
