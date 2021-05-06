@@ -11,7 +11,7 @@ namespace Mijin.Library.App.Driver
 {
     public class DriverHandle : IDriverHandle
     {
-        private ISIP2Client _sIP2Client { get; }
+        private IWenhuaSIP2Client _sIP2Client { get; }
         private ICabinetLock _cabinetLock { get; }
         private IPosPrint _posPrint { get; }
         private IdentityReader _identityReader { get; }
@@ -23,6 +23,7 @@ namespace Mijin.Library.App.Driver
         private ICardSender _cardSender { get; }
         private IDoorController _doorController { get; }
         private IGRfidDoorController _gRfidDoorController { get; }
+        private ITuChuangSIP2Client _tuChuangSIP2Client { get; }
 
         /// <summary>
         /// 所有Driver模块的事件
@@ -58,7 +59,7 @@ namespace Mijin.Library.App.Driver
 
         #region 构造函数
 
-        public DriverHandle(ISystemFunc systemFunc, ISIP2Client sIP2Client, ICabinetLock cabinetLock, IPosPrint posPrint, IdentityReader identityReader, IHFReader HFReader, IRfid rfid, IKeyboard keyboard, ICamera camera,ICardSender cardSender,IDoorController doorController, IGRfidDoorController gRfidDoorController)
+        public DriverHandle(ISystemFunc systemFunc, IWenhuaSIP2Client sIP2Client, ICabinetLock cabinetLock, IPosPrint posPrint, IdentityReader identityReader, IHFReader HFReader, IRfid rfid, IKeyboard keyboard, ICamera camera,ICardSender cardSender,IDoorController doorController, IGRfidDoorController gRfidDoorController, ITuChuangSIP2Client tuChuangSIP2Client)
         {
             _systemFunc = systemFunc;
             _sIP2Client = sIP2Client;
@@ -72,8 +73,8 @@ namespace Mijin.Library.App.Driver
             _cardSender = cardSender;
             _doorController = doorController;
             _gRfidDoorController = gRfidDoorController;
+            _tuChuangSIP2Client = tuChuangSIP2Client;
         }
-
         #endregion
 
         /// <summary>

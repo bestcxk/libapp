@@ -16,17 +16,9 @@ namespace Mijin.Library.App.Driver
     }
 
     /// <summary>
-    /// 图创用户信息
-    /// </summary>
-    public class TuchuangReaderInfo : baseSIP2ReaderInfo
-    {
-
-    }
-
-    /// <summary>
     /// 文华用户信息
     /// </summary>
-    public class WenhuaReaderInfo : baseSIP2ReaderInfo
+    public class SIP2ReaderInfo : baseSIP2ReaderInfo
     {
         /// <summary>
         /// 读者姓名

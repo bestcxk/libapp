@@ -14,7 +14,7 @@ namespace Mijin.Library.App.Driver
     /// <summary>
     /// 文华图书信息
     /// </summary>
-    public class WenhuaBookInfo : baseSIP2BookInfo
+    public class SIP2BookInfo : baseSIP2BookInfo
     {
         /// <summary>
         /// 在馆/借出

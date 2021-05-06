@@ -12,7 +12,7 @@ namespace Mijin.Library.App.Driver.Extentions
         public static void AddDriver(this IServiceCollection services)
         {
             services.AddSingleton<IDriverHandle, DriverHandle>();
-            services.AddSingleton<ISIP2Client, WenhuaSIP2Client>();
+            services.AddSingleton<IWenhuaSIP2Client, WenhuaSIP2Client>();
             services.AddSingleton<ICabinetLock, CabinetLock>();
             services.AddSingleton<IPosPrint, MyPosPrint>();
             services.AddSingleton<IdentityReader, WonteReader>();
@@ -24,6 +24,7 @@ namespace Mijin.Library.App.Driver.Extentions
             services.AddSingleton<ICamera, Camera>();
             services.AddSingleton<ICardSender, CardSender>();
             services.AddSingleton<IDoorController, ZktDoorController>();
+            services.AddSingleton<ITuChuangSIP2Client, TuChuangSIP2Client>();
         }
     }
 }
