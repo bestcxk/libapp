@@ -16,6 +16,8 @@ namespace Mijin.Library.App.Tests.Driver
         public IdentityReader IdReader { get; set; }
         public ISystemFunc sysFunc { get; set; }
 
+        public IHFReader hFReader { get; set; }
+
         public IdentityReader_Test()
         {
             sysFunc = new SystemFunc()
@@ -26,8 +28,9 @@ namespace Mijin.Library.App.Tests.Driver
                 }
             };
             IdReader = new WonteReader(sysFunc);
+            hFReader = new BlackHFReader(sysFunc);
 
-            
+
         }
         /// <summary>
         /// 身份证读卡器 读高频卡测试   需要和 当前其他测试分开测试
@@ -50,6 +53,21 @@ namespace Mijin.Library.App.Tests.Driver
             var result = IdReader.ReadIdentity();
             Assert.True(result.success);
             Assert.True(!result.response.Identity.IsEmpty());
+        }
+
+        [Fact]
+        public void LongTeng_Test()
+        {
+            var dt = "3ad5b852".ToUpper();
+            //var hfRes = hFReader.ReadCardNo();
+            //var card = Convert.ToString(hfRes.response.ToInt(), 16);
+            //var str = "";
+            //for (int i = 0; i < card.Length; i += 2)
+            //{
+            //    string dt = card[i].ToString() + card[i + 1].ToString();
+            //    str = str.Insert(0, dt);
+            //}
+            //var idRes = IdReader.ReadHFCardNo(14);
         }
     }
 }

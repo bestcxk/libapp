@@ -42,6 +42,18 @@ namespace Mijin.Library.App.Tests.Driver
         }
 
 
+        /// <summary>
+        /// 测试读块
+        /// </summary>
+        [Fact, TestPriority(2)]
+        public void ReadCardBlock_Test()
+        {
+            var result = _hfReader.ReadBlock("1");
+            Assert.True(result.success);
+            Assert.True(!result.response.IsEmpty());
+        }
+
+
 
     }
 }
