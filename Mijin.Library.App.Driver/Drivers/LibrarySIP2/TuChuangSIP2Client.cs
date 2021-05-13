@@ -27,7 +27,6 @@ namespace Mijin.Library.App.Driver
             var readerInfo = new SIP2ReaderInfo();
             var data = new MessageModel<object>();
             var sendStr = $@"11YN{DateTime.Now.ToString("yyyyMMddHHmmss")}   {DateTime.Now.ToString("yyyyMMddHHmmss")}AO|AA{readerNo}|AB{bookserial}|CNtc|AC|AY3AZEDB7|";
-
             string message = null;
             try
             {
@@ -96,7 +95,7 @@ namespace Mijin.Library.App.Driver
                 return data;
             }
 
-            data.success = message.Search("10", "YYN")?.ToInt() == 1;
+            data.success = message.Search("10", "YNN")?.ToInt() == 1;
 
 
             readerInfo.CardNo = message.Search("AA", "|");
@@ -135,6 +134,9 @@ namespace Mijin.Library.App.Driver
             var bookInfo = new SIP2BookInfo();
             var readerInfo = new SIP2ReaderInfo();
             var data = new MessageModel<object>();
+
+            if (readerPw.IsEmpty()) readerPw = null;
+
             var sendStr = $@"63001{DateTime.Now.ToString("yyyyMMdd")}    081303Y         AO|AA{readerNo}|AD{readerPw}|AY1AZF4A6|";
             string message = null;
             try
@@ -179,7 +181,26 @@ namespace Mijin.Library.App.Driver
             readerInfo.HoldItemsLimit = message.Search("BZ", "|");
             readerInfo.ReaderType = message.Search("XT", "|");
             readerInfo.Enddate = message.Search("XD", "|");
-            readerInfo.HoldItems = message.Search("AS", "|");  // ,分割多本
+
+            var books = message.Split("|AS");
+            var addBooks = new List<string>();
+            if (books.Length > 1)
+            {
+                for (int i = 1; i < books.Length; i++)
+                {
+                    var book = books[i];
+                    // 最后一个AS的处理
+                    if (books.Length == i + 1)
+                    {
+                        addBooks.Add(string.Join("", book.Take(book.IndexOf('|'))));
+                    }
+                    else
+                        addBooks.Add(book);
+                }
+            }
+            readerInfo.HoldItems = string.Join(",", addBooks);  // ,分割多本
+
+
             readerInfo.OverdueItems = message.Search("AT", "|");// ,分割多本
             readerInfo.AllItems = message.Search("AU", "|");// ,割多本
             readerInfo.ReaderCodeForChs = message.Search("AI", "|");
@@ -206,7 +227,7 @@ namespace Mijin.Library.App.Driver
             var bookInfo = new SIP2BookInfo();
             var readerInfo = new SIP2ReaderInfo();
             var data = new MessageModel<object>();
-            var sendStr = $@"17{DateTime.Now.ToString("yyyyMMddHHmmss")}AO|AB{bookserial}|AY1AZF7E3|";
+            var sendStr = $@"1720080828    105715AO|AB{bookserial}|AY1AZF7E3|";
 
             string message = null;
             try
