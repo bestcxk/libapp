@@ -21,6 +21,9 @@ namespace Mijin.Library.App.Driver
         /// </summary>
         public bool Connected { get => _tcpClient.Connected; }
 
+        public string host { get; set; }
+        public string port { get; set; }
+
         public int ReadTimeOut { get => _tcpClient.GetStream().ReadTimeout; set => _tcpClient.GetStream().ReadTimeout = value; }
 
         public baseTcpClient()
@@ -84,6 +87,11 @@ namespace Mijin.Library.App.Driver
             }
             result.success = _tcpClient.Connected;
             result.msg = result.success ? "连接成功" : "连接失败";
+            if (result.success)
+            {
+                this.host = host;
+                this.port = port;
+            }
             return result;
 
 
@@ -121,7 +129,17 @@ namespace Mijin.Library.App.Driver
         {
             if (!Connected)
             {
-                throw new Exception("未连接到socket");
+
+                if (!this.host.IsEmpty())
+                {
+                    var res = this.Connect(host, port);
+                    if (!res.success)
+                    {
+                        throw new Exception("未连接到socket");
+                    }
+                }
+                else
+                    throw new Exception("未连接到socket");
             }
             var sendBytes = UTF8Encoding.UTF8.GetBytes(message + "\r\n");
             var stream = _tcpClient.GetStream();
