@@ -27,6 +27,7 @@ namespace Mijin.Library.App.Views
         public static WebViewWindow _doorViewWindow { get; set; } = null;
         public static WebViewWindow _webViewWindow { get; set; } = null;
         public ISystemFunc _systemFunc { get; }
+        public string openUrl { get; set; }
 
         static private bool hasRegisterEvent = false;
 
@@ -210,8 +211,17 @@ namespace Mijin.Library.App.Views
             // 直达webView模式
             if (!string.IsNullOrEmpty(_clientSettings.NoSelectOpenUrl))
             {
-                this.webView.Source = new Uri(_clientSettings.NoSelectOpenUrl);
+                openUrl = _clientSettings.NoSelectOpenUrl;
             }
+
+            #region 当前路由处理
+            if (!string.IsNullOrWhiteSpace(openUrl) && openUrl.Substring(0, 2) == @$".\")
+            {
+                this.openUrl = @$"file://{Path.Combine(Environment.CurrentDirectory, openUrl.Substring(2)).Replace(@$"\",@$"/")}";
+            }
+            this.webView.Source = new Uri(this.openUrl);
+            #endregion
+
 
             if (!_clientSettings.ShowTitleBarBtns)
             {
@@ -340,7 +350,7 @@ namespace Mijin.Library.App.Views
             {
                 _doorViewWindow = new WebViewWindow(_driverHandle, _systemFunc);
                 var url = this._clientSettings.LibraryManageUrl + (this._clientSettings.LibraryManageUrl.Last() == '/' ? "door" : "/door");
-                _doorViewWindow.webView.Source = new Uri(url);
+                _doorViewWindow.openUrl = url;
                 _doorViewWindow.Title = "通道门";
             }
             _doorViewWindow.Show();

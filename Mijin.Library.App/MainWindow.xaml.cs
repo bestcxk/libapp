@@ -62,10 +62,10 @@ namespace Mijin.Library.App
                 switch (tile.Title)
                 {
                     case "后台管理系统":
-                        this._webView.webView.Source = new Uri(_clientSettings.LibraryManageUrl);
+                        this._webView.openUrl = _clientSettings.LibraryManageUrl;
                         break;
                     case "自助借阅":
-                        this._webView.webView.Source = new Uri(_clientSettings.ReaderActionUrl);
+                        this._webView.openUrl = _clientSettings.ReaderActionUrl;
                         break;
                     default:
                         return;
