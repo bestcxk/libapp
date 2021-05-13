@@ -235,7 +235,20 @@ namespace Mijin.Library.App.Driver
                 }
             }
 
+            // 龙腾单独编译
+            //{
+            //    var card = Convert.ToString(icNumber, 16);
+            //    var str = "";
+            //    for (int i = 0; i < card.Length; i += 2)
+            //    {
+            //        string dt = card[i].ToString() + card[i + 1].ToString();
+            //        str = str.Insert(0, dt);
+            //    }
+            //    result.response = str.ToUpper();
+            //}
+
             result.response = IcSettings.DataHandle(icNumber.ToString(), _systemFunc.LibrarySettings?.IcSettings);
+
             result.success = true;
             result.msg = "读IC卡物理卡号成功";
 

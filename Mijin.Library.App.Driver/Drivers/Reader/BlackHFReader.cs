@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Util;
+using Util.Helpers;
 
 namespace Mijin.Library.App.Driver
 {
@@ -239,14 +240,14 @@ namespace Mijin.Library.App.Driver
             }
 
             status = TyA_Select(g_hDevice, dataBuffer, len, ref sak);//锁定一张ISO14443-3 TYPE_A 卡
-            if (status != 0)
+            if (status != 0) 
             {
                 result.devMsg = "TyA_Select failed !";
                 return result;
             }
 
             // 转换卡号
-            String m_cardNo = String.Empty;
+            string m_cardNo = string.Empty;
             for (int q = 0; q < len; q++)
             {
                 m_cardNo += byteHEX(dataBuffer[q]);
@@ -258,8 +259,13 @@ namespace Mijin.Library.App.Driver
                 str = str.Insert(0, dt);
             }
 
+            // 龙腾单独编译
+            //{
+            //    result.response = m_cardNo.ToUpper();
+            //}
+
             result.response = IcSettings.DataHandle(Convert.ToInt64(str, 16).ToString(), _systemFunc.LibrarySettings?.IcSettings);
-            
+
             result.success = true;
             result.msg = "读卡成功";
             return result;
@@ -331,9 +337,9 @@ namespace Mijin.Library.App.Driver
                 result.devMsg = "TyA_CS_Read failed !";
                 return result;
             }
-            bts = bts.Where(b => b > 0).ToArray();
+            bts = bts.Take(rtbtsLen).ToArray();
 
-            result.response = Encoding.ASCII.GetString(bts, 0, bts.Length);
+            result.response = SerialPortHelper.ByteArrayToHexString(bts).Replace(" ",""); //  Encoding.ASCII.GetString(bts, 0, bts.Length);
             result.success = true;
             result.msg = "读卡成功";
 
@@ -346,9 +352,9 @@ namespace Mijin.Library.App.Driver
         /// </summary>
         /// <param name="ib">字节.</param>
         /// <returns>转换好的字符.</returns>
-        private String byteHEX(Byte ib)
+        private string byteHEX(Byte ib)
         {
-            String _str = String.Empty;
+            string _str = string.Empty;
             try
             {
                 char[] Digit = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A',
@@ -356,7 +362,7 @@ namespace Mijin.Library.App.Driver
                 char[] ob = new char[2];
                 ob[0] = Digit[(ib >> 4) & 0X0F];
                 ob[1] = Digit[ib & 0X0F];
-                _str = new String(ob);
+                _str = new string(ob);
             }
             catch (Exception)
             {
