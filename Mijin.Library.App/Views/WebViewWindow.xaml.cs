@@ -51,16 +51,6 @@ namespace Mijin.Library.App.Views
         /// </summary>
         async void InitializeAsync()
         {
-            await this.webView.EnsureCoreWebView2Async(null);
-            this.webView.CoreWebView2.WebMessageReceived += WebMessageReceived;
-
-            // 注册事件
-            if (!hasRegisterEvent)
-            {
-                hasRegisterEvent = true;
-                _driverHandle.OnDriverEvent += OnDriverEvent;
-            }
-
             // 窗口关闭时
             this.Closed += async (s, e) =>
             {
@@ -71,11 +61,12 @@ namespace Mijin.Library.App.Views
                     {
                         return;
                     }
-
                     // 获取webview 进程id 并杀掉，否则无法删除文件
                     var process = Process.GetProcessById((int)this.webView.CoreWebView2.BrowserProcessId);
                     process.Kill();
                     process.WaitForExit();
+                    //_webViewWindow.webView.Dispose();
+                    //GC.Collect();
 
                     //等待500毫秒等待文件被释放
                     await Task.Delay(500);
@@ -132,6 +123,16 @@ namespace Mijin.Library.App.Views
                 // 退出整个应用
                 Environment.Exit(0);
             };
+
+            await this.webView.EnsureCoreWebView2Async(null);
+            this.webView.CoreWebView2.WebMessageReceived += WebMessageReceived;
+
+            // 注册事件
+            if (!hasRegisterEvent)
+            {
+                hasRegisterEvent = true;
+                _driverHandle.OnDriverEvent += OnDriverEvent;
+            }
 
             // 非 开发 模式
             if (!_clientSettings.IsDev)
@@ -217,7 +218,7 @@ namespace Mijin.Library.App.Views
             #region 当前路由处理
             if (!string.IsNullOrWhiteSpace(openUrl) && openUrl.Substring(0, 2) == @$".\")
             {
-                this.openUrl = @$"file://{Path.Combine(Environment.CurrentDirectory, openUrl.Substring(2)).Replace(@$"\",@$"/")}";
+                this.openUrl = @$"{Path.Combine(Environment.CurrentDirectory, openUrl.Substring(2)).Replace(@$"\",@$"/")}";
             }
             this.webView.Source = new Uri(this.openUrl);
             #endregion

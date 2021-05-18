@@ -104,7 +104,7 @@ namespace Mijin.Library.App
             // 是否直接打开webview
             if (!string.IsNullOrEmpty(settings.NoSelectOpenUrl))
             {
-                webviewWindow.webView.Source = new Uri(settings.NoSelectOpenUrl);
+                webviewWindow.openUrl = settings.NoSelectOpenUrl;
                 webviewWindow.Show();
             }
             else
