@@ -20,13 +20,13 @@ namespace Mijin.Library.App.Driver
         {
         }
 
-        public MessageModel<object> LendBook(string bookserial, string readerNo)
+        public MessageModel<object> LendBook(string bookserial, string readerNo,string libraryAccount)
         {
             var dic = new Dictionary<string, object>();
             var bookInfo = new SIP2BookInfo();
             var readerInfo = new SIP2ReaderInfo();
             var data = new MessageModel<object>();
-            var sendStr = $@"11YN{DateTime.Now.ToString("yyyyMMddHHmmss")}   {DateTime.Now.ToString("yyyyMMddHHmmss")}AO|AA{readerNo}|AB{bookserial}|CNtc|AC|AY3AZEDB7|";
+            var sendStr = $@"11YN{DateTime.Now.ToString("yyyyMMddHHmmss")}   {DateTime.Now.ToString("yyyyMMddHHmmss")}AO|AA{readerNo}|AB{bookserial}|CN{libraryAccount}|AC|AY3AZEDB7|";
             string message = null;
             try
             {
@@ -70,14 +70,14 @@ namespace Mijin.Library.App.Driver
         /// </summary>
         /// <param name="bookserial">书籍条码</param>
         /// <returns></returns>
-        public MessageModel<object> BackBook(string bookserial)
+        public MessageModel<object> BackBook(string bookserial, string libraryAccount)
         {
             var dic = new Dictionary<string, object>();
             var bookInfo = new SIP2BookInfo();
             var readerInfo = new SIP2ReaderInfo();
             var data = new MessageModel<object>();
             //var sendStr = $@"09N{DateTime.Now.ToString("yyyyMMddHHmmss")} AP|AOzhepl|AB{bookserial}|AC|AY1AZEFAE";
-            var sendStr = $@"09N{DateTime.Now.ToString("yyyyMMdd")}    08005920150303    080059AP|AO|AB{bookserial}|AC|CNtc|BIN|AY1AZF0CC|";
+            var sendStr = $@"09N{DateTime.Now.ToString("yyyyMMdd")}    08005920150303    080059AP|AO|AB{bookserial}|AC|CN{libraryAccount}|BIN|AY1AZF0CC|";
             string message = null;
             try
             {
@@ -284,13 +284,13 @@ namespace Mijin.Library.App.Driver
         /// <param name="bookserial"></param>
         /// <param name="readerNo"></param>
         /// <returns></returns>
-        public MessageModel<object> ContinueBook(string bookserial, string readerNo)
+        public MessageModel<object> ContinueBook(string bookserial, string readerNo,string libraryAccount)
         {
             var dic = new Dictionary<string, object>();
             var bookInfo = new SIP2BookInfo();
             var readerInfo = new SIP2ReaderInfo();
             var data = new MessageModel<object>();
-            var sendStr = $@"29AO|AA{readerNo}|AD|AB{bookserial}|AC|AY3AZEDB7|";
+            var sendStr = $@"29AO|AA{readerNo}|AD|AB{bookserial}|AC|CN{libraryAccount}|AY3AZEDB7|";
 
             string message = null;
             try

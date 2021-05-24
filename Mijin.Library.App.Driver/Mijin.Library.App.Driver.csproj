@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
@@ -32,6 +32,9 @@
     </Reference>
     <Reference Include="GReaderApi">
       <HintPath>..\DLL\GReaderApi.dll</HintPath>
+    </Reference>
+    <Reference Include="HFReaderCSharp">
+      <HintPath>..\DLL\HFReaderCSharp.dll</HintPath>
     </Reference>
   </ItemGroup>
 

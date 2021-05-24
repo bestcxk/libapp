@@ -17,6 +17,9 @@ namespace Mijin.Library.App.Driver
         /// 客户端设置
         /// </summary>
         public ClientSettings ClientSettings { get; set; }
+
+        void Exit();
+
         /// <summary>
         /// 获取系统中所有能使用的com口
         /// </summary>
