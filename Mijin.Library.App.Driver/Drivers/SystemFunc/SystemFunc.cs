@@ -2,6 +2,7 @@
 using Mijin.Library.App.Model.Setting;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -55,6 +56,12 @@ namespace Mijin.Library.App.Driver
         public MessageModel<int> SetLibrarySettings(object librarySettings)
         {
             return SetLibrarySettings(librarySettings.JsonMapTo<LibrarySettings>());
+        }
+
+        public void Exit()
+        {
+            Process.GetProcessesByName("Mijin.Library.App.Daemon").FirstOrDefault().Kill();
+            Environment.Exit(0);
         }
 
     }
