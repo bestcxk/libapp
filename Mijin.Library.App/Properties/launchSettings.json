@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Mijin.Library.App": {
+      "commandName": "Project",
+      "nativeDebugging": false
+    }
+  }
+}
