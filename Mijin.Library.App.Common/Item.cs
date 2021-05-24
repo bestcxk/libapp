@@ -1,7 +1,8 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace Util {
+namespace IsUtil
+{
     /// <summary>
     /// 列表项
     /// </summary>

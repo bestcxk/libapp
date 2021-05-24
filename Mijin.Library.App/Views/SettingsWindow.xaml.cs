@@ -14,8 +14,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Shapes;
-using Util;
-using Util.Helpers;
+using IsUtil;
+using IsUtil.Helpers;
 
 namespace Mijin.Library.App.Views
 {

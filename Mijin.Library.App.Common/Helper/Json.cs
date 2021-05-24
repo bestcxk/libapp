@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
 
-namespace Util
+namespace IsUtil
 {
     /// <summary>
     /// Json操作

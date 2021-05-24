@@ -2,11 +2,12 @@
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using Util.Datas.Queries;
-using Util.Expressions;
-using Util.Helpers;
+using IsUtil.Datas.Queries;
+using IsUtil.Expressions;
+using IsUtil.Helpers;
 
-namespace Util {
+namespace IsUtil
+{
     /// <summary>
     /// 系统扩展 - Lambda表达式
     /// </summary>

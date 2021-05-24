@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Util.Helpers
+namespace IsUtil.Helpers
 {
     /// <summary>
     /// appsettings.json操作类

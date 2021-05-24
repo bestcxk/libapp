@@ -1,9 +1,9 @@
 ﻿using System;
 using AutoMapper;
 using System.Collections.Generic;
-using Util.Helpers;
+using IsUtil.Helpers;
 
-namespace Util.Maps {
+namespace IsUtil.Maps {
     /// <summary>
     /// 对象映射
     /// </summary>

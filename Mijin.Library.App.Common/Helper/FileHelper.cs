@@ -4,9 +4,9 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Util;
+using IsUtil;
 
-namespace Util.Helpers
+namespace IsUtil.Helpers
 {
     public class FileHelper : IDisposable
     {

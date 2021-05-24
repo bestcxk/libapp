@@ -9,8 +9,8 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Util;
-using Util.Maps;
+using IsUtil;
+using IsUtil.Maps;
 
 namespace Mijin.Library.App.Driver
 {

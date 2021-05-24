@@ -14,8 +14,8 @@ using Microsoft.Win32;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
-using Mijin.Library.Core.Common.Helper;
 using System.Linq;
+using IsUtil.Helper;
 
 namespace Mijin.Library.App
 {

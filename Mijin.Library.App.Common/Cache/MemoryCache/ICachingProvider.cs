@@ -1,4 +1,4 @@
-﻿namespace Util.Cache
+﻿namespace IsUtil.Cache
 {
     /// <summary>
     /// 简单的缓存接口，只有查询和添加，以后会进行扩展

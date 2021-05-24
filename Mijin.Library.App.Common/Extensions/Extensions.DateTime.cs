@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Text;
 
-namespace Util {
+namespace IsUtil
+{
     /// <summary>
     /// 系统扩展 - 日期
     /// </summary>

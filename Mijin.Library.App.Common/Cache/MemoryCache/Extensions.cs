@@ -4,9 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Util.Cache;
 
-namespace Mijin.Library.Core.Common.Cache.MemoryCache
+namespace IsUtil.Cache
 {
     public static partial class Extensions
     {

@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace Util
+namespace IsUtil
 {
     /// <summary>
     /// 系统扩展 - 验证

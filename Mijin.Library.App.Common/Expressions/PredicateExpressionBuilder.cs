@@ -1,9 +1,9 @@
-﻿using System;
+﻿using IsUtil.Datas.Queries;
+using IsUtil.Helpers;
+using System;
 using System.Linq.Expressions;
-using Util.Datas.Queries;
-using Util.Helpers;
 
-namespace Util.Expressions {
+namespace IsUtil.Expressions {
     /// <summary>
     /// 谓词表达式生成器
     /// </summary>

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Mijin.Library.Core.Common.Helper
+namespace IsUtil.Helper
 {
     public class Time
     {

@@ -43,10 +43,10 @@ namespace Mijin.Library.App.Tests.Driver
             //    var res = tuChuangSIP2Client.GetBookInfo("0200002270");
             //}
             {
-                var res = tuChuangSIP2Client.GetBookInfo("0200002270");
-                var res1 = tuChuangSIP2Client.GetBookInfo("020001996");
-                var res2 = tuChuangSIP2Client.GetBookInfo("020001959");
-                var res3 = tuChuangSIP2Client.GetBookInfo("020002038");
+                //var res = tuChuangSIP2Client.LendBook("0200079862", "411002020100015");
+                //var res1 = tuChuangSIP2Client.GetBookInfo("020001996");
+                //var res2 = tuChuangSIP2Client.GetBookInfo("020001959");
+                //var res3 = tuChuangSIP2Client.GetBookInfo("020002038");
             }
 
 

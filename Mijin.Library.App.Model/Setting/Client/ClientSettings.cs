@@ -6,8 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using Util;
-using Util.Helpers;
+using IsUtil;
+using IsUtil.Helpers;
 
 namespace Mijin.Library.App.Model
 {

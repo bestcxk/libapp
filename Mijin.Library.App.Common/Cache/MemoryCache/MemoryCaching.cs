@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using System;
 
-namespace Util.Cache
+namespace IsUtil.Cache
 {
     /// <summary>
     /// 实例化缓存接口ICaching

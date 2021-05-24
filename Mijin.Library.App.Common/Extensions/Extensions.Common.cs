@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Util {
+namespace IsUtil {
     /// <summary>
     /// 系统扩展 - 公共
     /// </summary>
@@ -20,7 +20,7 @@ namespace Util {
         public static int Value( this System.Enum instance ) {
             if( instance == null )
                 return 0;
-            return Util.Helpers.Enum.GetValue( instance.GetType(), instance );
+            return IsUtil.Helpers.Enum.GetValue( instance.GetType(), instance );
         }
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace Util {
         public static TResult Value<TResult>( this System.Enum instance ) {
             if( instance == null )
                 return default( TResult );
-            return Util.Helpers.Convert.To<TResult>( Value( instance ) );
+            return IsUtil.Helpers.Convert.To<TResult>( Value( instance ) );
         }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace Util {
         public static string Description( this System.Enum instance ) {
             if ( instance == null )
                 return string.Empty;
-            return Util.Helpers.Enum.GetDescription( instance.GetType(), instance );
+            return IsUtil.Helpers.Enum.GetDescription( instance.GetType(), instance );
         }
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace Util {
         /// <param name="quotes">引号，默认不带引号，范例：单引号 "'"</param>
         /// <param name="separator">分隔符，默认使用逗号分隔</param>
         public static string Join<T>( this IEnumerable<T> list, string quotes = "", string separator = "," ) {
-            return Util.Helpers.String.Join( list, quotes, separator );
+            return IsUtil.Helpers.String.Join( list, quotes, separator );
         }
     }
 }

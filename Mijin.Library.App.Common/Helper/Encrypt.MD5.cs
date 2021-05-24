@@ -5,7 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Util.Helpers
+namespace IsUtil.Helpers
 {
     /// <summary>
     /// SHA加密类

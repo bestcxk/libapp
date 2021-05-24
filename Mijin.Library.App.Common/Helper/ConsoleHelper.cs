@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Util.Helpers
+namespace IsUtil.Helpers
 {
     public static class ConsoleHelper
     {

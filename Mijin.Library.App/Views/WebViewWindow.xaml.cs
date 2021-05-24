@@ -5,15 +5,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using Mijin.Library.App.Model;
-using Util.Helpers;
+using IsUtil.Helpers;
 using Util.Logs.Extensions;
 using Util.Logs;
-using Util.Maps;
+using IsUtil.Maps;
 using MahApps.Metro.Controls;
 using System.IO;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using Util;
+using IsUtil;
 
 namespace Mijin.Library.App.Views
 {
@@ -269,7 +269,7 @@ namespace Mijin.Library.App.Views
                     }
 
                     // 请求model序列化, 一定要序列化成 object[]
-                    var req = Util.Json.ToObject<ReqMessageModel<object[]>>(reqStr);
+                    var req = IsUtil.Json.ToObject<ReqMessageModel<object[]>>(reqStr);
                     // 请求method guid 赋值
                     result.method = req.method;
                     result.guid = req.guid;
@@ -332,12 +332,12 @@ namespace Mijin.Library.App.Views
                 if (isEvent)
                 {
                     if (obj.status == 1001)
-                        this.Dispatcher.Invoke(new Action(() => _doorViewWindow.webView.CoreWebView2.PostWebMessageAsString(Util.Json.ToJson(obj))));
+                        this.Dispatcher.Invoke(new Action(() => _doorViewWindow.webView.CoreWebView2.PostWebMessageAsString(Json.ToJson(obj))));
                     else
-                        this.Dispatcher.Invoke(new Action(() => _webViewWindow.webView.CoreWebView2.PostWebMessageAsString(Util.Json.ToJson(obj))));
+                        this.Dispatcher.Invoke(new Action(() => _webViewWindow.webView.CoreWebView2.PostWebMessageAsString(Json.ToJson(obj))));
                 }
                 else
-                    this.Dispatcher.Invoke(new Action(() => this.webView.CoreWebView2.PostWebMessageAsString(Util.Json.ToJson(obj))));
+                    this.Dispatcher.Invoke(new Action(() => this.webView.CoreWebView2.PostWebMessageAsString(Json.ToJson(obj))));
             }
             catch (Exception)
             {

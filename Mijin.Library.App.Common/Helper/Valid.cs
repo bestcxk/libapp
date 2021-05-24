@@ -2,9 +2,9 @@
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Util;
+using IsUtil;
 
-namespace Utils.Helpers
+namespace IsUtil.Helpers
 {
     /// <summary>
     /// 验证 操作

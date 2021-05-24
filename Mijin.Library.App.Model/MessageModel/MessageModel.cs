@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Util;
+using IsUtil;
 
 namespace Mijin.Library.App.Model
 {
