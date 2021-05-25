@@ -15,7 +15,7 @@ namespace Mijin.Library.App.Driver
     /// 黑色高频读卡器
     /// 可直接调用读卡方法，读卡方法会进行初始化
     /// </summary>
-    public class BlackHFReader : IHFReader
+    public class BlackHFReader : IHFReader,IBlackHFReader
     {
         public ISystemFunc _systemFunc { get; }
 
@@ -346,6 +346,10 @@ namespace Mijin.Library.App.Driver
             return result;
         }
 
+        public MessageModel<string> ReadBlock(long sector, long block, string HexKey = "FFFFFFFFFFFF")
+        {
+            return ReadBlock(block.ToString());
+        }
         #region byteHEX
         /// <summary>
         /// 单个字节转字字符.

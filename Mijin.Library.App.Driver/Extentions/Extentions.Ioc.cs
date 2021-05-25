@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Mijin.Library.App.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,12 +12,14 @@ namespace Mijin.Library.App.Driver.Extentions
     {
         public static void AddDriver(this IServiceCollection services)
         {
+            ClientSettings clientSettings = new ClientSettings();
+
             services.AddSingleton<IDriverHandle, DriverHandle>();
             services.AddSingleton<IWenhuaSIP2Client, WenhuaSIP2Client>();
             services.AddSingleton<ICabinetLock, CabinetLock>();
             services.AddSingleton<IPosPrint, MyPosPrint>();
             services.AddSingleton<IdentityReader, WonteReader>();
-            services.AddSingleton<IHFReader, BlackHFReader>();
+            services.AddSingleton<IRRfid, RRfid>();
             services.AddSingleton<IRfid, GRfid>();
             services.AddSingleton<IGRfidDoorController, GRfidDoorController>();
             services.AddSingleton<IKeyboard, Keyboard>();
@@ -25,7 +28,16 @@ namespace Mijin.Library.App.Driver.Extentions
             services.AddSingleton<ICardSender, CardSender>();
             services.AddSingleton<IDoorController, ZktDoorController>();
             services.AddSingleton<ITuChuangSIP2Client, TuChuangSIP2Client>();
-            services.AddSingleton<IRRfid, RRfid>();
+
+            #region HFReader IOC 
+            if (clientSettings.HFReader == HFReaderEnum.BlackReader)
+                services.AddSingleton<IHFReader, BlackHFReader>();
+            else
+                services.AddSingleton<IHFReader, RRHFReader>();
+
+            #endregion
+
+
         }
     }
 }

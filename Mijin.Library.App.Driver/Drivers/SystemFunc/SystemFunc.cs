@@ -60,7 +60,7 @@ namespace Mijin.Library.App.Driver
 
         public void Exit()
         {
-            Process.GetProcessesByName("Mijin.Library.App.Daemon").FirstOrDefault().Kill();
+            Process.GetProcessesByName("Mijin.Library.App.Daemon").FirstOrDefault()?.Kill();
             Environment.Exit(0);
         }
 

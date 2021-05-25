@@ -38,7 +38,7 @@ namespace Mijin.Library.App.Driver
         /// <param name="msg"></param>
         protected override void OnEncapedGpiStart(EncapedLogBaseGpiStart msg)
         {
-            if (null == msg || !isStartWatch) { return; }
+            if (null == msg || !isStartWatch ) { return; }
             // 进馆/出馆 处理
             if (_gpiAction == GpiAction.WatchPeopleInOut)
             {

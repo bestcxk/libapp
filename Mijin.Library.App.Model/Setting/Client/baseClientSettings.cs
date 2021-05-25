@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -55,7 +56,7 @@ namespace Mijin.Library.App.Model
         /// <summary>
         /// 每次退出清空Cookie
         /// </summary>
-        public ClearWebViewCacheMode OnExitClearWebCache { get; set; } = ClearWebViewCacheMode.Default;
+        public ClearWebViewCacheModeEnum OnExitClearWebCache { get; set; } = ClearWebViewCacheModeEnum.Default;
 
         /// <summary>
         /// 开发者模式
@@ -81,12 +82,17 @@ namespace Mijin.Library.App.Model
         /// 显示标题栏多项按钮
         /// </summary>
         public bool ShowTitleBarBtns { get; set; }
+
+        /// <summary>
+        /// 高频读卡器
+        /// </summary>
+        public HFReaderEnum HFReader { get; set; } = 0;
     }
 
     /// <summary>
     /// webview清楚缓存类型
     /// </summary>
-    public enum ClearWebViewCacheMode
+    public enum ClearWebViewCacheModeEnum
     {
         /// <summary>
         /// 不清空
@@ -108,5 +114,13 @@ namespace Mijin.Library.App.Model
         /// 删除整个webview 的Cache文件
         /// </summary>
         AllCache = 4,
+    }
+
+    public enum HFReaderEnum
+    { 
+        [Description("黑色读卡器")]
+        BlackReader = 0,
+        [Description("荣睿高频读卡器")]
+        RRHFReader = 1
     }
 }

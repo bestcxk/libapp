@@ -74,10 +74,10 @@ namespace Mijin.Library.App.Views
                     {
                         switch (_clientSettings.OnExitClearWebCache)
                         {
-                            case ClearWebViewCacheMode.Cookie: // 清空cookie
+                            case ClearWebViewCacheModeEnum.Cookie: // 清空cookie
                                 this.webView.CoreWebView2.CookieManager.DeleteAllCookies();
                                 break;
-                            case ClearWebViewCacheMode.LocalState: // 清空LocalState
+                            case ClearWebViewCacheModeEnum.LocalState: // 清空LocalState
                                 {
                                     var dirPath = @"./Mijin.Library.App.exe.WebView2/EBWebView/Default/Local Storage";
                                     var FilePath = @"./Mijin.Library.App.exe.WebView2/EBWebView/Local Storage";
@@ -89,7 +89,7 @@ namespace Mijin.Library.App.Views
                                     }
                                 }
                                 break;
-                            case ClearWebViewCacheMode.DefaultCache: // 删除webview 下的Default文件
+                            case ClearWebViewCacheModeEnum.DefaultCache: // 删除webview 下的Default文件
                                 {
                                     var dirPath = @"./Mijin.Library.App.exe.WebView2/EBWebView/Default";
                                     if (Directory.Exists(dirPath))
@@ -98,7 +98,7 @@ namespace Mijin.Library.App.Views
                                     }
                                 }
                                 break;
-                            case ClearWebViewCacheMode.AllCache: // 删除整个webview 的Cache文件
+                            case ClearWebViewCacheModeEnum.AllCache: // 删除整个webview 的Cache文件
                                 {
                                     var dirPath = @"Mijin.Library.App.exe.WebView2";
                                     if (Directory.Exists(dirPath))

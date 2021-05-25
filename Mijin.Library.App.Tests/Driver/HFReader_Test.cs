@@ -17,7 +17,7 @@ namespace Mijin.Library.App.Tests.Driver
     [TestCaseOrderer("Mijin.Library.App.Tests.PriorityOrderer", "Mijin.Library.App.Tests")]
     public class HFReader_Test
     {
-        public IHFReader _hfReader { get; }
+        public IBlackHFReader _hfReader { get; }
         public ISystemFunc sysFunc { get; set; }
         public HFReader_Test()
         {

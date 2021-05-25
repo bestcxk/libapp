@@ -55,30 +55,34 @@ namespace Mijin.Library.App.Driver
         private IntPtr h = IntPtr.Zero;
         private string connectStr = "protocol=TCP,ipaddress={0},port={1},timeout={2},passwd=";
 
+        private string saveIp = null;
+        private Int64 savePort = 0;
+        private Int64 saveTimeout = 0;
+
+        private int deep = 0;
+        private int maxDeep = 3;
+
         public MessageModel<bool> Connect(string ip, Int64 port, Int64 timeout)
         {
             var res = new MessageModel<bool>();
-            if (IntPtr.Zero == h)
+            if (IntPtr.Zero != h)
             {
-                var conStr = string.Format(connectStr, ip, port, timeout);
-                h = Connect(conStr);
-                if (h != IntPtr.Zero)
-                {
-                    res.msg = "连接门控成功";
-                    res.success = true;
-                    return res;
-                }
+                Disconnect(h);
+            }
+            var conStr = string.Format(connectStr, ip, port, timeout);
+            h = Connect(conStr);
+            if (h == IntPtr.Zero)
+            {
                 var errorCode = PullLastError();
 
                 res.devMsg = "Connect device Failed! The error id is: " + errorCode;
                 res.msg = "连接门控失败";
                 return res;
             }
-            else
-            {
-                
-            }
-            res.msg = "已连接门控成功，无需再次连接";
+            saveIp = ip;
+            savePort = port;
+            saveTimeout = timeout;
+            res.msg = "连接门控成功";
             res.success = true;
             return res;
         }
@@ -91,11 +95,6 @@ namespace Mijin.Library.App.Driver
         public MessageModel<bool> OpenDoor(Int64 openTime = 5)
         {
             var res = new MessageModel<bool>();
-            if (IntPtr.Zero == h)
-            {
-                res.msg = "门控未连接，无法操作";
-                return res;
-            }
             var ret = ControlDevice(h, 1, 1, 1, (int)openTime, 0, "");
             if (ret >= 0)
             {
@@ -105,7 +104,19 @@ namespace Mijin.Library.App.Driver
             else
             {
                 res.msg = "开门操作失败";
+                if (h != IntPtr.Zero)
+                {
+                    if (++deep < maxDeep)
+                    { 
+                        var connectRes = Connect(saveIp, savePort, saveTimeout);
+                        if (connectRes.success)
+                        {
+                            return OpenDoor(openTime);
+                        }
+                    }
+                }
             }
+            deep = 0;
             return res;
         }
     }

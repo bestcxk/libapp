@@ -45,6 +45,8 @@ namespace Mijin.Library.App.Views
             // 添加缓存 comBox选项
             this.OnExitClearWebCacheCom.ItemsSource = new string[] { "保留", "清空cookie", "清空LocalState", "删除webview 下的Default文件", "删除整个webview 的Cache文件" };
 
+            this.HFReaderSelect.ItemsSource = System.Enum.GetNames(typeof(HFReaderEnum));
+
             // 添加id comBox 选项
             List<int> idComSources = new List<int>();
             for (int i = 1; i <= 50; i++)
@@ -79,6 +81,7 @@ namespace Mijin.Library.App.Views
             this.CannotClosed.IsOn = _clientSettings.CannotClosed;
             this.FollowSystemRunCheck.IsOn = _clientSettings.FollowSystemRun;
             this.ShowTitleBarBtnsCheck.IsOn = _clientSettings.ShowTitleBarBtns;
+            this.HFReaderSelect.SelectedIndex = (int)_clientSettings.HFReader;
         }
 
         private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -108,7 +111,7 @@ namespace Mijin.Library.App.Views
                     _clientSettings.NoSelectOpenUrl = this.NoSelectOpenUrlText.Text;
                     _clientSettings.WindowWidth = this.WindowWidthText.Text.ToInt();
                     _clientSettings.WindowHeight = this.WindowHeightText.Text.ToInt();
-                    _clientSettings.OnExitClearWebCache = (ClearWebViewCacheMode)this.OnExitClearWebCacheCom.SelectedIndex;
+                    _clientSettings.OnExitClearWebCache = (ClearWebViewCacheModeEnum)this.OnExitClearWebCacheCom.SelectedIndex;
                     _clientSettings.ShowWindowTitleBar = this.ShowWindowTitleBarCheck.IsOn;
                     _clientSettings.CanResize = this.CanResizeCheck.IsOn;
                     _clientSettings.IsDev = this.IsDevCheck.IsOn;
@@ -116,11 +119,11 @@ namespace Mijin.Library.App.Views
                     _clientSettings.CannotClosed = this.CannotClosed.IsOn;
                     _clientSettings.FollowSystemRun = this.FollowSystemRunCheck.IsOn;
                     _clientSettings.ShowTitleBarBtns = this.ShowTitleBarBtnsCheck.IsOn;
+                    _clientSettings.HFReader = (HFReaderEnum)this.HFReaderSelect.SelectedIndex;
                     // 开启启动项设置
                     try
                     {
                         FollowSystemStart(_clientSettings.FollowSystemRun);
-
                     }
                     catch (Exception e)
                     {

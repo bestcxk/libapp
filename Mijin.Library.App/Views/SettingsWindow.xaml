@@ -7,7 +7,7 @@
         xmlns:local="clr-namespace:Mijin.Library.App.Views"
         xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
         mc:Ignorable="d"
-        Title="设置" MinHeight="640" MinWidth="400" MaxHeight="480" MaxWidth="400" Height="550" Width="400" Closing="MetroWindow_Closing">
+        Title="设置" MinHeight="670" MinWidth="400" MaxHeight="520" MaxWidth="400" Height="550" Width="400" Closing="MetroWindow_Closing">
     <StackPanel >
 
         <StackPanel Margin="0,5,0,5">
@@ -45,6 +45,10 @@
                 <Label Content="缓存处理：" HorizontalContentAlignment="Center" Width="100" ></Label>
                 <ComboBox ToolTip="程序退出时缓存处理" Name="OnExitClearWebCacheCom"></ComboBox>
                 <Button Margin="115,0,0,0" ToolTip="不会修改到Url" Content="设置成自助借阅常用设置" Name="SetAutoLendSettings" Click="SetAutoLend_Click"></Button>
+            </StackPanel>
+            <StackPanel Margin="0,5,0,5" Orientation="Horizontal" Height="30">
+                <Label Content="高频读卡器：" HorizontalContentAlignment="Center" Width="100" ></Label>
+                <ComboBox ToolTip="读读者证的读卡器" Name="HFReaderSelect"></ComboBox>
             </StackPanel>
             <Controls:ToggleSwitch Margin="10,10,10,10" Content="显示窗口标题栏" Name="ShowWindowTitleBarCheck" />
             <Controls:ToggleSwitch Margin="10,0,10,10" Content="调整窗口宽高" Name="CanResizeCheck" />
