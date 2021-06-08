@@ -1,4 +1,4 @@
-﻿using Mijin.Library.Core.Common.Helper;
+﻿using IsUtil.Helper;
 using System;
 using System.Diagnostics;
 using System.Linq;
