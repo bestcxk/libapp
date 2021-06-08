@@ -531,6 +531,8 @@ namespace Mijin.Library.App.Driver
             {
                 uids.Add(DSFIDAndUID.Skip(i * 9 + 1).Take(8).ToArray());
             }
+
+            // 遍历已扫描的uids，获取块数据
             foreach (var uid in uids)
             {
                 byte[] data = new byte[4 * blockCount];
