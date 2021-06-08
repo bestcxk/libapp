@@ -26,7 +26,7 @@ namespace Mijin.Library.App.Model.Setting
         /// 通道的Ips
         /// </summary>
         /// <value></value>
-        public List<string> DoorIps { get; set; } = null;
+        public List<DoorSetting> DoorSettings { get; set; } = null;
 
         /// <summary>
         /// IC卡设置
@@ -86,6 +86,18 @@ namespace Mijin.Library.App.Model.Setting
         public bool ReadCardUseByIdentity { get; set; } = false;
 
 
+    }
+
+    public class DoorSetting
+    {
+        public int InGpi { get; set; }
+        public int OutGpi { get; set; }
+        /// <summary>
+        /// ip:port
+        /// </summary>
+        public string Address { get; set; }
+
+        public string Description { get; set; }
     }
     /// <summary>
     /// 高频卡设置

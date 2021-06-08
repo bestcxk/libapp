@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using IsUtil;
 using IsUtil.Maps;
+using Mijin.Library.App.Model.Setting;
 
 namespace Mijin.Library.App.Driver
 {
@@ -15,7 +16,9 @@ namespace Mijin.Library.App.Driver
         private List<DoorControllerModel> doors { get; set; } = new List<DoorControllerModel>();
         public event Action<WebViewSendModel<LabelInfo>> OnDoorReadLabel;
         public event Action<WebViewSendModel<PeopleInOut>> OnDoorPeopleInOut;
-        public MessageModel<string> ConnectDoors(Dictionary<int, string> connectDic)
+
+        #region 连接通道门(ConnectDoors)
+        public MessageModel<string> ConnectDoors(Dictionary<int, DoorSetting> connectDic)
         {
             var res = new MessageModel<string>();
             var failActionKey = new List<int>();
@@ -38,9 +41,13 @@ namespace Mijin.Library.App.Driver
                 DoorControllerModel door = new DoorControllerModel()
                 {
                     DoorKey = item.Key,
-                    ConnectStr = item.Value,
+                    ConnectStr = item.Value.Address,
                     RfidDoor = new GRfidDoor()
                 };
+
+                door.RfidDoor.gpiInIndex = item.Value.InGpi;
+                door.RfidDoor.gpiOutIndex = item.Value.OutGpi;
+
                 var connectRes = door.RfidDoor.Connect("tcp", door.ConnectStr);
                 if (!connectRes.success)
                 {
@@ -86,9 +93,11 @@ namespace Mijin.Library.App.Driver
 
         public MessageModel<string> ConnectDoors(string connectDicStr)
         {
-            return ConnectDoors(Json.ToObject<Dictionary<int, string>>(connectDicStr));
+            return ConnectDoors(Json.ToObject<Dictionary<int, DoorSetting>>(connectDicStr));
         }
+        #endregion
 
+        #region 获取通道门信息(GetConnectDoorInfos)
         public MessageModel<List<object>> GetConnectDoorInfos()
         {
             var res = new MessageModel<List<object>>();
@@ -103,6 +112,9 @@ namespace Mijin.Library.App.Driver
             return res;
 
         }
+        #endregion
+
+        #region 设置通道门功率(SetDoorsPower)
         public MessageModel<string> SetDoorsPower(Dictionary<int, Dictionary<byte, byte>> powers)
         {
             var res = new MessageModel<string>();
@@ -148,6 +160,10 @@ namespace Mijin.Library.App.Driver
         {
             return SetDoorsPower(Json.ToObject<Dictionary<int, Dictionary<byte, byte>>>(powersStr));
         }
+        #endregion
+
+        #region 获取通道门功率(GetDoorsPower)
+
         public MessageModel<Dictionary<int, Dictionary<byte, byte>>> GetDoorsPower()
         {
             var res = new MessageModel<Dictionary<int, Dictionary<byte, byte>>>();
@@ -184,6 +200,9 @@ namespace Mijin.Library.App.Driver
             res.response = powers;
             return res;
         }
+        #endregion
+
+        #region 开始监听所有通道门进出(StartAllDoorWatch)
 
         public MessageModel<string> StartAllDoorWatch(bool clear = false)
         {
@@ -220,6 +239,9 @@ namespace Mijin.Library.App.Driver
             }
             return res;
         }
+        #endregion
+
+        #region 停止监听所有通道门进出(StopAllDoorWatch)
 
         public MessageModel<string> StopAllDoorWatch()
         {
@@ -251,6 +273,8 @@ namespace Mijin.Library.App.Driver
             }
             return res;
         }
+        #endregion
+
     }
 
     public class DoorControllerModel

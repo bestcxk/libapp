@@ -12,9 +12,9 @@ namespace Mijin.Library.App.Driver
 {
     public class GRfidDoor : GRfid, IRfidDoor
     {
+        public int gpiInIndex { get; set; } = 0; // 通道门入口的gpi 索引值
 
-        private int gpiInIndex = 0;              // 通道门入口的gpi 索引值
-        private int gpiOutIndex = 1;             // 通道门出口的gpi 索引值
+        public int gpiOutIndex { get; set; } = 1; // 通道门出口的gpi 索引值
 
         public int inCount { get; set; } = 0;
         public int outCount { get; set; } = 0;

@@ -13,6 +13,15 @@ namespace Mijin.Library.App.Driver
     public interface IRfidDoor : IRfid
     {
         /// <summary>
+        /// 通道门入口的gpi 索引值
+        /// </summary>
+        public int gpiInIndex { get; set; }
+
+        /// <summary>
+        /// 通道门出口的gpi 索引值
+        /// </summary>
+        public int gpiOutIndex { get; set; } 
+        /// <summary>
         /// 进人数
         /// </summary>
         int inCount { get; set; }
