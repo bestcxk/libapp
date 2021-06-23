@@ -27,8 +27,8 @@ namespace Mijin.Library.App.Tests.Driver
                 Assert.True(res.success);
             }
             {
-                //var res = _rRfid.NewScan(0,2);
-                //Assert.True(res.success);
+                var res = _rRfid.NewScan(0,2);
+                Assert.True(res.success);
             }
 
         }
