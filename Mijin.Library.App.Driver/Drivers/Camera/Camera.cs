@@ -10,6 +10,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using IsUtil;
+using Util.Logs;
+using Util.Logs.Extensions;
 
 namespace Mijin.Library.App.Driver
 {
@@ -90,9 +92,9 @@ namespace Mijin.Library.App.Driver
                     };
                     this.OnCameraGetImage.Invoke(SendModel);
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
-
+                    e.GetBaseException().Log(Log.GetLog().Caption(@$"摄像头{nameof(GetPicOnCameraHandle)}异常"));
                 }
             }
 
