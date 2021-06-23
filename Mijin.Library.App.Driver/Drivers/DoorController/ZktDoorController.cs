@@ -104,17 +104,18 @@ namespace Mijin.Library.App.Driver
             else
             {
                 res.msg = "开门操作失败";
-                if (h != IntPtr.Zero)
+                //if (h != IntPtr.Zero)
+                //{
+                if (++deep < maxDeep)
                 {
-                    if (++deep < maxDeep)
-                    { 
-                        var connectRes = Connect(saveIp, savePort, saveTimeout);
-                        if (connectRes.success)
-                        {
-                            return OpenDoor(openTime);
-                        }
+                    var connectRes = Connect(saveIp, savePort, saveTimeout);
+                    if (connectRes.success)
+                    {
+                        deep = 0;
+                        return OpenDoor(openTime);
                     }
                 }
+                //}
             }
             deep = 0;
             return res;
