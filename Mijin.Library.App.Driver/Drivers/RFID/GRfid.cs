@@ -30,7 +30,7 @@ namespace Mijin.Library.App.Driver
         protected GpiAction _gpiAction = GpiAction.Default;
 
         // 标签触发事件
-        public event Action<WebViewSendModel<LabelInfo>> OnReadLabel;
+        public event Action<WebViewSendModel<LabelInfo>> OnReadUHFLabel;
         #region 构造函数
         /// <summary>
         /// 构造函数
@@ -64,12 +64,12 @@ namespace Mijin.Library.App.Driver
                 }
                 else
                 { 
-                    OnReadLabel.Invoke(new WebViewSendModel<LabelInfo>()
+                    OnReadUHFLabel.Invoke(new WebViewSendModel<LabelInfo>()
                     {
                         msg = "获取成功",
                         success = true,
                         response = new LabelInfo(msg.logBaseEpcInfo),
-                        method = "OnReadLabel"
+                        method = nameof(OnReadUHFLabel)
                     });
                 }
 

@@ -6,27 +6,24 @@ namespace Mijin.Library.App.Driver
 {
     public interface IRRfid
     {
-        /// <summary>
-        /// 自动连接设备
-        /// </summary>
-        /// <returns></returns>
-        MessageModel<string> AutoOpenComPort();
-        /// <summary>
-        /// 新的扫描
-        /// NewScan(3,2) 即为 从第三块区开始读，读2个区的数据，即为读3 4 区的数据
-        /// NewScan(3,5) 即为 从第三块区开始读，读5个区的数据，即为读3 4 5 6 7 区的数据
-        /// </summary>
-        /// <param name="startBlockNum">起始块地址</param>
-        /// <param name="blockCount">连续读取的数据块数</param>
-        /// <returns></returns>
-        MessageModel<List<ScanDataModel>> NewScan(long startBlockNum, long blockCount);
+        event Action<WebViewSendModel<List<ScanDataModel>>> OnReadHFLabels;
 
         /// <summary>
-        /// 设置高频标签EAS
+        /// 多线程扫描间隔
         /// </summary>
-        /// <param name="uid">标签Uid</param>
-        /// <param name="enabled">使能EAS报警</param>
-        /// <returns></returns>
-        MessageModel<string> SetEAS(List<Int64> uid, bool enabled);
+        public int ScanSpaceMs { get; set; }
+
+        MessageModel<string> AutoOpenComPort();
+        MessageModel<string> SetActionLabelPara(long startReadBlock = 0, long ReadBlockCount = 0, long actionBlockSize = 0, long writeState = 0);
+        MessageModel<List<ScanDataModel>> NewScan(long startBlockNum = -1, long readBlockCount = -1);
+        MessageModel<string> Read();
+        MessageModel<string> Stop();
+        MessageModel<ScanDataModel> ReadOnce();
+        MessageModel<string> WriteLabel(string uidHex, byte[] data, long actionBlockSize = -1, long writeState = -1);
+        MessageModel<string> WriteLabel(string uidHex, string hexData, long actionBlockSize = -1, long writeState = -1);
+        MessageModel<string> SetEAS(List<long> uid, bool enabled);
+        MessageModel<string> SetEAS(string uidHexStr, bool enabled);
+        MessageModel<string> SetScanSpaceMs(long ms);
+        MessageModel<string> WriteLabelByAscii(string uidHex, string asciiData, long actionBlockSize = -1, long writeState = -1);
     }
 }

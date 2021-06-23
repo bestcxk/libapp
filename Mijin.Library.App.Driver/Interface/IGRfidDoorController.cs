@@ -8,7 +8,7 @@ namespace Mijin.Library.App.Driver
     public interface IGRfidDoorController
     {
         event Action<WebViewSendModel<PeopleInOut>> OnDoorPeopleInOut;
-        event Action<WebViewSendModel<LabelInfo>> OnDoorReadLabel;
+        event Action<WebViewSendModel<LabelInfo>> OnDoorReadUHFLabel;
 
         MessageModel<string> ConnectDoors(Dictionary<int, DoorSetting> connectDic);
         MessageModel<List<object>> GetConnectDoorInfos();

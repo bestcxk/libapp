@@ -14,7 +14,7 @@ namespace Mijin.Library.App.Driver
     public class GRfidDoorController : IGRfidDoorController
     {
         private List<DoorControllerModel> doors { get; set; } = new List<DoorControllerModel>();
-        public event Action<WebViewSendModel<LabelInfo>> OnDoorReadLabel;
+        public event Action<WebViewSendModel<LabelInfo>> OnDoorReadUHFLabel;
         public event Action<WebViewSendModel<PeopleInOut>> OnDoorPeopleInOut;
 
         #region 连接通道门(ConnectDoors)
@@ -56,13 +56,13 @@ namespace Mijin.Library.App.Driver
                 else
                 {
                     doors.Add(door);
-                    door.RfidDoor.OnReadLabel += (obj) =>
+                    door.RfidDoor.OnReadUHFLabel += (obj) =>
                     {
                         // 通道门统一事件状态码
                         obj.status = 1001;
-                        obj.method = "OnDoorReadLabel";
+                        obj.method = nameof(OnDoorReadUHFLabel);
                         obj.response.DoorKey = door.DoorKey;
-                        OnDoorReadLabel?.Invoke(obj);
+                        OnDoorReadUHFLabel?.Invoke(obj);
                     };
                     door.RfidDoor.OnPeopleInOut += (obj) =>
                     {
