@@ -259,11 +259,6 @@ namespace Mijin.Library.App.Driver
                 str = str.Insert(0, dt);
             }
 
-            // 龙腾单独编译
-            //{
-            //    result.response = m_cardNo.ToUpper();
-            //}
-
             result.response = IcSettings.DataHandle(Convert.ToInt64(str, 16).ToString(), _systemFunc.LibrarySettings?.IcSettings);
 
             result.success = true;
