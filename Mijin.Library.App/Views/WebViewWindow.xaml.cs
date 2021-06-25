@@ -218,7 +218,7 @@ namespace Mijin.Library.App.Views
             #region 当前路由处理
             if (!string.IsNullOrWhiteSpace(openUrl) && openUrl.Substring(0, 2) == @$".\")
             {
-                this.openUrl = @$"{Path.Combine(Environment.CurrentDirectory, openUrl.Substring(2)).Replace(@$"\",@$"/")}";
+                this.openUrl = @$"{Path.Combine(Environment.CurrentDirectory, openUrl.Substring(2)).Replace(@$"\", @$"/")}";
             }
             this.webView.Source = new Uri(this.openUrl);
             #endregion
@@ -253,6 +253,8 @@ namespace Mijin.Library.App.Views
             var result = new WebViewSendModel<object>();
             // 获取请求字符串
             string reqStr = receivedEvent.WebMessageAsJson;
+            object[] parameters = null;
+
 
             Task.Run(() =>
             {
@@ -276,14 +278,18 @@ namespace Mijin.Library.App.Views
 
                     string interfaceName = req.method.Split('.')[0]; // 执行的接口名
                     string methodName = req.method.Split('.')[1];    // 执行的方法
-                    object[] parameters = req.@params;            // 执行参数处理
-                                                                  // 把请求参数中的 JArray 转换为 List<List<string> ,否则会匹配不到方法
+                    parameters = req.@params;            // 执行参数处理
+                                                         // 把请求参数中的 JArray 转换为 List<List<string> ,否则会匹配不到方法
+
+
                     for (int i = 0; i < parameters?.Length; i++)
                     {
                         var item = parameters[i];
                         if (!item.IsNull() && item.GetType().Name == "JArray")
                             item = item.JsonMapTo<List<string>>();
                     }
+
+
 
                     // 反射执行指定方法并赋值
                     var resultObj = _driverHandle.Invoke(interfaceName, methodName, parameters);
@@ -295,15 +301,14 @@ namespace Mijin.Library.App.Views
                     result.success = resultObj?.success ?? false;
                     result.response = resultObj?.response;
 
-
                 }
                 catch (Exception ex)
                 {
                     ILog log = Log.GetLog();
+                    log.Content("WebMessageReceived捕获异常");
                     // 设置日志等级为 警告
                     log.Warn();
                     // 设置内容为 WebMessageReceived捕获异常
-                    log.Content("WebMessageReceived捕获异常");
                     // 写入日志
                     ex.Log(log);
 
@@ -313,8 +318,10 @@ namespace Mijin.Library.App.Views
                     result.success = false;
                 }
 
+
+
                 // 发送信息给前端页面
-                Send(result);
+                Send(result, false, reqStr,Json.ToJson(parameters));
             });
         }
         #endregion
@@ -324,24 +331,47 @@ namespace Mijin.Library.App.Views
         /// 发送信息给前端页面
         /// </summary>
         /// <param name="obj"></param>
-        private void Send(dynamic obj, bool isEvent = false)
+        /// <param name="isEvent"></param>
+        /// <param name="reqStr"></param>
+        /// <param name="para"></param>
+        private void Send(dynamic obj, bool isEvent = false, string reqStr = "", string para = "")
         {
-            try
+            // 事件处理
+            if (isEvent)
             {
-                // 事件处理
-                if (isEvent)
-                {
-                    if (obj.status == 1001)
-                        this.Dispatcher.Invoke(new Action(() => _doorViewWindow.webView.CoreWebView2.PostWebMessageAsString(Json.ToJson(obj))));
-                    else
-                        this.Dispatcher.Invoke(new Action(() => _webViewWindow.webView.CoreWebView2.PostWebMessageAsString(Json.ToJson(obj))));
-                }
+                if (obj.status == 1001)
+                    this.Dispatcher.Invoke(new Action(() => _doorViewWindow.webView.CoreWebView2.PostWebMessageAsString(Json.ToJson(obj))));
                 else
-                    this.Dispatcher.Invoke(new Action(() => this.webView.CoreWebView2.PostWebMessageAsString(Json.ToJson(obj))));
+                    this.Dispatcher.Invoke(new Action(() => _webViewWindow.webView.CoreWebView2.PostWebMessageAsString(Json.ToJson(obj))));
             }
-            catch (Exception)
+            else
+                this.Dispatcher.Invoke(new Action(() => this.webView.CoreWebView2.PostWebMessageAsString(Json.ToJson(obj))));
+
+            
+
+            // 屏蔽黑名单进info日志
+            if (!string.IsNullOrWhiteSpace(obj.method) && _driverHandle.BlackListLogMethod.Contains((string)obj.method))
+                return;
+
+            // 日志信息记录
+            RequestLogInfo loginfo = new RequestLogInfo();
+            loginfo.reqStr = reqStr;
+            loginfo.para = para;
+            loginfo.rtData = Json.ToJson(obj.response);
+            loginfo.rtSuccess = obj.success;
+            loginfo.rtMsg = obj.msg;
+
+            if (isEvent)
             {
+                loginfo.eventName = obj.method;
+                loginfo.WriteEvent();
             }
+            else
+            {
+                loginfo.method = obj.method;
+                loginfo.WriteActionLog();
+            }
+
         }
         #endregion
 
@@ -355,6 +385,52 @@ namespace Mijin.Library.App.Views
                 _doorViewWindow.Title = "通道门";
             }
             _doorViewWindow.Show();
+        }
+
+        private class RequestLogInfo
+        {
+            private ILog log;
+            public string reqStr { get; set; }
+            public string title { get; set; }
+            public string method { get; set; }
+            public string para { get; set; }
+            public string rtData { get; set; }
+            public string eventName { get; set; }
+            public string rtMsg { get; set; }
+            public bool rtSuccess { get; set; }
+
+            public RequestLogInfo()
+            {
+                log = Log.GetLog();
+            }
+
+            private void Write(string text)
+            {
+                log.Content(text);
+                log.Info();
+            }
+
+            public virtual void WriteActionLog(string reqStr, string title, string method, string para, string rtData, bool rtSuccess, string rtMsg)
+            {
+                string text = $" 请求字符串　：{reqStr} \r\n 标题　　　　：{title} \r\n 请求方法　　：{method} \r\n 请求参数　　：{para} \r\n 返回数据　　：{rtData} \r\n 返回成功状态：{rtSuccess} \r\n 返回信息　　：{rtMsg} \r\n ";
+                Write(text);
+            }
+            public virtual void WriteActionLog()
+            {
+                string text = $" 请求字符串　：{reqStr} \r\n 标题　　　　：{title} \r\n 请求方法　　：{method} \r\n 请求参数　　：{para} \r\n 返回数据　　：{rtData} \r\n 返回成功状态：{rtSuccess} \r\n 返回信息　　：{rtMsg} \r\n ";
+                Write(text);
+            }
+
+            public virtual void WriteEvent(string title, string eventName, string rtData, bool rtSuccess, string rtMsg)
+            {
+                string text = $" 标题　　　　：{title} \r\n 事件名称　　：{eventName} \r\n 返回数据　　：{rtData} \r\n 返回成功状态：{rtSuccess} \r\n 返回信息　　：{rtMsg} \r\n ";
+                Write(text);
+            }
+            public virtual void WriteEvent()
+            {
+                string text = $" 标题　　　　：{title} \r\n 事件名称　　：{eventName} \r\n 返回数据　　：{rtData} \r\n 返回成功状态：{rtSuccess} \r\n 返回信息　　：{rtMsg} \r\n ";
+                Write(text);
+            }
         }
     }
 }
