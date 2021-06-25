@@ -101,7 +101,7 @@ namespace Mijin.Library.App.Driver
             {
                 success = true,
                 response = serialPort.IsOpen,
-                msg = "设置成功"
+                msg = "获取成功"
             };
         }
     }
