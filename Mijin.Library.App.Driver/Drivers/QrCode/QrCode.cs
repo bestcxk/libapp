@@ -33,11 +33,10 @@ namespace Mijin.Library.App.Driver
 
         private void port_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            if (!watchQrCode) return;
 
             String str_HEX = "";
             string str = serialPort.ReadExisting().Replace("\r\n","");//字符串方式读
-
+            if (!watchQrCode) return;
             OnScanQrCode?.Invoke(new WebViewSendModel<string>()
             {
                 msg = "获取成功",
