@@ -52,6 +52,11 @@ namespace Mijin.Library.App.Driver
         public MessageModel<string> AutoConnect(string baud = "115200")
         {
             var res = new MessageModel<string>();
+            // 如果com口已经打开，则先关闭
+            if (serialPort.IsOpen)
+            {
+                serialPort.Close();
+            }
             var comName = PublicFun.GetPortNameFormVidPid(vid, pid);
             if (comName.IsNull())
             {
@@ -61,11 +66,7 @@ namespace Mijin.Library.App.Driver
             serialPort.PortName = comName;
             serialPort.BaudRate = baud.ToInt();
 
-            // 如果com口已经打开，则先关闭
-            if (serialPort.IsOpen)
-            {
-                serialPort.Close();
-            }
+            
 
             try
             {
