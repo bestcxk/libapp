@@ -17,7 +17,7 @@ namespace Mijin.Library.App.Driver
         private IdentityReader _identityReader { get; }
         private IHFReader _hFReader { get; }
         private IRfid _rfid { get; }
-        public IKeyboard _keyboard { get; }
+        private IKeyboard _keyboard { get; }
         private ISystemFunc _systemFunc { get; }
         private ICamera _camera { get; }
         private ICardSender _cardSender { get; }
@@ -25,6 +25,11 @@ namespace Mijin.Library.App.Driver
         private IGRfidDoorController _gRfidDoorController { get; }
         private ITuChuangSIP2Client _tuChuangSIP2Client { get; }
         private IRRfid _rRfid { get; }
+        private IQrCode _qrCode { get; }
+
+
+        public static string[] BlackListLogMethod = { "ISystemFunc.SetLibrarySettings" };
+        string[] IDriverHandle.BlackListLogMethod { get => BlackListLogMethod; }
 
         /// <summary>
         /// 所有Driver模块的事件
@@ -60,7 +65,7 @@ namespace Mijin.Library.App.Driver
 
         #region 构造函数
 
-        public DriverHandle(ISystemFunc systemFunc, IWenhuaSIP2Client sIP2Client, ICabinetLock cabinetLock, IPosPrint posPrint, IdentityReader identityReader, IHFReader HFReader, IRfid rfid, IKeyboard keyboard, ICamera camera,ICardSender cardSender,IDoorController doorController, IGRfidDoorController gRfidDoorController, ITuChuangSIP2Client tuChuangSIP2Client,IRRfid rRfid)
+        public DriverHandle(ISystemFunc systemFunc, IWenhuaSIP2Client sIP2Client, ICabinetLock cabinetLock, IPosPrint posPrint, IdentityReader identityReader, IHFReader HFReader, IRfid rfid, IKeyboard keyboard, ICamera camera, ICardSender cardSender, IDoorController doorController, IGRfidDoorController gRfidDoorController, ITuChuangSIP2Client tuChuangSIP2Client, IRRfid rRfid, IQrCode qrCode)
         {
             _systemFunc = systemFunc;
             _sIP2Client = sIP2Client;
@@ -76,6 +81,7 @@ namespace Mijin.Library.App.Driver
             _gRfidDoorController = gRfidDoorController;
             _tuChuangSIP2Client = tuChuangSIP2Client;
             _rRfid = rRfid;
+            _qrCode = qrCode;
         }
         #endregion
 
@@ -126,7 +132,7 @@ namespace Mijin.Library.App.Driver
                 return invoke.JsonMapTo<MessageModel<object>>();
             }
 
-            
+
         }
 
         /// <summary>

@@ -7,6 +7,7 @@ namespace Mijin.Library.App.Driver
     public interface IDriverHandle
     {
 
+        string[] BlackListLogMethod { get; }
         /// <summary>
         /// 所有Driver模块的事件
         /// </summary>

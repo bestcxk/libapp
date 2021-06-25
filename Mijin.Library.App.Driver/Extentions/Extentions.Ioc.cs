@@ -28,6 +28,7 @@ namespace Mijin.Library.App.Driver.Extentions
             services.AddSingleton<ICardSender, CardSender>();
             services.AddSingleton<IDoorController, ZktDoorController>();
             services.AddSingleton<ITuChuangSIP2Client, TuChuangSIP2Client>();
+            services.AddSingleton<IQrCode, QrCode>();
 
             #region HFReader IOC 
             if (clientSettings.HFReader == HFReaderEnum.BlackReader)
