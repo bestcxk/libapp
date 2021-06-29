@@ -15,7 +15,7 @@ namespace Mijin.Library.App.Driver
     /// 黑色高频读卡器
     /// 可直接调用读卡方法，读卡方法会进行初始化
     /// </summary>
-    public class BlackHFReader : IHFReader,IBlackHFReader
+    public class BlackHFReader : IHFReader, IBlackHFReader
     {
         public ISystemFunc _systemFunc { get; }
 
@@ -240,7 +240,7 @@ namespace Mijin.Library.App.Driver
             }
 
             status = TyA_Select(g_hDevice, dataBuffer, len, ref sak);//锁定一张ISO14443-3 TYPE_A 卡
-            if (status != 0) 
+            if (status != 0)
             {
                 result.devMsg = "TyA_Select failed !";
                 return result;
@@ -259,7 +259,10 @@ namespace Mijin.Library.App.Driver
                 str = str.Insert(0, dt);
             }
 
-            result.response = IcSettings.DataHandle(Convert.ToInt64(str, 16).ToString(), _systemFunc.LibrarySettings?.IcSettings);
+            if (_systemFunc.ClientSettings.HFOriginalCard)
+                result.response = m_cardNo.ToUpper();
+            else
+                result.response = IcSettings.DataHandle(Convert.ToInt64(str, 16).ToString(), _systemFunc.LibrarySettings?.IcSettings);
 
             result.success = true;
             result.msg = "读卡成功";
@@ -294,7 +297,7 @@ namespace Mijin.Library.App.Driver
                 // 初始化失败则直接返回结果
                 if (!initResult.success)
                     return new MessageModel<string>(initResult);
-                    //return new MessageModel<string>(initResult);
+                //return new MessageModel<string>(initResult);
             }
 
             status = TyA_Request(g_hDevice, mode, ref TagType);//搜寻所有的卡
@@ -334,7 +337,7 @@ namespace Mijin.Library.App.Driver
             }
             bts = bts.Take(rtbtsLen).ToArray();
 
-            result.response = SerialPortHelper.ByteArrayToHexString(bts).Replace(" ",""); //  Encoding.ASCII.GetString(bts, 0, bts.Length);
+            result.response = SerialPortHelper.ByteArrayToHexString(bts).Replace(" ", ""); //  Encoding.ASCII.GetString(bts, 0, bts.Length);
             result.success = true;
             result.msg = "读卡成功";
 

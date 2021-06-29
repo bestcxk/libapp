@@ -365,6 +365,9 @@ namespace Mijin.Library.App.Views
             {
                 loginfo.eventName = obj.method;
                 loginfo.WriteEvent();
+
+                
+
             }
             else
             {
@@ -414,6 +417,7 @@ namespace Mijin.Library.App.Views
             {
                 string text = $" 请求字符串　：{reqStr} \r\n 标题　　　　：{title} \r\n 请求方法　　：{method} \r\n 请求参数　　：{para} \r\n 返回数据　　：{rtData} \r\n 返回成功状态：{rtSuccess} \r\n 返回信息　　：{rtMsg} \r\n ";
                 Write(text);
+
             }
             public virtual void WriteActionLog()
             {

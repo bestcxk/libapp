@@ -82,6 +82,8 @@ namespace Mijin.Library.App.Views
             this.FollowSystemRunCheck.IsOn = _clientSettings.FollowSystemRun;
             this.ShowTitleBarBtnsCheck.IsOn = _clientSettings.ShowTitleBarBtns;
             this.HFReaderSelect.SelectedIndex = (int)_clientSettings.HFReader;
+            this.HFOriginalCardCheck.IsOn = _clientSettings.HFOriginalCard;
+            this.UHFEventIsOldNameCheck.IsOn = _clientSettings.UHFEventIsOldName;
         }
 
         private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -120,6 +122,8 @@ namespace Mijin.Library.App.Views
                     _clientSettings.FollowSystemRun = this.FollowSystemRunCheck.IsOn;
                     _clientSettings.ShowTitleBarBtns = this.ShowTitleBarBtnsCheck.IsOn;
                     _clientSettings.HFReader = (HFReaderEnum)this.HFReaderSelect.SelectedIndex;
+                    _clientSettings.HFOriginalCard = this.HFOriginalCardCheck.IsOn;
+                    _clientSettings.UHFEventIsOldName = this.UHFEventIsOldNameCheck.IsOn;
                     // 开启启动项设置
                     try
                     {

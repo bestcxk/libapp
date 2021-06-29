@@ -29,13 +29,16 @@ namespace Mijin.Library.App.Driver
         // gpi触发Action ,默认不处理
         protected GpiAction _gpiAction = GpiAction.Default;
 
+
         // 标签触发事件
         public event Action<WebViewSendModel<LabelInfo>> OnReadUHFLabel;
+
+        private string eventName = nameof(OnReadUHFLabel);
         #region 构造函数
         /// <summary>
         /// 构造函数
         /// </summary>
-        public GRfid()
+        public GRfid(ISystemFunc systemFunc)
         {
             _gClient = new GClient();
             // 默认4天线模式
@@ -46,6 +49,9 @@ namespace Mijin.Library.App.Driver
                 { 3 , 1},
                 { 4 , 1},
             };
+            if (systemFunc?.ClientSettings?.UHFEventIsOldName == true)
+                eventName = "OnReadLabel";
+            
         }
         #endregion
 
@@ -69,7 +75,7 @@ namespace Mijin.Library.App.Driver
                         msg = "获取成功",
                         success = true,
                         response = new LabelInfo(msg.logBaseEpcInfo),
-                        method = nameof(OnReadUHFLabel)
+                        method = eventName
                     });
                 }
 

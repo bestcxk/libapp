@@ -25,7 +25,7 @@ namespace Mijin.Library.App.Driver
         // 是否已经开启了人员进出判断
         private bool isStartWatch = false;
 
-        public GRfidDoor() : base()
+        public GRfidDoor() : base(null)
         {
             _gpiAction = GpiAction.WatchPeopleInOut;
         }

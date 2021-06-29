@@ -87,6 +87,16 @@ namespace Mijin.Library.App.Model
         /// 高频读卡器
         /// </summary>
         public HFReaderEnum HFReader { get; set; } = 0;
+
+        /// <summary>
+        /// 超高频模块事件名使用旧事件名
+        /// </summary>
+        public bool UHFEventIsOldName { get; set; }
+
+        /// <summary>
+        /// 高频读卡器发送原始卡号
+        /// </summary>
+        public bool HFOriginalCard{ get; set; }
     }
 
     /// <summary>

@@ -191,7 +191,7 @@ namespace Mijin.Library.App.Driver
             var result = new MessageModel<string>();
             uint icNumber = 0;
 
-            
+
             List<string> coms = null; // 当前存在的com口
 
             if (hfCom == 0) // 还没有一次读成功
@@ -220,7 +220,7 @@ namespace Mijin.Library.App.Driver
                 if (icNumber <= 0)
                 {
                     result.msg = "未连接到读卡器";
-                    result.devMsg = @$"已扫描的com口：{string.Join(",",coms)}";
+                    result.devMsg = @$"已扫描的com口：{string.Join(",", coms)}";
                     return result;
                 }
 
@@ -234,8 +234,19 @@ namespace Mijin.Library.App.Driver
                     return result;
                 }
             }
-
-            result.response = IcSettings.DataHandle(icNumber.ToString(), _systemFunc.LibrarySettings?.IcSettings);
+            if (_systemFunc.ClientSettings.HFOriginalCard)
+            {
+                var card = Convert.ToString(icNumber, 16);
+                var str = "";
+                for (int i = 0; i < card.Length; i += 2)
+                {
+                    string dt = card[i].ToString() + card[i + 1].ToString();
+                    str = str.Insert(0, dt);
+                }
+                result.response = str.ToUpper();
+            }
+            else
+                result.response = IcSettings.DataHandle(icNumber.ToString(), _systemFunc.LibrarySettings?.IcSettings);
 
             result.success = true;
             result.msg = "读IC卡物理卡号成功";

@@ -7,7 +7,7 @@
         xmlns:local="clr-namespace:Mijin.Library.App.Views"
         xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
         mc:Ignorable="d"
-        Title="设置" MinHeight="670" MinWidth="400" MaxHeight="520" MaxWidth="400" Height="550" Width="400" Closing="MetroWindow_Closing">
+        Title="设置" MinHeight="750" MinWidth="400" MaxHeight="520" MaxWidth="400" Height="550" Width="400" Closing="MetroWindow_Closing">
     <StackPanel >
 
         <StackPanel Margin="0,5,0,5">
@@ -57,6 +57,8 @@
             <Controls:ToggleSwitch Margin="10,0,10,10" Content="显示标题栏多项按钮" ToolTip="通道门等按钮" Name="ShowTitleBarBtnsCheck" />
             <Controls:ToggleSwitch Margin="10,0,10,10" Content="窗口被关闭后自动重启" Name="CannotClosed" />
             <Controls:ToggleSwitch Margin="10,0,10,10" Content="开机自动启动" Name="FollowSystemRunCheck" />
+            <Controls:ToggleSwitch Margin="10,0,10,10" Content="超高频模块事件名使用旧事件名" Name="UHFEventIsOldNameCheck" />
+            <Controls:ToggleSwitch Margin="10,0,10,10" Content="高频读卡器发送原始卡号" Name="HFOriginalCardCheck" />
             <!--<CheckBox Margin="10,10,10,10" Content="显示窗口标题栏" Name="ShowWindowTitleBarCheck"></CheckBox>-->
             <!--<CheckBox Margin="10,0,10,10" Content="手动调整窗口宽高" Name="CanResizeCheck"></CheckBox>
             <CheckBox Margin="10,0,10,10" Content="开发者模式" Name="IsDevCheck"></CheckBox>-->
