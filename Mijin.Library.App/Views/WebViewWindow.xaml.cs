@@ -31,6 +31,8 @@ namespace Mijin.Library.App.Views
 
         static private bool hasRegisterEvent = false;
 
+        static private string logColor = "32"; // 32 或者 34
+
         #region 构造函数
         public WebViewWindow(IDriverHandle driverHandle, ISystemFunc systemFunc)
         {
@@ -321,7 +323,7 @@ namespace Mijin.Library.App.Views
 
 
                 // 发送信息给前端页面
-                Send(result, false, reqStr,Json.ToJson(parameters));
+                Send(result, false, reqStr, Json.ToJson(parameters));
             });
         }
         #endregion
@@ -347,7 +349,7 @@ namespace Mijin.Library.App.Views
             else
                 this.Dispatcher.Invoke(new Action(() => this.webView.CoreWebView2.PostWebMessageAsString(Json.ToJson(obj))));
 
-            
+
 
             // 屏蔽黑名单进info日志
             if (!string.IsNullOrWhiteSpace(obj.method) && _driverHandle.BlackListLogMethod.Contains((string)obj.method))
@@ -361,19 +363,26 @@ namespace Mijin.Library.App.Views
             loginfo.rtSuccess = obj.success;
             loginfo.rtMsg = obj.msg;
 
+            string webLog = "";
             if (isEvent)
             {
                 loginfo.eventName = obj.method;
-                loginfo.WriteEvent();
-
-                
-
+                webLog = loginfo.WriteEvent();
             }
             else
             {
                 loginfo.method = obj.method;
-                loginfo.WriteActionLog();
+                webLog = loginfo.WriteActionLog();
             }
+            webLog = @$"console.log('\x1B["+logColor+@$"m%s\x1B[0m', '{webLog}')".Replace("\r\n", "\\n");
+
+            if (logColor == "32") logColor = "34";
+            else logColor = "32";
+
+            if (obj.status == 1001)
+                this.Dispatcher.Invoke(new Action(() => _doorViewWindow.webView.CoreWebView2.ExecuteScriptAsync(webLog)));
+            else
+                this.Dispatcher.Invoke(new Action(() => _webViewWindow.webView.CoreWebView2.ExecuteScriptAsync(webLog)));
 
         }
         #endregion
@@ -413,27 +422,31 @@ namespace Mijin.Library.App.Views
                 log.Info();
             }
 
-            public virtual void WriteActionLog(string reqStr, string title, string method, string para, string rtData, bool rtSuccess, string rtMsg)
+            public virtual string WriteActionLog(string reqStr, string title, string method, string para, string rtData, bool rtSuccess, string rtMsg)
             {
                 string text = $" 请求字符串　：{reqStr} \r\n 标题　　　　：{title} \r\n 请求方法　　：{method} \r\n 请求参数　　：{para} \r\n 返回数据　　：{rtData} \r\n 返回成功状态：{rtSuccess} \r\n 返回信息　　：{rtMsg} \r\n ";
                 Write(text);
+                return text;
 
             }
-            public virtual void WriteActionLog()
+            public virtual string WriteActionLog()
             {
                 string text = $" 请求字符串　：{reqStr} \r\n 标题　　　　：{title} \r\n 请求方法　　：{method} \r\n 请求参数　　：{para} \r\n 返回数据　　：{rtData} \r\n 返回成功状态：{rtSuccess} \r\n 返回信息　　：{rtMsg} \r\n ";
                 Write(text);
+                return text;
             }
 
-            public virtual void WriteEvent(string title, string eventName, string rtData, bool rtSuccess, string rtMsg)
+            public virtual string WriteEvent(string title, string eventName, string rtData, bool rtSuccess, string rtMsg)
             {
                 string text = $" 标题　　　　：{title} \r\n 事件名称　　：{eventName} \r\n 返回数据　　：{rtData} \r\n 返回成功状态：{rtSuccess} \r\n 返回信息　　：{rtMsg} \r\n ";
                 Write(text);
+                return text;
             }
-            public virtual void WriteEvent()
+            public virtual string WriteEvent()
             {
                 string text = $" 标题　　　　：{title} \r\n 事件名称　　：{eventName} \r\n 返回数据　　：{rtData} \r\n 返回成功状态：{rtSuccess} \r\n 返回信息　　：{rtMsg} \r\n ";
                 Write(text);
+                return text;
             }
         }
     }
