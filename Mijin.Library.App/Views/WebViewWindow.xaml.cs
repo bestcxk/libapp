@@ -359,7 +359,6 @@ namespace Mijin.Library.App.Views
             RequestLogInfo loginfo = new RequestLogInfo();
             loginfo.reqStr = reqStr;
             loginfo.para = para;
-            loginfo.rtData = Json.ToJson(obj.response);
             loginfo.rtSuccess = obj.success;
             loginfo.rtMsg = obj.msg;
 
@@ -367,11 +366,17 @@ namespace Mijin.Library.App.Views
             if (isEvent)
             {
                 loginfo.eventName = obj.method;
+
+                // 摄像头事件则不传输 rtData
+                if (loginfo.eventName != nameof(ICamera.OnCameraGetImage))
+                    loginfo.rtData = Json.ToJson(obj.response);
+
                 webLog = loginfo.WriteEvent();
             }
             else
             {
                 loginfo.method = obj.method;
+                loginfo.rtData = Json.ToJson(obj.response);
                 webLog = loginfo.WriteActionLog();
             }
             webLog = @$"console.log('\x1B["+logColor+@$"m%s\x1B[0m', '{webLog}')".Replace("\r\n", "\\n");
