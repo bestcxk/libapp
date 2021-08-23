@@ -28,6 +28,12 @@ namespace Mijin.Library.App.Driver
         /// </summary>
         public event Action<WebViewSendModel<string>> OnCameraGetImage;
 
+        public static int gcCount = 0;
+
+        public Camera()
+        {
+        }
+
         /// <summary>
         /// 开启摄像头
         /// </summary>
@@ -37,16 +43,22 @@ namespace Mijin.Library.App.Driver
             if (_capture == null)
                 _capture = new Capture();
 
-            if (_taskIsRunning != true)
+            if (_task.IsNull())
             {
-                _taskIsRunning = true;
                 _task = new Task(GetPicOnCameraHandle);
                 _task.Start();
-
-                //_threadFaceDet = new Thread(new ThreadStart(SendPic));
-                //_taskIsRunning = true;
-                //_threadFaceDet.Start();
             }
+            _taskIsRunning = true;
+            //if (_taskIsRunning != true)
+            //{
+            //    _taskIsRunning = true;
+            //    _task = new Task(GetPicOnCameraHandle);
+            //    _task.Start();
+
+            //    //_threadFaceDet = new Thread(new ThreadStart(SendPic));
+            //    //_taskIsRunning = true;
+            //    //_threadFaceDet.Start();
+            //}
             return new MessageModel<bool>()
             {
                 msg = "开启摄像头成功",
@@ -75,8 +87,12 @@ namespace Mijin.Library.App.Driver
         /// </summary>
         private void GetPicOnCameraHandle()
         {
-            while (_taskIsRunning)
+            
+            while (true)
             {
+                Task.Delay(30).GetAwaiter();
+
+                if (!_taskIsRunning) continue;
                 try
                 {
                     //MessageModel<Dictionary<string, string>> data = new MessageModel<Dictionary<string, string>>() { response = new Dictionary<string, string>() };
@@ -91,6 +107,14 @@ namespace Mijin.Library.App.Driver
                         method = "OnCameraGetImage"
                     };
                     this.OnCameraGetImage.Invoke(SendModel);
+
+                    if (++gcCount >= 500)
+                    {
+                        gcCount = 0;
+                        System.GC.Collect();
+
+                    }
+
                 }
                 catch (Exception e)
                 {
