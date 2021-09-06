@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using IsUtil;
+using IsUtil.Maps;
 
 namespace Mijin.Library.App.Driver
 {
@@ -20,7 +21,7 @@ namespace Mijin.Library.App.Driver
         {
         }
 
-        public MessageModel<object> LendBook(string bookserial, string readerNo,string libraryAccount)
+        public MessageModel<object> LendBook(string bookserial, string readerNo, string libraryAccount)
         {
             var dic = new Dictionary<string, object>();
             var bookInfo = new SIP2BookInfo();
@@ -284,7 +285,7 @@ namespace Mijin.Library.App.Driver
         /// <param name="bookserial"></param>
         /// <param name="readerNo"></param>
         /// <returns></returns>
-        public MessageModel<object> ContinueBook(string bookserial, string readerNo,string libraryAccount)
+        public MessageModel<object> ContinueBook(string bookserial, string readerNo, string libraryAccount)
         {
             var dic = new Dictionary<string, object>();
             var bookInfo = new SIP2BookInfo();
@@ -326,5 +327,67 @@ namespace Mijin.Library.App.Driver
 
             return data;
         }
+
+        /// <summary>
+        /// 注册用户
+        /// </summary>
+        /// <param name="bookserial"></param>
+        /// <param name="readerNo"></param>
+        /// <returns></returns>
+        public MessageModel<object> RegiesterReader(RegiesterInfo readerInfo)
+        {
+            var data = new MessageModel<object>();
+
+            if (readerInfo == null)
+            {
+                data.msg = "readerInfo实体不可为空";
+                return data;
+            }
+
+            var sendStr = @$"81YN{DateTime.Now.ToString("yyyyMMddHHmmss")}    144920AOYB|AA{readerInfo.Identity}|AD{readerInfo.Pw}|AE{readerInfo.Name}|AM{readerInfo.CreateReaderLibrary}|BP{readerInfo.Phone}|BD{readerInfo.Addr}|XO{readerInfo.Identity}|XT{readerInfo.Type}|BV{readerInfo.Moeny}|XM{(readerInfo.Sex ? "1" : "0")}|XK01|AY1AZB92E";
+
+            string message = null;
+            try
+            {
+                message = SendAsync(sendStr).Result;
+            }
+            catch (Exception e)
+            {
+                data.msg = e.ToString();
+                return data;
+            }
+            if (message == null)
+            {
+                data.msg = "获取数据失败，返回信息为空";
+                return data;
+            }
+            try
+            {
+                data.msg = message.Search("AF", "|");
+            }
+            catch (Exception)
+            {
+                data.msg = message.Substring(message.IndexOf("AF"), message.Length - 1);
+            }
+            if (string.IsNullOrEmpty(data.msg))
+            {
+                data.msg = message.Substring(message.IndexOf("AF"), message.Length - message.IndexOf("AF"));
+            }
+
+            data.success = data.msg?.Contains("成功") ?? false; // 成功
+
+            return data;
+        }
+
+        /// <summary>
+        /// 自助办证(用于web进行反射调用)
+        /// </summary>
+        /// <param name="readerInfo"></param>
+        /// <returns></returns>
+        MessageModel<object> RegiesterReader(object readerInfo)
+        {
+            return RegiesterReader(readerInfo.JsonMapTo<RegiesterInfo>());
+        }
+
     }
 }

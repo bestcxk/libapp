@@ -15,7 +15,7 @@ namespace Mijin.Library.App.Tests.Driver
         IRfid _rfid { get; set; }
         public Rfid_Test()
         {
-            _rfid = new GRfid();
+            _rfid = new GRfid(null);
         }
 
         /// <summary>

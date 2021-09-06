@@ -9,5 +9,7 @@ namespace Mijin.Library.App.Driver
         MessageModel<object> GetBookInfo(string bookserial);
         MessageModel<object> GetReaderInfo(string readerNo, string readerPw = null);
         MessageModel<object> LendBook(string bookserial, string readerNo, string libraryAccount);
+
+        MessageModel<object> RegiesterReader(RegiesterInfo readerInfo);
     }
 }

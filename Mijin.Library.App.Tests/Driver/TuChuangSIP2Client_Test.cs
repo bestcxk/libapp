@@ -20,8 +20,21 @@ namespace Mijin.Library.App.Tests.Driver
         [Fact, TestPriority(1)]
         public void Connect_Test()
         {
-            var res = tuChuangSIP2Client.Connect("222.89.181.140", "2001");
-            Assert.True(res.success);
+            // 阳西  自助机账号 002042ACS
+            var res = tuChuangSIP2Client.Connect("47.107.119.27", "2042");
+            //var bkRes = tuChuangSIP2Client.GetBookInfo("0420069486");
+            var regiesterRes = tuChuangSIP2Client.RegiesterReader(new RegiesterInfo()
+            {
+                Identity = "500113199706286714",
+                Pw="123456",
+                Name="米进测试用户",
+                CreateReaderLibrary= "002042",
+                Moeny = 0,
+                Type = "999_SFZYH2C"
+            });
+
+            var getReaderRes = tuChuangSIP2Client.GetReaderInfo("500113199706286714");
+
         }
 
         [Fact, TestPriority(2)]
@@ -29,28 +42,9 @@ namespace Mijin.Library.App.Tests.Driver
         {
             {
                 var res = tuChuangSIP2Client.Connect("222.89.181.140", "2001");
+                var dt = tuChuangSIP2Client.LendBook("0200082261", "411002020100117", "wdqacs011");
+                var dt1 = tuChuangSIP2Client.GetReaderInfo("411002020100117");
             }
-            //{
-            //    var res = tuChuangSIP2Client.LendBook("0200002270", "411002020100117");
-            //}
-            //{
-            //    var res = tuChuangSIP2Client.ContinueBook("0200002270", "411002020100117");
-            //}
-            //{
-            //    var res = tuChuangSIP2Client.BackBook("0200002270");
-            //}
-            //{
-            //    var res = tuChuangSIP2Client.GetBookInfo("0200002270");
-            //}
-            {
-                //var res = tuChuangSIP2Client.LendBook("0200079862", "411002020100015");
-                //var res1 = tuChuangSIP2Client.GetBookInfo("020001996");
-                //var res2 = tuChuangSIP2Client.GetBookInfo("020001959");
-                //var res3 = tuChuangSIP2Client.GetBookInfo("020002038");
-            }
-
-
-
         }
     }
 }
