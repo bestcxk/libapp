@@ -43,11 +43,9 @@ namespace Mijin.Library.App.Driver
             if (_capture == null)
                 _capture = new Capture();
 
-            if (_task.IsNull())
-            {
-                _task = new Task(GetPicOnCameraHandle);
-                _task.Start();
-            }
+            _task = new Task(GetPicOnCameraHandle);
+            _task.Start();
+
             _taskIsRunning = true;
             //if (_taskIsRunning != true)
             //{
@@ -87,12 +85,12 @@ namespace Mijin.Library.App.Driver
         /// </summary>
         private void GetPicOnCameraHandle()
         {
-            
+
             while (true)
             {
                 Task.Delay(30).GetAwaiter();
 
-                if (!_taskIsRunning) continue;
+                if (!_taskIsRunning) return;
                 try
                 {
                     //MessageModel<Dictionary<string, string>> data = new MessageModel<Dictionary<string, string>>() { response = new Dictionary<string, string>() };
