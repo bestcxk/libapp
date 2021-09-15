@@ -34,6 +34,9 @@
     <Reference Include="GReaderApi">
       <HintPath>..\DLL\GReaderApi.dll</HintPath>
     </Reference>
+    <Reference Include="SimpleTcp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\DLL\SimpleTcp.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>

@@ -11,6 +11,7 @@ namespace Mijin.Library.App.Driver
 {
     public class DriverHandle : IDriverHandle
     {
+        private ICkDoorController _ckDoorController { get; }
         private IWenhuaSIP2Client _sIP2Client { get; }
         private ICabinetLock _cabinetLock { get; }
         private IPosPrint _posPrint { get; }
@@ -28,13 +29,18 @@ namespace Mijin.Library.App.Driver
         private IQrCode _qrCode { get; }
 
 
-        public static string[] BlackListLogMethod = { "ISystemFunc.SetLibrarySettings" };
-        string[] IDriverHandle.BlackListLogMethod { get => BlackListLogMethod; }
+        public static string[] BlackListLogMethod = {"ISystemFunc.SetLibrarySettings"};
+
+        string[] IDriverHandle.BlackListLogMethod
+        {
+            get => BlackListLogMethod;
+        }
 
         /// <summary>
         /// 所有Driver模块的事件
         /// </summary>
         private event Action<object> OnAllDriverEvent;
+
         /// <summary>
         /// 所有Driver模块的事件 (访问器)
         /// </summary>
@@ -56,17 +62,19 @@ namespace Mijin.Library.App.Driver
                     OnAllDriverEvent += value;
                 }
             }
-            remove
-            {
-                OnAllDriverEvent -= value;
-            }
+            remove { OnAllDriverEvent -= value; }
         }
 
 
         #region 构造函数
 
-        public DriverHandle(ISystemFunc systemFunc, IWenhuaSIP2Client sIP2Client, ICabinetLock cabinetLock, IPosPrint posPrint, IdentityReader identityReader, IHFReader HFReader, IRfid rfid, IKeyboard keyboard, ICamera camera, ICardSender cardSender, IDoorController doorController, IGRfidDoorController gRfidDoorController, ITuChuangSIP2Client tuChuangSIP2Client, IRRfid rRfid, IQrCode qrCode)
+        public DriverHandle(ISystemFunc systemFunc, IWenhuaSIP2Client sIP2Client, ICabinetLock cabinetLock,
+            IPosPrint posPrint, IdentityReader identityReader, IHFReader HFReader, IRfid rfid, IKeyboard keyboard,
+            ICamera camera, ICardSender cardSender, IDoorController doorController,
+            IGRfidDoorController gRfidDoorController, ITuChuangSIP2Client tuChuangSIP2Client, IRRfid rRfid,
+            IQrCode qrCode, ICkDoorController ckDoorController)
         {
+            _ckDoorController = ckDoorController;
             _systemFunc = systemFunc;
             _sIP2Client = sIP2Client;
             _cabinetLock = cabinetLock;
@@ -83,6 +91,7 @@ namespace Mijin.Library.App.Driver
             _rRfid = rRfid;
             _qrCode = qrCode;
         }
+
         #endregion
 
         /// <summary>
@@ -95,11 +104,13 @@ namespace Mijin.Library.App.Driver
         public MessageModel<object> Invoke(string cls, string mthod, object[]? parameters)
         {
             // 获取执行参数的所有type
-            Type[] parametersTypes = parameters == null ? new Type[] { } : parameters.Select(p => p.GetType()).ToArray();
+            Type[] parametersTypes =
+                parameters == null ? new Type[] { } : parameters.Select(p => p.GetType()).ToArray();
 
             // 反射通过cls 获取 同名接口的 属性
             var bindingFlags = BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public;
-            PropertyInfo propertyInfo = this.GetType().GetProperties(bindingFlags).Where(p => p.PropertyType.Name == cls).FirstOrDefault();
+            PropertyInfo propertyInfo = this.GetType().GetProperties(bindingFlags)
+                .Where(p => p.PropertyType.Name == cls).FirstOrDefault();
 
             // 匹配不到执行类
             if (propertyInfo == null)
@@ -109,11 +120,14 @@ namespace Mijin.Library.App.Driver
                     msg = "未匹配到执行的类名"
                 };
             }
+
             // 获取执行类实体
             var acionInstance = propertyInfo.GetValue(this);
 
             // 访问的是参数
-            var proInfo = acionInstance.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static).Where(p => p.Name == mthod).FirstOrDefault();
+            var proInfo = acionInstance.GetType()
+                .GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static)
+                .Where(p => p.Name == mthod).FirstOrDefault();
             if (proInfo != null)
             {
                 return new MessageModel<object>()
@@ -131,8 +145,6 @@ namespace Mijin.Library.App.Driver
                 var invoke = method.Invoke(acionInstance, parameters);
                 return invoke.JsonMapTo<MessageModel<object>>();
             }
-
-
         }
 
         /// <summary>

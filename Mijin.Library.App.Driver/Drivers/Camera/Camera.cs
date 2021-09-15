@@ -45,7 +45,6 @@ namespace Mijin.Library.App.Driver
 
             _task = new Task(GetPicOnCameraHandle);
             _task.Start();
-
             _taskIsRunning = true;
             //if (_taskIsRunning != true)
             //{
