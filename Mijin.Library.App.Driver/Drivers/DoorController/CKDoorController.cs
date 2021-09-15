@@ -1,4 +1,5 @@
 ﻿using System;
+using Exceptionless.Submission;
 using Mijin.Library.App.Model;
 using PublicAPI.CKC001.Connected;
 
@@ -11,6 +12,8 @@ namespace Mijin.Library.App.Driver
         public event Action<WebViewSendModel<string>> OnCkDoorControllerDisconnected;
         public event Action<WebViewSendModel<object>> OnNotityLock;
 
+        private bool _connected = false;
+
         public CkDoorController()
         {
             Server = new PublicAPI.CKC001.Connected.CykeoCtrlServer(5460);
@@ -18,6 +21,7 @@ namespace Mijin.Library.App.Driver
             {
                 Server.ClientConnected += ip =>
                 {
+                    _connected = true;
                     OnCkDoorControllerConnected?.Invoke(new WebViewSendModel<string>()
                     {
                         method = nameof(OnCkDoorControllerConnected),
@@ -27,6 +31,7 @@ namespace Mijin.Library.App.Driver
                 };
                 Server.ClientDisconnected += ip =>
                 {
+                    _connected = false;
                     OnCkDoorControllerDisconnected?.Invoke(new WebViewSendModel<string>()
                     {
                         method = nameof(OnCkDoorControllerDisconnected),
@@ -55,6 +60,16 @@ namespace Mijin.Library.App.Driver
                 response = true,
                 success = true,
                 msg = "开锁成功"
+            };
+        }
+
+        public MessageModel<bool> IsConnected()
+        {
+            return new MessageModel<bool>()
+            {
+                success = _connected,
+                response = _connected,
+                msg = _connected ? "连接成功" : "连接失败"
             };
         }
     }
