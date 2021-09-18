@@ -18,7 +18,13 @@ namespace Mijin.Library.App.Driver.Extentions
             services.AddSingleton<IWenhuaSIP2Client, WenhuaSIP2Client>();
             services.AddSingleton<ICabinetLock, CabinetLock>();
             services.AddSingleton<IPosPrint, MyPosPrint>();
-            services.AddSingleton<IdentityReader, WonteReader>();
+
+            if (clientSettings.IsM513IdentityReader)
+                services.AddSingleton<IdentityReader, M513Reader>();
+            else
+                services.AddSingleton<IdentityReader, WonteReader>();
+
+
             services.AddSingleton<IRRfid, RRfid>();
             services.AddSingleton<IRfid, GRfid>();
             services.AddSingleton<IGRfidDoorController, GRfidDoorController>();

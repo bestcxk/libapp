@@ -130,12 +130,12 @@ namespace Mijin.Library.App.Driver
                 {
                     if (_gClient.OpenTcp(conStr, (int)timeOutMs, out status))
                     {
-                        result.success = GetPower().success;
+                        result.success = Stop().success;
                     }
                 }
                 catch (Exception)
                 {
-
+                    
                 }
                 
             }
@@ -145,7 +145,7 @@ namespace Mijin.Library.App.Driver
                 {
                     if (_gClient.OpenSerial(conStr, (int)timeOutMs, out status))
                     {
-                        result.success = GetPower().success;
+                        result.success = Stop().success;
                     }
                 }
                 catch (Exception)

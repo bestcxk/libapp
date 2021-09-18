@@ -8,12 +8,12 @@ dotnet build
 
 cd Mijin.Library.App.Daemon
 
-dotnet publish -f net5.0 -c Release -r win-x64 -p:UseAppHost=true -p:PublishReadyToRun=true -p:PublishSingleFile=true --self-contained false -o ..\..\publish_File\App\
+dotnet publish -f net5.0 -c Release -r win-x86 -p:UseAppHost=true -p:PublishReadyToRun=true -p:PublishSingleFile=true --self-contained false -o ..\..\publish_File\App\
 
 
 cd ..\Mijin.Library.App
 
-dotnet publish -f net5.0-windows -c Release -r win-x64 -p:UseAppHost=true -p:PublishReadyToRun=true -p:PublishSingleFile=false --self-contained false -o ..\..\publish_File\App\
+dotnet publish -f net5.0-windows -c Release -r win-x86 -p:UseAppHost=true -p:PublishReadyToRun=true -p:PublishSingleFile=false --self-contained false -o ..\..\publish_File\App\
 
 xcopy /e /y ..\DLL\* ..\..\publish_File\App\ 
 

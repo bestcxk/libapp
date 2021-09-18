@@ -13,7 +13,9 @@ namespace Mijin.Library.App.Tests.Driver
     [TestCaseOrderer("Mijin.Library.App.Tests.PriorityOrderer", "Mijin.Library.App.Tests")]
     public class IdentityReader_Test
     {
-        public IdentityReader IdReader { get; set; }
+        public IdentityReader wonteReader { get; set; }
+        public IdentityReader m513Reader { get; set; }
+
         public ISystemFunc sysFunc { get; set; }
 
         public IHFReader hFReader { get; set; }
@@ -27,8 +29,9 @@ namespace Mijin.Library.App.Tests.Driver
                     IcSettings = new Model.Setting.IcSettings()
                 }
             };
-            IdReader = new WonteReader(sysFunc);
+            wonteReader = new WonteReader(sysFunc);
             hFReader = new BlackHFReader(sysFunc);
+            m513Reader = new M513Reader();
 
 
         }
@@ -39,7 +42,7 @@ namespace Mijin.Library.App.Tests.Driver
         [Fact]
         public void ReadHFCardNo_Test()
         {
-            var result = IdReader.ReadHFCardNo();
+            var result = wonteReader.ReadHFCardNo();
             Assert.True(result.success);
             Assert.True(!result.response.IsEmpty());
         }
@@ -48,12 +51,22 @@ namespace Mijin.Library.App.Tests.Driver
         /// 读身份证信息    需要和 当前其他测试分开测试
         /// </summary>
         [Fact]
-        public void ReadIdentity_Test()
+        public void WonteReadIdentity_Test()
         {
-            var result = IdReader.ReadIdentity();
+            var result = wonteReader.ReadIdentity();
             Assert.True(result.success);
             Assert.True(!result.response.Identity.IsEmpty());
         }
+
+        [Fact]
+        public void M53ReadIdentity_Test()
+        {
+            var result = m513Reader.ReadIdentity();
+            Assert.True(result.success);
+            Assert.True(!result.response.Identity.IsEmpty());
+        }
+
+
 
         [Fact]
         public void LongTeng_Test()

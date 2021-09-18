@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
-    <Platforms>AnyCPU;x64</Platforms>
+    <Platforms>AnyCPU;x64;X86</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
@@ -34,7 +34,7 @@
     <Reference Include="GReaderApi">
       <HintPath>..\DLL\GReaderApi.dll</HintPath>
     </Reference>
-    <Reference Include="SimpleTcp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=null">
+    <Reference Include="SimpleTcp">
       <HintPath>..\DLL\SimpleTcp.dll</HintPath>
     </Reference>
   </ItemGroup>

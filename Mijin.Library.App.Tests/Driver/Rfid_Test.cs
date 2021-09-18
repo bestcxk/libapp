@@ -26,6 +26,18 @@ namespace Mijin.Library.App.Tests.Driver
         {
             var result = _rfid.Auto232Connect();
             Assert.True(result.success);
+            
+        }
+        
+        /// <summary>
+        /// 测试232自动连接
+        /// </summary>
+        [Fact, TestPriority(1)]
+        public void TcpConnect_Test()
+        {
+            var result = _rfid.Connect("232","COM7:115200");
+            Assert.True(result.success);
+            
         }
 
         /// <summary>

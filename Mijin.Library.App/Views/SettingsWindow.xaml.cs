@@ -84,6 +84,7 @@ namespace Mijin.Library.App.Views
             this.HFReaderSelect.SelectedIndex = (int)_clientSettings.HFReader;
             this.HFOriginalCardCheck.IsOn = _clientSettings.HFOriginalCard;
             this.UHFEventIsOldNameCheck.IsOn = _clientSettings.UHFEventIsOldName;
+            this.IsM513IdentityReaderCheck.IsOn = _clientSettings.IsM513IdentityReader;
         }
 
         private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -124,6 +125,7 @@ namespace Mijin.Library.App.Views
                     _clientSettings.HFReader = (HFReaderEnum)this.HFReaderSelect.SelectedIndex;
                     _clientSettings.HFOriginalCard = this.HFOriginalCardCheck.IsOn;
                     _clientSettings.UHFEventIsOldName = this.UHFEventIsOldNameCheck.IsOn;
+                    _clientSettings.IsM513IdentityReader = this.IsM513IdentityReaderCheck.IsOn;
                     // 开启启动项设置
                     try
                     {

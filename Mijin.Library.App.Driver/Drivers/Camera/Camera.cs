@@ -20,7 +20,7 @@ namespace Mijin.Library.App.Driver
         private Capture _capture = null;           // 摄像头操作对象
         private bool _taskIsRunning = false;       // 线程是否启动
 
-        //private Thread _threadFaceDet = null;     // 检测线程
+        //private Thread _threadFaceDet = null;     // 检测线程 
         private Task _task = null;                  // 检测线程
 
         /// <summary>

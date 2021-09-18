@@ -97,6 +97,8 @@ namespace Mijin.Library.App.Model
         /// 高频读卡器发送原始卡号
         /// </summary>
         public bool HFOriginalCard{ get; set; }
+
+        public bool IsM513IdentityReader { get; set; }
     }
 
     /// <summary>
