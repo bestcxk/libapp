@@ -7,7 +7,7 @@
         xmlns:local="clr-namespace:Mijin.Library.App.Views"
         xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
         mc:Ignorable="d"
-        Title="设置" MinHeight="780" MinWidth="400" MaxHeight="540" MaxWidth="400" Height="550" Width="400" Closing="MetroWindow_Closing">
+        Title="设置" MinHeight="800" MinWidth="400" MaxHeight="540" MaxWidth="400" Height="550" Width="400" Closing="MetroWindow_Closing">
     <StackPanel >
 
         <StackPanel Margin="0,5,0,5">

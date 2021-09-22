@@ -250,7 +250,7 @@ namespace Mijin.Library.App.Driver
             string m_cardNo = string.Empty;
             for (int q = 0; q < len; q++)
             {
-                m_cardNo += byteHEX(dataBuffer[q]);
+                m_cardNo += SerialPortHelper.byteHEX(dataBuffer[q]);
             }
             string str = "";
             for (int i = 0; i < m_cardNo.Length; i += 2)
@@ -348,31 +348,6 @@ namespace Mijin.Library.App.Driver
         {
             return ReadBlock(block.ToString());
         }
-        #region byteHEX
-        /// <summary>
-        /// 单个字节转字字符.
-        /// </summary>
-        /// <param name="ib">字节.</param>
-        /// <returns>转换好的字符.</returns>
-        private string byteHEX(Byte ib)
-        {
-            string _str = string.Empty;
-            try
-            {
-                char[] Digit = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A',
-                'B', 'C', 'D', 'E', 'F' };
-                char[] ob = new char[2];
-                ob[0] = Digit[(ib >> 4) & 0X0F];
-                ob[1] = Digit[ib & 0X0F];
-                _str = new string(ob);
-            }
-            catch (Exception)
-            {
-                new Exception("对不起有错。");
-            }
-            return _str;
 
-        }
-        #endregion
     }
 }

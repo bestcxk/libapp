@@ -23,6 +23,7 @@ namespace Mijin.Library.App.Driver
 
         //是否只读一次模式
         protected bool _readOnce = false;
+
         // ReadOnce 存储缓存标签
         protected LabelInfo _tempLabel = null;
 
@@ -34,7 +35,9 @@ namespace Mijin.Library.App.Driver
         public event Action<WebViewSendModel<LabelInfo>> OnReadUHFLabel;
 
         private string eventName = nameof(OnReadUHFLabel);
+
         #region 构造函数
+
         /// <summary>
         /// 构造函数
         /// </summary>
@@ -44,18 +47,19 @@ namespace Mijin.Library.App.Driver
             // 默认4天线模式
             _powerDic = new Dictionary<byte, byte>()
             {
-                { 1 , 1},
-                { 2 , 1},
-                { 3 , 1},
-                { 4 , 1},
+                {1, 1},
+                {2, 1},
+                {3, 1},
+                {4, 1},
             };
             if (systemFunc?.ClientSettings?.UHFEventIsOldName == true)
                 eventName = "OnReadLabel";
-            
         }
+
         #endregion
 
         #region 标签读取事件(OnEncapedTagEpcLog)
+
         private void OnEncapedTagEpcLog(EncapedLogBaseEpcInfo msg)
         {
             // 回调内部如有阻塞，会影响API正常使用
@@ -69,7 +73,7 @@ namespace Mijin.Library.App.Driver
                     this.Stop(); // 达到次数后停止读标签
                 }
                 else
-                { 
+                {
                     OnReadUHFLabel.Invoke(new WebViewSendModel<LabelInfo>()
                     {
                         msg = "获取成功",
@@ -78,15 +82,19 @@ namespace Mijin.Library.App.Driver
                         method = eventName
                     });
                 }
-
             }
         }
+
         #endregion
 
         #region GPI触发事件(OnEncapedGpiStart)
+
         protected virtual void OnEncapedGpiStart(EncapedLogBaseGpiStart msg)
         {
-            if (null == msg) { return; }
+            if (null == msg)
+            {
+                return;
+            }
 
             // 扫码枪 处理
             if (_gpiAction == GpiAction.InventoryGun && msg.logBaseGpiStart.GpiPort == 0) //扫码枪
@@ -95,23 +103,19 @@ namespace Mijin.Library.App.Driver
                 keys[msg.logBaseGpiStart.GpiPort] = msg.logBaseGpiStart.Level;
                 if (msg.logBaseGpiStart.Level == 1)
                 {
-                    Task.Run(() =>
-                    {
-                        ReadByAntId(new List<string> { "2" });
-                    });
+                    Task.Run(() => { ReadByAntId(new List<string> {"2"}); });
                 }
                 else
                 {
-                    Task.Run(() =>
-                    {
-                        Stop();
-                    });
+                    Task.Run(() => { Stop(); });
                 }
             }
         }
+
         #endregion
 
         #region 连接设备(Connect)
+
         /// <summary>
         /// 连接设备
         /// </summary>
@@ -119,7 +123,7 @@ namespace Mijin.Library.App.Driver
         /// <param name="conStr"></param>
         /// <param name="timeOutMs">超时毫秒</param>
         /// <returns></returns>
-        public MessageModel<bool> Connect(string mode, string conStr,Int64 timeOutMs = 1500)
+        public MessageModel<bool> Connect(string mode, string conStr, Int64 timeOutMs = 1500)
         {
             var result = new MessageModel<bool>();
             eConnectionAttemptEventStatusType status = eConnectionAttemptEventStatusType.NoResponse;
@@ -128,41 +132,38 @@ namespace Mijin.Library.App.Driver
             {
                 try
                 {
-                    if (_gClient.OpenTcp(conStr, (int)timeOutMs, out status))
+                    if (_gClient.OpenTcp(conStr, (int) timeOutMs, out status))
                     {
                         result.success = Stop().success;
                     }
                 }
                 catch (Exception)
                 {
-                    
                 }
-                
             }
             else
             {
                 try
                 {
-                    if (_gClient.OpenSerial(conStr, (int)timeOutMs, out status))
+                    if (_gClient.OpenSerial(conStr, (int) timeOutMs, out status))
                     {
                         result.success = Stop().success;
                     }
                 }
                 catch (Exception)
                 {
-
                 }
-                
             }
+
             if (result.success)
             {
                 // 清除绑定的委托
                 ClearEvent("all");
-                _gClient.OnEncapedTagEpcLog += OnEncapedTagEpcLog;  //标签读取时间
+                _gClient.OnEncapedTagEpcLog += OnEncapedTagEpcLog; //标签读取时间
                 _gClient.OnEncapedGpiStart += new delegateEncapedGpiStart(OnEncapedGpiStart);
             }
             else
-            { 
+            {
                 _gClient.Close();
             }
 
@@ -170,9 +171,11 @@ namespace Mijin.Library.App.Driver
             result.devMsg = status.ToString();
             return result;
         }
+
         #endregion
 
         #region 232自动连接(Auto232Connect)
+
         /// <summary>
         /// 232自动连接
         /// </summary>
@@ -197,14 +200,16 @@ namespace Mijin.Library.App.Driver
                 }
                 catch (Exception e)
                 {
-
                 }
             }
+
             return result;
         }
+
         #endregion
 
         #region 清除绑定的委托(ClearEvent)
+
         /// <summary>
         /// 清除绑定的委托
         /// </summary>
@@ -216,7 +221,10 @@ namespace Mijin.Library.App.Driver
                 if ("all".Equals(model) || "label".Equals(model))
                     _gClient.OnEncapedTagEpcLog?.GetInvocationList().Select(p => _gClient.OnEncapedTagEpcLog -= p as delegateEncapedTagEpcLog).ToList();
             }
-            catch (Exception e) { }
+            catch (Exception e)
+            {
+            }
+
             try
             {
                 if ("all".Equals(model) || "gpi".Equals(model))
@@ -226,12 +234,15 @@ namespace Mijin.Library.App.Driver
                     //_gClient.OnEncapedGpiOver?.GetInvocationList().Select(p => _gClient.OnEncapedGpiOver -= p as delegateEncapedGpiOver).ToList();
                 }
             }
-            catch (Exception e) { }
+            catch (Exception e)
+            {
+            }
         }
 
         #endregion
 
         #region 停止读标签(Stop)
+
         /// <summary>
         /// 停止读标签
         /// </summary>
@@ -239,7 +250,7 @@ namespace Mijin.Library.App.Driver
         public MessageModel<bool> Stop()
         {
             var result = new MessageModel<bool>();
-            
+
             try
             {
                 // 停止指令，空闲态
@@ -252,6 +263,7 @@ namespace Mijin.Library.App.Driver
             {
                 result.success = false;
             }
+
             result.msg = "停止" + (result.success ? "成功" : "失败");
             return result;
         }
@@ -259,6 +271,7 @@ namespace Mijin.Library.App.Driver
         #endregion
 
         #region 获取功率信息(GetPower)
+
         /// <summary>
         /// 获取功率信息
         /// </summary>
@@ -281,15 +294,17 @@ namespace Mijin.Library.App.Driver
             }
             catch (Exception)
             {
-
             }
+
             result.msg = "获取" + (result.success ? "成功" : "失败");
             result.devMsg = msgBaseSetPower.RtMsg;
             return result;
         }
+
         #endregion
 
         #region 设置天线功率(SetPower)
+
         /// <summary>
         /// 设置天线功率
         /// </summary>
@@ -307,13 +322,16 @@ namespace Mijin.Library.App.Driver
                 result.response = msgBaseSetPower.DicPower;
                 _powerDic = msgBaseSetPower.DicPower;
             }
+
             result.msg = "设置" + (result.success ? "成功" : "失败");
             result.devMsg = msgBaseSetPower.RtMsg;
             return result;
         }
+
         #endregion
 
         #region 获取频段信息(GetFreqRange)
+
         /// <summary>
         /// 获取频段信息
         /// </summary>
@@ -333,9 +351,11 @@ namespace Mijin.Library.App.Driver
             result.devMsg = msgBaseGetFreqRange.RtMsg;
             return result;
         }
+
         #endregion
 
         #region 设置频段(SetFreqRange)
+
         public MessageModel<bool> SetFreqRange(string index)
         {
             var result = new MessageModel<bool>();
@@ -347,9 +367,11 @@ namespace Mijin.Library.App.Driver
             result.devMsg = msgBaseSetFreqRange.RtMsg;
             return result;
         }
+
         #endregion
 
         #region 开启指定天线读标签(ReadByAntId)
+
         /// <summary>
         /// 开启指定天线读标签
         /// </summary>
@@ -370,13 +392,13 @@ namespace Mijin.Library.App.Driver
             for (int i = 0; i < antIds.Count; i++)
             {
                 double doub = Math.Pow(2.0, Convert.ToDouble(antIds[i] - 1));
-                antIds[i] = (uint)doub;
+                antIds[i] = (uint) doub;
                 msgBaseInventoryEpc.AntennaEnable |= antIds[i];
             }
 
-            msgBaseInventoryEpc.InventoryMode = (byte)eInventoryMode.Inventory;
-            msgBaseInventoryEpc.ReadTid = new ParamEpcReadTid();                // TID和EPC
-            msgBaseInventoryEpc.ReadTid.Mode = (byte)eParamTidMode.Auto;
+            msgBaseInventoryEpc.InventoryMode = (byte) eInventoryMode.Inventory;
+            msgBaseInventoryEpc.ReadTid = new ParamEpcReadTid(); // TID和EPC
+            msgBaseInventoryEpc.ReadTid.Mode = (byte) eParamTidMode.Auto;
             msgBaseInventoryEpc.ReadTid.Len = 6;
 
             _gClient.SendSynMsg(msgBaseInventoryEpc);
@@ -397,9 +419,11 @@ namespace Mijin.Library.App.Driver
             //var list = jArray.Select(j => j.ToString()).ToList();
             return ReadByAntId(Json.ToObject<List<string>>(jsonStr));
         }
+
         #endregion
 
         #region 开启所有天线读标签(Read)
+
         /// <summary>
         /// 开启所有天线读标签
         /// </summary>
@@ -408,9 +432,11 @@ namespace Mijin.Library.App.Driver
         {
             return ReadByAntId(_powerDic.Select(p => p.Key.ToString()).ToList());
         }
+
         #endregion
 
         #region 只读一个标签(ReadOnceByAntId)
+
         /// <summary>
         /// 只读一个标签
         /// </summary>
@@ -436,6 +462,7 @@ namespace Mijin.Library.App.Driver
                 {
                     break;
                 }
+
                 Task.Delay(5).GetAwaiter().GetResult(); // 没有读到，则延时 5 ms后继续查看
 
                 // 超过 1500 毫秒，直接退出循环 并 返回
@@ -443,8 +470,8 @@ namespace Mijin.Library.App.Driver
                 {
                     break;
                 }
-
             }
+
             _readOnce = false;
             result.response = _tempLabel;
             result.success = result.response != null;
@@ -453,17 +480,19 @@ namespace Mijin.Library.App.Driver
             return result;
         }
 
-        
         #endregion
 
         #region 只读一个标签(ReadOnce)
+
         public MessageModel<LabelInfo> ReadOnce()
         {
             return ReadOnceByAntId(_powerDic.Select(p => p.Key.ToString()).ToList());
         }
+
         #endregion
 
         #region 设置GPO输出(SetGpo)
+
         /// <summary>
         /// 设置GPO输出
         /// </summary>
@@ -474,10 +503,10 @@ namespace Mijin.Library.App.Driver
             var result = new MessageModel<bool>();
             MsgAppSetGpo msgAppSetGpo = new MsgAppSetGpo()
             {
-                Gpo1 = (byte)(dic.ContainsKey("Gpo1") ? dic["Gpo1"] : 0),
-                Gpo2 = (byte)(dic.ContainsKey("Gpo2") ? dic["Gpo2"] : 0),
-                Gpo3 = (byte)(dic.ContainsKey("Gpo3") ? dic["Gpo3"] : 0),
-                Gpo4 = (byte)(dic.ContainsKey("Gpo4") ? dic["Gpo4"] : 0),
+                Gpo1 = (byte) (dic.ContainsKey("Gpo1") ? dic["Gpo1"] : 0),
+                Gpo2 = (byte) (dic.ContainsKey("Gpo2") ? dic["Gpo2"] : 0),
+                Gpo3 = (byte) (dic.ContainsKey("Gpo3") ? dic["Gpo3"] : 0),
+                Gpo4 = (byte) (dic.ContainsKey("Gpo4") ? dic["Gpo4"] : 0),
             };
             _gClient.SendSynMsg(msgAppSetGpo);
             result.success = msgAppSetGpo.RtCode == 0;
@@ -485,9 +514,11 @@ namespace Mijin.Library.App.Driver
             result.devMsg = msgAppSetGpo.RtMsg;
             return result;
         }
+
         #endregion
 
         #region 写标签(WriteLabel)
+
         /// <summary>
         /// 写标签
         /// </summary>
@@ -499,15 +530,46 @@ namespace Mijin.Library.App.Driver
         /// <returns></returns>
         public MessageModel<bool> WriteLabel(Int64 area, Int64 startAddr, string data, string baseTid = null, string password = "00000000", Int64 timeOut = 3)
         {
+            return WriteLabel(area, startAddr, data, baseTid, password, timeOut, null);
+        }
+
+        public MessageModel<bool> WriteLabel(Int64 area, Int64 startAddr, string data, string baseTid = null, string password = "00000000", Int64 timeOut = 3,
+            string antIdJsonStr = null)
+        {
             var result = new MessageModel<bool>();
             MsgBaseWriteEpc msgBaseWriteEpc = new MsgBaseWriteEpc();
-            msgBaseWriteEpc.AntennaEnable = (ushort)eAntennaNo._1;
-            msgBaseWriteEpc.Area = (byte)area;
-            msgBaseWriteEpc.Start = (byte)startAddr;
-            int iWordLen = data.Length / 4;                            // 1 word = 2 byte     
-            ushort iPc = (ushort)(iWordLen << 11);                              // PC值为EPC区域的长度标识（前5个bit标记长度），参考文档说明 
+
+            if (!antIdJsonStr.IsEmpty())
+            {
+                try
+                {
+                    List<uint> antIds = Json.ToObject<List<uint>>(antIdJsonStr);
+
+                    //天线排序
+                    antIds = antIds.OrderBy(p => p).ToList();
+
+                    //设置天线
+                    for (int i = 0; i < antIds.Count; i++)
+                    {
+                        double doub = Math.Pow(2.0, Convert.ToDouble(antIds[i] - 1));
+                        antIds[i] = (uint) doub;
+                        msgBaseWriteEpc.AntennaEnable |= antIds[i];
+                    }
+                }
+                catch (Exception e)
+                {
+                    msgBaseWriteEpc.AntennaEnable = (ushort) eAntennaNo._1;
+                }
+            }
+            else
+                msgBaseWriteEpc.AntennaEnable = (ushort) eAntennaNo._1;
+
+            msgBaseWriteEpc.Area = (byte) area;
+            msgBaseWriteEpc.Start = (byte) startAddr;
+            int iWordLen = data.Length / 4; // 1 word = 2 byte     
+            ushort iPc = (ushort) (iWordLen << 11); // PC值为EPC区域的长度标识（前5个bit标记长度），参考文档说明 
             String sPc = Convert.ToString(iPc, 16).PadLeft(4, '0');
-            data = sPc + data;                                // 
+            data = sPc + data; // 
             msgBaseWriteEpc.HexWriteData = data.Trim().PadRight(iWordLen * 4, '0');
             msgBaseWriteEpc.HexPassword = password;
 
@@ -515,11 +577,11 @@ namespace Mijin.Library.App.Driver
             {
                 msgBaseWriteEpc.Filter = new ParamEpcFilter();
                 // 匹配TID写标签示例，用于多标签环境写单个标签
-                msgBaseWriteEpc.Filter.Area = (byte)eParamFilterArea.TID;
+                msgBaseWriteEpc.Filter.Area = (byte) eParamFilterArea.TID;
                 msgBaseWriteEpc.Filter.BitStart = 0;
                 msgBaseWriteEpc.Filter.HexData = baseTid.Trim();
                 msgBaseWriteEpc.Filter.BData = GDotnet.Reader.Api.Utils.Util.ConvertHexStringToByteArray(msgBaseWriteEpc.Filter.HexData);
-                msgBaseWriteEpc.Filter.BitLength = (byte)(msgBaseWriteEpc.Filter.BData.Length * 8);
+                msgBaseWriteEpc.Filter.BitLength = (byte) (msgBaseWriteEpc.Filter.BData.Length * 8);
             }
 
             while (timeOut-- >= 0)
@@ -534,14 +596,17 @@ namespace Mijin.Library.App.Driver
                     break;
                 }
             }
+
             result.msg = "写入" + (result.success ? "成功" : "失败");
             result.devMsg = msgBaseWriteEpc.RtMsg;
 
             return result;
         }
+
         #endregion
 
         # region 开始盘点(StartInventory)
+
         /// <summary>
         /// 开始盘点
         /// </summary>
@@ -568,9 +633,9 @@ namespace Mijin.Library.App.Driver
                 result.success = msg.RtCode == 0;
                 result.devMsg = msg.RtMsg;
             }
+
             result.msg = "开启盘点" + (result.success ? "成功" : "失败");
             return result;
-
         }
 
         /// <summary>
@@ -587,7 +652,7 @@ namespace Mijin.Library.App.Driver
                 TriggerStart = 5,
             };
             _gClient.SendSynMsg(msg);
-            _gpiAction = (GpiAction)gpiAction;
+            _gpiAction = (GpiAction) gpiAction;
 
             // 不是 扫码枪，则直接开启读标签
             if (_gpiAction != GpiAction.InventoryGun)
@@ -599,13 +664,15 @@ namespace Mijin.Library.App.Driver
                 result.success = msg.RtCode == 0;
                 result.devMsg = msg.RtMsg;
             }
+
             result.msg = "开启盘点" + (result.success ? "成功" : "失败");
             return result;
-
         }
+
         #endregion
 
         #region 停止盘点(StopInventory)
+
         /// <summary>
         /// 停止盘点
         /// </summary>
@@ -626,12 +693,13 @@ namespace Mijin.Library.App.Driver
             result = this.Stop();
             result.msg = "停止盘点" + (result.success ? "成功" : "失败");
             return result;
-
         }
+
         #endregion
 
 
         #region 设置天线功率(SetPower(用于web进行反射调用))
+
         /// <summary>
         /// 设置天线功率(用于web进行反射调用)
         /// </summary>
@@ -641,9 +709,11 @@ namespace Mijin.Library.App.Driver
         {
             return SetPower(dt.JsonMapTo<Dictionary<byte, byte>>());
         }
+
         #endregion
 
         #region 设置GPO输出(SetGpo(用于web进行反射调用))
+
         /// <summary>
         /// 设置GPO输出
         /// </summary>
@@ -653,7 +723,7 @@ namespace Mijin.Library.App.Driver
         {
             return SetGpo(dic.JsonMapTo<Dictionary<string, byte>>());
         }
-        #endregion
 
+        #endregion
     }
 }

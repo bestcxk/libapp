@@ -5,11 +5,15 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using CH340;
+using Util;
 
 namespace Mijin.Library.App.Driver
 {
     public class M513Reader : IdentityReader
     {
+        IdCard ic_Card = new IdCard();
+        private string com = null;
         #region Dll
 
         #region VID和PID连接com口
@@ -125,130 +129,91 @@ namespace Mijin.Library.App.Driver
 
         #endregion
 
+        private bool BeforeCheck()
+        {
+            if (!com.IsEmpty()) return true;
+            string[] a = ic_Card.RetunCom();
+            foreach (var item in a)
+            {
+                ic_Card.OpenCom(item);
+                string C = ic_Card.OFFAntenna();
+                if (C == "0")
+                {
+                    com = item;
+                    break;
+                }
+                else
+                {
+                    ic_Card.ClosCom();
+                }
+            }
+
+            return !com.IsEmpty();
+        }
+        
         public MessageModel<IdentityInfo> ReadIdentity()
         {
             var res = new MessageModel<IdentityInfo>();
             IdentityInfo user = new IdentityInfo();
 
-            HANDLE a;
-            string vid = "1A86";
-            string pid = "E010";
-            string ver = "3400";
-            ushort VID = Convert.ToUInt16(vid, 16);
-            ushort PID = Convert.ToUInt16(pid, 16);
-            ushort VER = Convert.ToUInt16(ver, 16);
-            byte[] pucBaseMsg;
-            byte[] pucPhoto;
-            byte[] find;
-            byte[] uid;
-            pucBaseMsg = new byte[256];
-            pucPhoto = new byte[1024];
-            uid = new byte[8];
-            find = new byte[1024];
-            a = CH9326OpenDevices(VID, PID);
-            bool sd = CH9326SetRate(a, 13, 4, 1, 4, 0x10); //设置波特率
-            SetUpAntenna(); //设置天线
-            OPenAntenna(); //打开天线
-            SetUpAgreement(); //设置身份证协议
-            CH9326ClearThreadData(a); //清空缓存区
-
-            int UID = SetUID(uid);
-
-            if (UID == 1)
+            if (!BeforeCheck())
             {
-                // this.label15.Text = BitConverter.ToString(uid);
-            }
-            else if (UID == -2 || UID == 0)
-            {
-                // this.label13.Text = "请重新放置身份证";
-
-                res.msg = "请重新放置身份证";
+                res.msg = "连接设备失败";
                 return res;
             }
-            else
+            
+            byte[] uid = ic_Card.ReadUserID();
+
+            if (uid.Length == 1 || uid.Length == 3)
             {
                 res.msg = "未连接设备";
                 return res;
             }
-
-            CH9326CloseDevice(a);
-            a = CH9326OpenDevices(VID, PID);
-            bool sda = CH9326SetRate(a, 13, 4, 1, 4, 0x10); //设置波特率
-            int setUpAntenna = SetUpAntenna(); //设置天线
-
-            if (setUpAntenna == 1)
+            else if (uid.Length == 2)
             {
-                int oPenAntenna = OPenAntenna(); //打开天线
-                if (oPenAntenna == 1)
+                res.msg = "请放置身份证卡";
+                return res;
+            }
+            else if (uid.Length == 8)
+            {
+                string status = ic_Card.ReadUserOnekey(); //设置身份证模式
+                Console.WriteLine("设置模式状态" + status);
+                if (status == "0")
                 {
-                    int setUpAgreement = SetUpAgreement(); //设置身份证协议
-                    if (setUpAgreement == 1)
+                    byte[] by = ic_Card.DuKa();
+                    Console.WriteLine("身份证数据长度" + by.Length);
+                    if (by.Length < 1295)
                     {
-                        int findCard = FindCard();
-                        if (findCard == 1)
-                        {
-                            int selectCard = SelectCard();
-                            if (selectCard == 1)
-                            {
-                                int Read = Fingerprint(pucBaseMsg, pucPhoto, find);
-                                if (Read == 1 || Read == 2)
-                                {
-                                    byte[] type = new byte[2];
-                                    byte[] image = new byte[1024];
-                                    byte[] userby = new byte[256];
+                        return res;
+                    }
 
-                                    Array.Copy(pucBaseMsg, 0, userby, 0, 256); //获取文字信息字节
-                                    Array.Copy(pucPhoto, 0, image, 0, 1024); //获取图片字节
-                                    Array.Copy(pucBaseMsg, 248, type, 0, 2);
-                                    string asa = Encoding.Unicode.GetString(type);
-                                    if (asa == "J")
-                                    {
-                                        user = RetunGATUser(userby);
-                                    }
-                                    else if (asa == "I")
-                                    {
-                                        user = RetunForeignUser(userby);
-                                    }
-                                    else
-                                    {
-                                        user = RetunUser(userby);
-                                    }
-                                }
-                                else if (Read == -1)
-                                {
-                                    res.msg = "设备未连接";
-                                    return res;
-                                }
-                                else
-                                {
-                                    res.msg = "读取失败,请重新放置身份证";
-                                    return res;
-                                }
-                            }
-                            else if (selectCard == -1)
-                            {
-                                res.msg = "设备未连接";
-                                return res;
-                            }
-                            else
-                            {
-                                res.msg = "读取失败,请重新放置身份证";
-                                return res;
-                            }
-                        }
-                        else if (findCard == -1)
-                        {
-                            res.msg = "设备未连接";
-                            return res;
-                        }
-                        else
-                        {
-                            res.msg = "读取失败,请重新放置身份证";
-                            return res;
-                        }
+                    byte[] type = new byte[2];
+                    byte[] image = new byte[1024];
+                    byte[] userby = new byte[256];
+                    Array.Copy(by, 14, userby, 0, 256); //获取文字信息字节
+                    Array.Copy(by, 270, image, 0, 1024); //获取图片字节
+                    Array.Copy(by, 262, type, 0, 2);
+                    string asa = Encoding.Unicode.GetString(type);
+                    if (asa == "J")
+                    {
+                        user = RetunGATUser(userby);
+                    }
+                    else if (asa == "I")
+                    {
+                        user = RetunForeignUser(userby);
+                    }
+                    else
+                    {
+                        user = RetunUser(userby);
                     }
                 }
+                else
+                {
+                    res.msg = "身份证模式设置失败";
+                    return res;
+                }
             }
+
 
             res.response = user;
             res.msg = "获取成功";
@@ -307,7 +272,9 @@ namespace Mijin.Library.App.Driver
             }
 
             #endregion
-
+            
+            user.Birth = Encoding.Unicode.GetString(brath);
+            
             //user.Brath = Encoding.Unicode.GetString(brath);
             //user.Address = Encoding.Unicode.GetString(address);
             //user.Num = Encoding.Unicode.GetString(num);

@@ -41,6 +41,10 @@ namespace Mijin.Library.App
             _clientSettings = systemFunc.ClientSettings;
             _settingsWindow = settingsWindow;
             _systemFunc = systemFunc;
+
+            Title = _clientSettings.Titles?.App ?? "图书管理系统";
+            manager.Title = _clientSettings.Titles?.Manager ?? "后台管理";
+            autoLend.Title = _clientSettings.Titles?.Terminal ?? "自助借阅";
         }
 
         private void MetroWindow_Loaded(object sender, RoutedEventArgs e)
@@ -59,17 +63,10 @@ namespace Mijin.Library.App
             Tile tile = sender as Tile;
             if (tile != null)
             {
-                switch (tile.Title)
-                {
-                    case "后台管理系统":
-                        this._webView.openUrl = _clientSettings.LibraryManageUrl;
-                        break;
-                    case "自助借阅":
-                        this._webView.openUrl = _clientSettings.ReaderActionUrl;
-                        break;
-                    default:
-                        return;
-                }
+                if (_clientSettings.Titles?.Manager == tile.Title)
+                    this._webView.openUrl = _clientSettings.LibraryManageUrl;
+                else
+                    this._webView.openUrl = _clientSettings.ReaderActionUrl;
                 this._webView.Show();
                 this.Hide();
             }

@@ -33,9 +33,13 @@
     </mah:MetroWindow.RightWindowCommands>
 
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="80*"/>
+            <ColumnDefinition Width="823*"/>
+        </Grid.ColumnDefinitions>
 
 
-        <WrapPanel Margin="10,10,10,10">
+        <WrapPanel Margin="10,10,10,10" Grid.ColumnSpan="2">
             <Controls:Tile x:Name="manager" Title="后台管理系统"
                            Click="GoWebView"
                            Margin="10"

@@ -40,5 +40,32 @@ namespace IsUtil.Helpers
             return sb.ToString().ToUpper();
         }
         #endregion
+
+        #region byteHEX
+        /// <summary>
+        /// 单个字节转字字符.
+        /// </summary>
+        /// <param name="ib">字节.</param>
+        /// <returns>转换好的字符.</returns>
+        public static string byteHEX(Byte ib)
+        {
+            string _str = string.Empty;
+            try
+            {
+                char[] Digit = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A',
+                'B', 'C', 'D', 'E', 'F' };
+                char[] ob = new char[2];
+                ob[0] = Digit[(ib >> 4) & 0X0F];
+                ob[1] = Digit[ib & 0X0F];
+                _str = new string(ob);
+            }
+            catch (Exception)
+            {
+                new Exception("对不起有错。");
+            }
+            return _str;
+
+        }
+        #endregion
     }
 }

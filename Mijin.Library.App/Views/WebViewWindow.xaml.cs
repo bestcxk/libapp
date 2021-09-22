@@ -14,6 +14,7 @@ using System.IO;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using IsUtil;
+using System.ComponentModel;
 
 namespace Mijin.Library.App.Views
 {
@@ -42,10 +43,23 @@ namespace Mijin.Library.App.Views
             InitializeComponent();
             InitializeAsync(); // 初始化
 
+            Title = _clientSettings.Titles?.App ?? "图书管理系统";
+
 
 
         }
         #endregion
+
+        ~WebViewWindow()
+        {
+
+        }
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            if (_doorViewWindow != null && _doorViewWindow.IsVisible)
+                _doorViewWindow.Close();
+        }
 
         #region 初始化
         /// <summary>
@@ -379,7 +393,7 @@ namespace Mijin.Library.App.Views
                 loginfo.rtData = Json.ToJson(obj.response);
                 webLog = loginfo.WriteActionLog();
             }
-            webLog = @$"console.log('\x1B["+logColor+@$"m%s\x1B[0m', '{webLog}')".Replace("\r\n", "\\n");
+            webLog = @$"console.log('\x1B[" + logColor + @$"m%s\x1B[0m', '{webLog}')".Replace("\r\n", "\\n");
 
             if (logColor == "32") logColor = "34";
             else logColor = "32";

@@ -30,6 +30,11 @@ namespace Mijin.Library.App.Driver
 
         public static int gcCount = 0;
 
+        ~Camera()
+        {
+            _taskIsRunning = false;
+        }
+
         public Camera()
         {
         }
@@ -87,7 +92,7 @@ namespace Mijin.Library.App.Driver
 
             while (true)
             {
-                Task.Delay(30).GetAwaiter();
+                Task.Delay(100).GetAwaiter().GetResult();
 
                 if (!_taskIsRunning) return;
                 try

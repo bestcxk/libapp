@@ -25,6 +25,9 @@
     <Reference Include="autoreplyprint.cs">
       <HintPath>..\DLL\autoreplyprint.cs.dll</HintPath>
     </Reference>
+    <Reference Include="CH340, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\DLL\CH340.dll</HintPath>
+    </Reference>
     <Reference Include="Emgu.CV">
       <HintPath>..\DLL\Emgu.CV.dll</HintPath>
     </Reference>

@@ -9,7 +9,7 @@ namespace Mijin.Library.App.Tests.Driver
         private CkDoorController _doorController;
         public CKDoorController_Test()
         {
-            _doorController = new CkDoorController();
+            _doorController = new CkDoorController(null);
         }
 
         [Fact]

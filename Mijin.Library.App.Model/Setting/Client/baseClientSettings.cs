@@ -96,9 +96,11 @@ namespace Mijin.Library.App.Model
         /// <summary>
         /// 高频读卡器发送原始卡号
         /// </summary>
-        public bool HFOriginalCard{ get; set; }
+        public bool HFOriginalCard { get; set; }
 
         public bool IsM513IdentityReader { get; set; }
+
+        public Title Titles { get; set; } = new Title();
     }
 
     /// <summary>
@@ -129,10 +131,18 @@ namespace Mijin.Library.App.Model
     }
 
     public enum HFReaderEnum
-    { 
+    {
         [Description("黑色读卡器")]
         BlackReader = 0,
         [Description("荣睿高频读卡器")]
         RRHFReader = 1
     }
+
+    public class Title
+    {
+        public string App { get; set; } = "图书管理系统";
+        public string Manager { get; set; } = "后台管理系统";
+        public string Terminal { get; set; } = "自助借阅";
+    }
+
 }
