@@ -17,11 +17,11 @@ namespace Mijin.Library.App.Driver
 {
     public class Camera : ICamera
     {
-        private Capture _capture = null;           // 摄像头操作对象
-        private bool _taskIsRunning = false;       // 线程是否启动
+        private Capture _capture = null; // 摄像头操作对象
+        private bool _taskIsRunning = false; // 线程是否启动
 
         //private Thread _threadFaceDet = null;     // 检测线程 
-        private Task _task = null;                  // 检测线程
+        private Task _task = null; // 检测线程
 
         /// <summary>
         /// 摄像头图片事件, response 是 string
@@ -89,7 +89,6 @@ namespace Mijin.Library.App.Driver
         /// </summary>
         private void GetPicOnCameraHandle()
         {
-
             while (true)
             {
                 Task.Delay(100).GetAwaiter().GetResult();
@@ -114,16 +113,13 @@ namespace Mijin.Library.App.Driver
                     {
                         gcCount = 0;
                         System.GC.Collect();
-
                     }
-
                 }
                 catch (Exception e)
                 {
                     e.GetBaseException().Log(Log.GetLog().Caption(@$"摄像头{nameof(GetPicOnCameraHandle)}异常"));
                 }
             }
-
         }
 
         /// <summary>
@@ -134,36 +130,7 @@ namespace Mijin.Library.App.Driver
         {
             //var image = _capture.QueryFrame().ToImage<Bgr, byte>().ToBitmap();
             var bitmap = _capture.QueryFrame()?.Bitmap;
-            return ToBase64Str(bitmap);
-        }
-
-        /// <summary>
-        /// Bitmap 转 base64字符串
-        /// </summary>
-        /// <param name="bmp"></param>
-        /// <returns></returns>
-        private string ToBase64Str(Bitmap bmp)
-        {
-            if (bmp.IsNull())
-            {
-                return null;
-            }
-            try
-            {
-                MemoryStream ms = new MemoryStream();
-                bmp.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
-                byte[] arr = new byte[ms.Length];
-                ms.Position = 0;
-                ms.Read(arr, 0, (int)ms.Length);
-                ms.Close();
-                String strbaser64 = Convert.ToBase64String(arr);
-                return strbaser64;
-            }
-            catch (Exception ex)
-            {
-                //MessageBox.Show("ImgToBase64String 转换失败 Exception:" + ex.Message);
-                return "";
-            }
+            return ImageHelper.ToBase64Str(bitmap);
         }
     }
 }

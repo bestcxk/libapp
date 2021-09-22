@@ -1,12 +1,14 @@
 ﻿using Mijin.Library.App.Model;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using CH340;
-using Util;
+using IsUtil;
+using Extensions = Util.Extensions;
 
 namespace Mijin.Library.App.Driver
 {
@@ -14,6 +16,7 @@ namespace Mijin.Library.App.Driver
     {
         IdCard ic_Card = new IdCard();
         private string com = null;
+
         #region Dll
 
         #region VID和PID连接com口
@@ -131,7 +134,7 @@ namespace Mijin.Library.App.Driver
 
         private bool BeforeCheck()
         {
-            if (!com.IsEmpty()) return true;
+            if (!Extensions.IsEmpty(com)) return true;
             string[] a = ic_Card.RetunCom();
             foreach (var item in a)
             {
@@ -148,9 +151,9 @@ namespace Mijin.Library.App.Driver
                 }
             }
 
-            return !com.IsEmpty();
+            return !Extensions.IsEmpty(com);
         }
-        
+
         public MessageModel<IdentityInfo> ReadIdentity()
         {
             var res = new MessageModel<IdentityInfo>();
@@ -161,7 +164,7 @@ namespace Mijin.Library.App.Driver
                 res.msg = "连接设备失败";
                 return res;
             }
-            
+
             byte[] uid = ic_Card.ReadUserID();
 
             if (uid.Length == 1 || uid.Length == 3)
@@ -205,6 +208,35 @@ namespace Mijin.Library.App.Driver
                     else
                     {
                         user = RetunUser(userby);
+                    }
+
+
+                    string FileLoad = "zp.wlt"; //.jpg-.doc   -.xls
+                    FileStream fs = new FileStream(FileLoad, FileMode.Create, FileAccess.Write); //创建图片存放路径
+                    BinaryWriter bw = new BinaryWriter(fs);
+                    int i = 1;
+                    while (i < image.Length)
+                    {
+                        bw.Write(image);
+                        i++;
+                    }
+
+                    bw.Close();
+                    if (File.Exists("zp.wlt"))
+                    {
+                        string path; int b = 1;
+                        path = ("zp.wlt");
+                        byte[] byteArray = Encoding.Default.GetBytes(path);
+                        int aa = GetBmp(byteArray, b);
+
+                        if (File.Exists("zp.bmp"))
+                        {
+                            System.Drawing.Image img = System.Drawing.Image.FromFile("zp.bmp");
+                            user.FacePicBase64 = ImageHelper.ToBase64Str(new System.Drawing.Bitmap(img));
+                            img.Dispose();
+                        }
+                        
+                        
                     }
                 }
                 else
@@ -272,9 +304,11 @@ namespace Mijin.Library.App.Driver
             }
 
             #endregion
-            
+
             user.Birth = Encoding.Unicode.GetString(brath);
-            
+            user.Addr = Encoding.Unicode.GetString(address);
+            user.Identity = Encoding.Unicode.GetString(num);
+            // user.Country = Encoding.Unicode.GetString(startdate);
             //user.Brath = Encoding.Unicode.GetString(brath);
             //user.Address = Encoding.Unicode.GetString(address);
             //user.Num = Encoding.Unicode.GetString(num);
@@ -335,15 +369,10 @@ namespace Mijin.Library.App.Driver
 
             #endregion
 
-            //user.Num = Encoding.Unicode.GetString(num);
-            //user.Brath = Encoding.Unicode.GetString(brath);
-            //user.ChineseName = Encoding.Unicode.GetString(CName);
-            //user.ResidenceNum = Encoding.Unicode.GetString(num);
-            //user.Security = Encoding.Unicode.GetString(security);
-            //user.Startdate = Encoding.Unicode.GetString(startdate);
-            //user.Enddate = Encoding.Unicode.GetString(enddate);
-            //user.Nationality = Encoding.Unicode.GetString(Nationality);
-            //user.VersionNum = Encoding.Unicode.GetString(VersionNum);
+            user.Birth = Encoding.Unicode.GetString(brath);
+            // user.Addr = Encoding.Unicode.GetString(address);
+            user.Identity = Encoding.Unicode.GetString(num);
+            user.Country = Encoding.Unicode.GetString(Nationality);
             return user;
         }
 
@@ -394,7 +423,10 @@ namespace Mijin.Library.App.Driver
 
             #endregion
 
-            str = Encoding.Unicode.GetString(minzu);
+            user.Birth = Encoding.Unicode.GetString(brath);
+            user.Addr = Encoding.Unicode.GetString(address);
+            user.Identity = Encoding.Unicode.GetString(num);
+            // user.Country = Encoding.Unicode.GetString(security);
             //user.Brath = Encoding.Unicode.GetString(brath);
             //user.Address = Encoding.Unicode.GetString(address);
             //user.Num = Encoding.Unicode.GetString(num);

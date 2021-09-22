@@ -21,7 +21,9 @@ namespace IsUtil
             {
                 return null;
             }
-            base64string = base64string.Replace("data:image/png;base64,", "").Replace("data:image/jgp;base64,", "").Replace("data:image/jpg;base64,", "").Replace("data:image/jpeg;base64,", "");//将base64头部信息替换
+
+            base64string = base64string.Replace("data:image/png;base64,", "").Replace("data:image/jgp;base64,", "").Replace("data:image/jpg;base64,", "")
+                .Replace("data:image/jpeg;base64,", ""); //将base64头部信息替换
 
             byte[] b = Convert.FromBase64String(base64string);
             MemoryStream ms = new MemoryStream(b);
@@ -51,7 +53,7 @@ namespace IsUtil
                     bmp.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
                     byte[] arr = new byte[ms.Length];
                     ms.Position = 0;
-                    ms.Read(arr, 0, (int)ms.Length);
+                    ms.Read(arr, 0, (int) ms.Length);
                     ms.Close();
 
                     strbaser64 = Convert.ToBase64String(arr);
@@ -63,6 +65,36 @@ namespace IsUtil
             }
 
             return strbaser64;
+        }
+
+        /// <summary>
+        /// Bitmap 转 base64字符串
+        /// </summary>
+        /// <param name="bmp"></param>
+        /// <returns></returns>
+        public static string ToBase64Str(Bitmap bmp)
+        {
+            if (bmp.IsNull())
+            {
+                return null;
+            }
+
+            try
+            {
+                MemoryStream ms = new MemoryStream();
+                bmp.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
+                byte[] arr = new byte[ms.Length];
+                ms.Position = 0;
+                ms.Read(arr, 0, (int) ms.Length);
+                ms.Close();
+                String strbaser64 = Convert.ToBase64String(arr);
+                return strbaser64;
+            }
+            catch (Exception ex)
+            {
+                //MessageBox.Show("ImgToBase64String 转换失败 Exception:" + ex.Message);
+                return "";
+            }
         }
     }
 }
