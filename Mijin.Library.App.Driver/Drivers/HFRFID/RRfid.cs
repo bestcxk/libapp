@@ -619,13 +619,18 @@ namespace Mijin.Library.App.Driver
         {
             var res = new MessageModel<bool>();
 
-            byte state = 6;
+            byte state = 0;
             byte errorCode = 0;
             // 获取byte[] uid
             var uid = SerialPortHelper.HexStringToByteArray(uidHex);
 
             var fCmdRet = StaticClassReaderA.WriteAFI(ref readerAddr, ref state, uid, (byte)afi, ref errorCode, portIndex);
 
+            if(fCmdRet != OK)
+            {
+                state = 8;
+                fCmdRet = StaticClassReaderA.WriteAFI(ref readerAddr, ref state, uid, (byte)afi, ref errorCode, portIndex);
+            }
             res.msg = fCmdRet != OK ?"设置失败":"设置成功";
             res.success = fCmdRet == OK;
             return res;
