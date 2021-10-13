@@ -610,6 +610,28 @@ namespace Mijin.Library.App.Driver
         }
 
         /// <summary>
+        /// 设置AFI
+        /// </summary>
+        /// <param name="uidHex"></param>
+        /// <param name="afi"></param>
+        /// <returns></returns>
+        public MessageModel<bool> SetAFI(string uidHex, Int64 afi)
+        {
+            var res = new MessageModel<bool>();
+
+            byte state = 6;
+            byte errorCode = 0;
+            // 获取byte[] uid
+            var uid = SerialPortHelper.HexStringToByteArray(uidHex);
+
+            var fCmdRet = StaticClassReaderA.WriteAFI(ref readerAddr, ref state, uid, (byte)afi, ref errorCode, portIndex);
+
+            res.msg = fCmdRet != OK ?"设置失败":"设置成功";
+            res.success = fCmdRet == OK;
+            return res;
+        }
+
+        /// <summary>
         /// 自动连接设备
         /// </summary>
         /// <returns></returns>
@@ -650,7 +672,7 @@ namespace Mijin.Library.App.Driver
         /// <param name="actionBlockSize"></param>
         /// <param name="writeState"></param>
         /// <returns></returns>
-        public MessageModel<string> SetActionLabelPara(Int64 startReadBlock = 0, Int64 ReadBlockCount = 0, Int64 actionBlockSize = 0,Int64 writeState = 0)
+        public MessageModel<string> SetActionLabelPara(Int64 startReadBlock = 0, Int64 ReadBlockCount = 0, Int64 actionBlockSize = 0, Int64 writeState = 0)
         {
             if (!startReadBlock.IsZeroOrMinus())
                 this.startReadBlock = (int)startReadBlock;

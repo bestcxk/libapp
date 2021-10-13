@@ -27,10 +27,24 @@ namespace Mijin.Library.App.Tests.Driver
                 Assert.True(res.success);
             }
             {
-                var res = _rRfid.NewScan(0,2);
+                var res = _rRfid.NewScan(0, 2);
                 Assert.True(res.success);
             }
+        }
 
+        [Fact]
+        public void SetAFI_Test()
+        {
+            {
+                var res = _rRfid.AutoOpenComPort();
+                Assert.True(res.success);
+            }
+            {
+                var readOnceRes = _rRfid.ReadOnce();
+                Assert.True(readOnceRes.success);
+                var res = _rRfid.SetAFI(readOnceRes.response.UidHexStr, 6);
+                Assert.True(res.success);
+            }
         }
     }
 }
