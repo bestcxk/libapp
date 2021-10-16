@@ -1,7 +1,7 @@
 ﻿using Mijin.Library.App.Model;
 using System;
 
-namespace Mijin.Library.App.Driver.Drivers.Track
+namespace Mijin.Library.App.Driver
 {
     public interface ITrack
     {

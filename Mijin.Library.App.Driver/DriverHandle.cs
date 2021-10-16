@@ -12,6 +12,7 @@ namespace Mijin.Library.App.Driver
     public class DriverHandle : IDriverHandle
     {
         private ICkDoorController _ckDoorController { get; }
+        private ITrack _track { get; }
         private IWenhuaSIP2Client _sIP2Client { get; }
         private ICabinetLock _cabinetLock { get; }
         private IPosPrint _posPrint { get; }
@@ -72,9 +73,10 @@ namespace Mijin.Library.App.Driver
             IPosPrint posPrint, IdentityReader identityReader, IHFReader HFReader, IRfid rfid, IKeyboard keyboard,
             ICamera camera, ICardSender cardSender, IDoorController doorController,
             IGRfidDoorController gRfidDoorController, ITuChuangSIP2Client tuChuangSIP2Client, IRRfid rRfid,
-            IQrCode qrCode, ICkDoorController ckDoorController)
+            IQrCode qrCode, ICkDoorController ckDoorController,ITrack track)
         {
             _ckDoorController = ckDoorController;
+            _track = track;
             _systemFunc = systemFunc;
             _sIP2Client = sIP2Client;
             _cabinetLock = cabinetLock;

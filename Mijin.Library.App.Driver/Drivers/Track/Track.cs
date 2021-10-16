@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Mijin.Library.App.Driver.Drivers.Track
+namespace Mijin.Library.App.Driver
 {
     public class Track : ITrack
     {
