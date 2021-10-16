@@ -81,65 +81,65 @@ namespace Mijin.Library.App.Driver
 
         //////////////////////////////////////////////////////////////////////////
         ///////////////////////////初始化函数/////////////////////////////////////
-        [DllImport("FAIO_x64.dll")]
+        [DllImport("FAIO.dll")]
         public static extern IOBERROR iob_read_getlasterror(ushort comno);
-        [DllImport("FAIO_x64.dll")]
+        [DllImport("FAIO.dll")]
         public static extern IOBERROR iob_board_init(ushort comno, Byte outputstatus);
-        [DllImport("FAIO_x64.dll")]
+        [DllImport("FAIO.dll")]
         public static extern IOBERROR iob_board_close(ushort comno, bool bOutputKeep);
 
         ///////////////////////////操作函数///////////////////////////////////////
-        [DllImport("FAIO_x64.dll")]
+        [DllImport("FAIO.dll")]
         public static extern int iob_read_inport(ushort comno);
-        [DllImport("FAIO_x64.dll")]
+        [DllImport("FAIO.dll")]
         public static extern int iob_read_outport(ushort comno);
-        [DllImport("FAIO_x64.dll")]
+        [DllImport("FAIO.dll")]
         public static extern int iob_read_inport_last(ushort comno);
-        [DllImport("FAIO_x64.dll")]
+        [DllImport("FAIO.dll")]
         public static extern int iob_read_outport_last(ushort comno);
-        [DllImport("FAIO_x64.dll")]
+        [DllImport("FAIO.dll")]
         public static extern IOBERROR iob_write_outport(ushort comno, Byte outputstatus);
-        [DllImport("FAIO_x64.dll")]
+        [DllImport("FAIO.dll")]
         public static extern int iob_read_inbit(ushort comno, Byte bitno);
-        [DllImport("FAIO_x64.dll")]
+        [DllImport("FAIO.dll")]
         public static extern int iob_read_outbit(ushort comno, Byte bitno);
-        [DllImport("FAIO_x64.dll")]
+        [DllImport("FAIO.dll")]
         public static extern int iob_read_inbit_last(ushort comno, Byte bitno);
-        [DllImport("FAIO_x64.dll")]
+        [DllImport("FAIO.dll")]
         public static extern int iob_read_outbit_last(ushort comno, Byte bitno);
-        [DllImport("FAIO_x64.dll")]
+        [DllImport("FAIO.dll")]
         public static extern IOBERROR iob_write_outbit(ushort comno, Byte bitno, bool bOn);
-        [DllImport("FAIO_x64.dll")]
+        [DllImport("FAIO.dll")]
         public static extern IOBERROR iob_write_delayOff(ushort comno, FAIO_DELAYOFF secondevery, Byte secondmulty);
 
         ///////////////////////////设置函数///////////////////////////////////////
         // 操作函数中的bitno编号数最大为8 即0＜bitno≤8	 （bitno = 0时会返回错误代码FAIO_ERROR_BITNUMVALUEWRONG）
-        [DllImport("FAIO_x64.dll")]
+        [DllImport("FAIO.dll")]
         public static extern IOBERROR iob_board_setcallback(IntPtr p, ushort comno, FA_IO_CALLBACK callbackfunstatus);
-        [DllImport("FAIO_x64.dll")]
+        [DllImport("FAIO.dll")]
         public static extern IOBERROR iob_board_setcallback2(ushort comno, FA_IO_CALLBACK2 callbackfun2status, IntPtr p);
-        [DllImport("FAIO_x64.dll")]
+        [DllImport("FAIO.dll")]
         public static extern IOBERROR iob_board_setoutport(ushort comno, bool bAllOn);
-        [DllImport("FAIO_x64.dll")]
+        [DllImport("FAIO.dll")]
         public static extern IOBERROR iob_board_setportevent(ushort comno, SafeWaitHandle hPortEvent);
 
         ///////////////////////////等待函数///////////////////////////////////////
-        [DllImport("FAIO_x64.dll")]
+        [DllImport("FAIO.dll")]
         public static extern IOBERROR iob_board_waitportevent(ushort comno, UInt32 dwWaitTime);
 
         ////////////////////////////获取卡信息////////////////////////////////////
-        [DllImport("FAIO_x64.dll")]
+        [DllImport("FAIO.dll")]
         public static extern IOBERROR iob_board_getboardinfo(ushort comno, String version, String cardtype);
 
         ////////////////////////////脉冲发生器//////////////////////////////////////////////
         // 脉冲发生器中bitno编号数最大为8 即0≤bitno≤8	 （bitno = 0 所有bit）
-        [DllImport("FAIO_x64.dll")]
+        [DllImport("FAIO.dll")]
         public static extern IOBERROR iob_board_pulser_create(ushort comno, Byte bitno);
-        [DllImport("FAIO_x64.dll")]
+        [DllImport("FAIO.dll")]
         public static extern IOBERROR iob_board_pulser_destory(ushort comno, Byte bitno);
-        [DllImport("FAIO_x64.dll")]
+        [DllImport("FAIO.dll")]
         public static extern IOBERROR iob_board_pulser_terminate(ushort comno, Byte bitno);
-        [DllImport("FAIO_x64.dll")]
+        [DllImport("FAIO.dll")]
         public static extern IOBERROR iob_board_pulser_pulse(ushort comno,
                                                             Byte bitno,
                                                             bool bPositive,                 //true:正向脉冲。 false:负向脉冲
