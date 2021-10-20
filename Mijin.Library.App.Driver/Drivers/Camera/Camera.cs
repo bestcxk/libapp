@@ -88,7 +88,6 @@ namespace Mijin.Library.App.Driver
         {
             while (true)
             {
-                Task.Delay(200).GetAwaiter().GetResult();
 
                 if (!_taskIsRunning) return;
                 try
@@ -111,6 +110,8 @@ namespace Mijin.Library.App.Driver
                 {
                     e.GetBaseException().Log(Log.GetLog().Caption(@$"摄像头{nameof(GetPicOnCameraHandle)}异常"));
                 }
+                Task.Delay(200).GetAwaiter().GetResult();
+
             }
         }
 
