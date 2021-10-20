@@ -101,6 +101,9 @@ namespace Mijin.Library.App.Model
         public bool IsM513IdentityReader { get; set; }
 
         public Title Titles { get; set; } = new Title();
+
+        public int CameraIndex { get; set; } = 0;
+
     }
 
     /// <summary>

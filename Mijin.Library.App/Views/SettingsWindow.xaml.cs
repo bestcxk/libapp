@@ -49,11 +49,15 @@ namespace Mijin.Library.App.Views
 
             // 添加id comBox 选项
             List<int> idComSources = new List<int>();
-            for (int i = 1; i <= 50; i++)
+            List<int> cameraSources = new List<int>();
+            for (int i = 0; i < 50; i++)
             {
-                idComSources.Add(i);
+                idComSources.Add(i + 1);
+                cameraSources.Add(i);
             }
             this.idCom.ItemsSource = idComSources;
+            this.cameraIndex.ItemsSource = cameraSources;
+
         }
 
         private void SettingsWindow_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -85,6 +89,7 @@ namespace Mijin.Library.App.Views
             this.HFOriginalCardCheck.IsOn = _clientSettings.HFOriginalCard;
             this.UHFEventIsOldNameCheck.IsOn = _clientSettings.UHFEventIsOldName;
             this.IsM513IdentityReaderCheck.IsOn = _clientSettings.IsM513IdentityReader;
+            this.cameraIndex.SelectedIndex = _clientSettings.CameraIndex;
         }
 
         private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -126,6 +131,7 @@ namespace Mijin.Library.App.Views
                     _clientSettings.HFOriginalCard = this.HFOriginalCardCheck.IsOn;
                     _clientSettings.UHFEventIsOldName = this.UHFEventIsOldNameCheck.IsOn;
                     _clientSettings.IsM513IdentityReader = this.IsM513IdentityReaderCheck.IsOn;
+                    _clientSettings.CameraIndex = this.cameraIndex.SelectedIndex;
                     // 开启启动项设置
                     try
                     {
