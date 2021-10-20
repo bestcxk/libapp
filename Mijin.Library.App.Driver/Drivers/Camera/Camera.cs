@@ -30,13 +30,16 @@ namespace Mijin.Library.App.Driver
 
         public static int gcCount = 0;
 
+        public ISystemFunc _systemFunc { get; }
+
         ~Camera()
         {
             _taskIsRunning = false;
         }
 
-        public Camera()
+        public Camera(ISystemFunc systemFunc)
         {
+            _systemFunc = systemFunc;
         }
 
         /// <summary>
@@ -46,21 +49,15 @@ namespace Mijin.Library.App.Driver
         {
             // 第一次启动获取摄像头操作对象
             if (_capture == null)
-                _capture = new Capture();
+                _capture = new Capture(_systemFunc.ClientSettings.CameraIndex);
 
-            _task = new Task(GetPicOnCameraHandle);
-            _task.Start();
+            if(_task == null)
+            {
+                _task = new Task(GetPicOnCameraHandle);
+                _task.Start();
+            }
             _taskIsRunning = true;
-            //if (_taskIsRunning != true)
-            //{
-            //    _taskIsRunning = true;
-            //    _task = new Task(GetPicOnCameraHandle);
-            //    _task.Start();
 
-            //    //_threadFaceDet = new Thread(new ThreadStart(SendPic));
-            //    //_taskIsRunning = true;
-            //    //_threadFaceDet.Start();
-            //}
             return new MessageModel<bool>()
             {
                 msg = "开启摄像头成功",
@@ -75,7 +72,7 @@ namespace Mijin.Library.App.Driver
         public MessageModel<bool> CloseCamera()
         {
             _taskIsRunning = false;
-
+            _task = null;
             return new MessageModel<bool>()
             {
                 msg = "关闭摄像头成功",
@@ -91,7 +88,7 @@ namespace Mijin.Library.App.Driver
         {
             while (true)
             {
-                Task.Delay(100).GetAwaiter().GetResult();
+                Task.Delay(200).GetAwaiter().GetResult();
 
                 if (!_taskIsRunning) return;
                 try
@@ -109,11 +106,6 @@ namespace Mijin.Library.App.Driver
                     };
                     this.OnCameraGetImage.Invoke(SendModel);
 
-                    if (++gcCount >= 500)
-                    {
-                        gcCount = 0;
-                        System.GC.Collect();
-                    }
                 }
                 catch (Exception e)
                 {
