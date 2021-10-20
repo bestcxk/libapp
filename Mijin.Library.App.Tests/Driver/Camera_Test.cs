@@ -13,7 +13,7 @@ namespace Mijin.Library.App.Tests.Driver
         ICamera _camera;
         public Camera_Test()
         {
-            _camera = new Camera();
+            _camera = new Camera(null);
         }
 
         [Fact]
