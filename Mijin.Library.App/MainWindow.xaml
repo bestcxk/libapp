@@ -26,6 +26,9 @@
             <Button Click="doorViewBtn" Name="doorBtn">
                 <Label Content="通道门"></Label>
             </Button>
+            <Button Click="labelConvert_Click" Name="labelConvert">
+                <Label Content="标签转换"></Label>
+            </Button>
             <Button>
                 <Label x:Name="versionLabel" Content="版本信息"></Label>
             </Button>

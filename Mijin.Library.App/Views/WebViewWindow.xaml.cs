@@ -418,6 +418,7 @@ namespace Mijin.Library.App.Views
             _doorViewWindow.Show();
         }
 
+
         private class RequestLogInfo
         {
             private ILog log;

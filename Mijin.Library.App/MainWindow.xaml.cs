@@ -77,5 +77,12 @@ namespace Mijin.Library.App
             this.Hide();
             _webView.ShowDoorViewBtn(null, null);
         }
+
+        private void labelConvert_Click(object sender, RoutedEventArgs e)
+        {
+            this._webView.openUrl = this._clientSettings.LibraryManageUrl + "/labelSwitch".Replace("//", "/");
+            this._webView.Show();
+            this.Hide();
+        }
     }
 }
