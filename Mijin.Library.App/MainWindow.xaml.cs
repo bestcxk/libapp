@@ -80,7 +80,7 @@ namespace Mijin.Library.App
 
         private void labelConvert_Click(object sender, RoutedEventArgs e)
         {
-            this._webView.openUrl = this._clientSettings.LibraryManageUrl + "/labelSwitch".Replace("//", "/");
+            this._webView.openUrl = System.IO.Path.Combine(this._clientSettings.LibraryManageUrl, "labelSwitch");
             this._webView.Show();
             this.Hide();
         }
