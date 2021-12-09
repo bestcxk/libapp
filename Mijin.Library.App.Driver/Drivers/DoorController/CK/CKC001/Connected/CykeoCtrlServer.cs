@@ -53,7 +53,15 @@ namespace PublicAPI.CKC001.Connected
 
         public bool OnStart()
         {
-            server.Start();
+            try
+            {
+                server.Start();
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
             return true;
         }
 
