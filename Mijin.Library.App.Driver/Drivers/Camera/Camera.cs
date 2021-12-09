@@ -51,12 +51,14 @@ namespace Mijin.Library.App.Driver
             if (_capture == null)
                 _capture = new Capture(_systemFunc.ClientSettings.CameraIndex);
 
-            if(_task == null)
+            _taskIsRunning = true;
+
+            if (_task == null)
             {
-                _task = new Task(GetPicOnCameraHandle);
+                _task = GetPicOnCameraHandle();
                 _task.Start();
             }
-            _taskIsRunning = true;
+
 
             return new MessageModel<bool>()
             {
@@ -72,7 +74,6 @@ namespace Mijin.Library.App.Driver
         public MessageModel<bool> CloseCamera()
         {
             _taskIsRunning = false;
-            _task = null;
             return new MessageModel<bool>()
             {
                 msg = "关闭摄像头成功",
@@ -84,12 +85,14 @@ namespace Mijin.Library.App.Driver
         /// <summary>
         /// 线程任务，从摄像头中获取图片
         /// </summary>
-        private void GetPicOnCameraHandle()
+        private async Task GetPicOnCameraHandle()
         {
             while (true)
             {
-
-                if (!_taskIsRunning) return;
+                if (!_taskIsRunning) {
+                    await Task.Delay(40);
+                    return;
+                };
                 try
                 {
                     //MessageModel<Dictionary<string, string>> data = new MessageModel<Dictionary<string, string>>() { response = new Dictionary<string, string>() };
@@ -110,8 +113,6 @@ namespace Mijin.Library.App.Driver
                 {
                     e.GetBaseException().Log(Log.GetLog().Caption(@$"摄像头{nameof(GetPicOnCameraHandle)}异常"));
                 }
-                Task.Delay(200).GetAwaiter().GetResult();
-
             }
         }
 

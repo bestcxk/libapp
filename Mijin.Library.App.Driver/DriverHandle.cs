@@ -13,6 +13,7 @@ namespace Mijin.Library.App.Driver
     {
         private ICkDoorController _ckDoorController { get; }
         private ITrack _track { get; }
+        private IMultiGrfid _multiGrfid { get; }
         private IWenhuaSIP2Client _sIP2Client { get; }
         private ICabinetLock _cabinetLock { get; }
         private IPosPrint _posPrint { get; }
@@ -30,7 +31,7 @@ namespace Mijin.Library.App.Driver
         private IQrCode _qrCode { get; }
 
 
-        public static string[] BlackListLogMethod = {"ISystemFunc.SetLibrarySettings"};
+        public static string[] BlackListLogMethod = {"ISystemFunc.SetLibrarySettings", "OnLockEvent" };
 
         string[] IDriverHandle.BlackListLogMethod
         {
@@ -73,10 +74,11 @@ namespace Mijin.Library.App.Driver
             IPosPrint posPrint, IdentityReader identityReader, IHFReader HFReader, IRfid rfid, IKeyboard keyboard,
             ICamera camera, ICardSender cardSender, IDoorController doorController,
             IGRfidDoorController gRfidDoorController, ITuChuangSIP2Client tuChuangSIP2Client, IRRfid rRfid,
-            IQrCode qrCode, ICkDoorController ckDoorController,ITrack track)
+            IQrCode qrCode, ICkDoorController ckDoorController,ITrack track,IMultiGrfid multiGrfid)
         {
             _ckDoorController = ckDoorController;
             _track = track;
+            _multiGrfid = multiGrfid;
             _systemFunc = systemFunc;
             _sIP2Client = sIP2Client;
             _cabinetLock = cabinetLock;
@@ -111,6 +113,7 @@ namespace Mijin.Library.App.Driver
 
             // 反射通过cls 获取 同名接口的 属性
             var bindingFlags = BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public;
+
             PropertyInfo propertyInfo = this.GetType().GetProperties(bindingFlags)
                 .Where(p => p.PropertyType.Name == cls).FirstOrDefault();
 

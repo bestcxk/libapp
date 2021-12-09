@@ -37,5 +37,13 @@ namespace Mijin.Library.App.Model
         /// 调试信息
         /// </summary>
         public string devMsg { get; set; }
+
+
+        public void SetMsg()
+        {
+            if (success)
+                this.msg = "操作成功";
+            else this.msg = "操作失败";
+        }
     }
 }

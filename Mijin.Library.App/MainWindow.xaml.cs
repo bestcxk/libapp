@@ -17,6 +17,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Util.Helpers;
 
 namespace Mijin.Library.App
 {
@@ -80,7 +81,7 @@ namespace Mijin.Library.App
 
         private void labelConvert_Click(object sender, RoutedEventArgs e)
         {
-            this._webView.openUrl = System.IO.Path.Combine(this._clientSettings.LibraryManageUrl, "labelSwitch");
+            this._webView.openUrl = Url.Combine(this._clientSettings.LibraryManageUrl, "labelSwitch");
             this._webView.Show();
             this.Hide();
         }

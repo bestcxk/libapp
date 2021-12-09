@@ -3,6 +3,7 @@ using GDotnet.Reader.Api.Protocol.Gx;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Util;
 
 namespace Mijin.Library.App.Driver
 {
@@ -18,7 +19,7 @@ namespace Mijin.Library.App.Driver
         public LabelInfo(LogBaseEpcInfo logBaseEpcInfo)
         {
             Epc = logBaseEpcInfo.Epc;
-            Tid = logBaseEpcInfo.Tid;
+            Tid = logBaseEpcInfo.Tid.IsEmpty() ? logBaseEpcInfo.Epc : logBaseEpcInfo.Tid;
             AntId = logBaseEpcInfo.AntId;
             Rssi = logBaseEpcInfo.Rssi;
 

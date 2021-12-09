@@ -28,17 +28,27 @@ namespace Mijin.Library.App.Tests.Driver
             Assert.True(result.success);
             
         }
-        
+
         /// <summary>
         /// 测试232自动连接
         /// </summary>
         [Fact, TestPriority(1)]
         public void TcpConnect_Test()
         {
-            var result = _rfid.Connect("232","COM7:115200");
+            var result = _rfid.Connect("232", "COM7:115200");
             Assert.True(result.success);
-            
         }
+
+        /// <summary>
+        /// 测试USB自动连接
+        /// </summary>
+        [Fact, TestPriority(1)]
+        public void ConnectUSB_Test()
+        {
+            var result = _rfid.Connect("usb","");
+            Assert.True(result.success);
+        }
+
 
         /// <summary>
         /// 测试 开启读

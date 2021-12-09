@@ -19,9 +19,12 @@ namespace Mijin.Library.App.Tests.Driver
         [Fact]
         public void Test()
         {
-            var rs = _cabinetLockNew.OpenSerialPort("COM13",9600);
-            var ass = _cabinetLockNew.GetLockStatus();
-            var dt = _cabinetLockNew.OpenBox(1);
+            var rs = _cabinetLockNew.OpenSerialPort("COM3",9600);
+            //var ass = _cabinetLockNew.GetLockStatusByControllerIndex(1);
+            _cabinetLockNew.OpenBox(1);
+
+
+            _cabinetLockNew.OpenBox(1);
         }
     }
 }

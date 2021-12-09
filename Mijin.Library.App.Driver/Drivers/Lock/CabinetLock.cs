@@ -16,6 +16,8 @@ namespace Mijin.Library.App.Driver
         private SerialPort _serialPort = new SerialPort();
         private readonly static object openLockObj = new object();
         private readonly static object sendLockObj = new object();
+        // 锁孔数量
+        private int controllerCount = 1;
         /// <summary>
         /// 串口是否打开
         /// </summary>
@@ -92,6 +94,21 @@ namespace Mijin.Library.App.Driver
         }
 
         /// <summary>
+        /// 设置控制板数量
+        /// </summary>
+        /// <param name="Count"></param>
+        /// <returns></returns>
+        public MessageModel<bool> SetControllerCount(Int64 Count)
+        {
+            controllerCount = (int)Count;
+            return new MessageModel<bool>()
+            {
+                success = true,
+                msg = "设置成功"
+            };
+        }
+
+        /// <summary>
         /// 打开串口
         /// </summary>
         /// <param name="com"></param>
@@ -142,8 +159,19 @@ namespace Mijin.Library.App.Driver
         /// <returns></returns>
         public MessageModel<string> OpenBox(Int64 boxIndex)
         {
+            var controller = (int)(boxIndex / 24) + 1;
+            var index = boxIndex;
+
+            while (index > 24)
+                index -= 24;
+
+            return OpenBox((byte)controller, index);
+        }
+
+        private MessageModel<string> OpenBox(byte controller, Int64 boxIndex)
+        {
             var res = new MessageModel<string>();
-            byte[] bytes = new byte[] { 0x8a, 0x01, (byte)boxIndex, 0x11 };
+            byte[] bytes = new byte[] { 0x8a, controller, (byte)boxIndex, 0x11 };
 
             var data = Send(bytes);
             if (!data.success)
@@ -151,7 +179,7 @@ namespace Mijin.Library.App.Driver
                 return new(data);
             }
 
-            if (data.response[3] != 0x11)
+            if (data.response[3] != 0x11 && data.response[3] != 0)
             {
                 res.msg = "开锁柜失败";
                 return res;
@@ -159,7 +187,6 @@ namespace Mijin.Library.App.Driver
             res.msg = @$"开锁柜{boxIndex}成功";
             res.success = true;
             return res;
-
         }
 
         /// <summary>
@@ -170,16 +197,16 @@ namespace Mijin.Library.App.Driver
         {
             var res = new MessageModel<List<bool>>() { response = new List<bool>() };
 
-            for (byte i = 1; i <= 3; i++)
+            for (byte cont = 1; cont <= controllerCount; cont++)
             {
-                var data = GetLockStatus(i);
-                if (!data.success)
+                for (byte i = 1; i <= 3; i++)
                 {
-                    return new(data);
+                    var data = GetLockStatus(cont, i);
+                    if (!data.success)
+                        return new(data);
+                    res.response.AddRange(data.response);
                 }
-                res.response.AddRange(data.response);
             }
-
             res.msg = "获取成功";
             res.success = true;
             return res;
@@ -190,10 +217,10 @@ namespace Mijin.Library.App.Driver
         /// </summary>
         /// <param name="lockAddr">0X01：对应 1-8 号锁位     0X02：对应 9-16 号锁位      0X03：对应 17-24 号锁</param>
         /// <returns>true 为开 false 为关</returns>
-        private MessageModel<List<bool>> GetLockStatus(byte lockAddr)
+        private MessageModel<List<bool>> GetLockStatus(byte controller, byte lockAddr)
         {
             var res = new MessageModel<List<bool>>() { response = new List<bool>() };
-            byte[] bytes = new byte[] { 0x81, 0x01, lockAddr, 0x33 };
+            byte[] bytes = new byte[] { 0x81, controller, lockAddr, 0x33 };
 
             if (!IsOpen)
             {
@@ -234,7 +261,7 @@ namespace Mijin.Library.App.Driver
 
         private MessageModel<byte[]> Send(byte[] sendData)
         {
-            
+
             var res = new MessageModel<byte[]>();
             if (!IsOpen)
             {
@@ -310,7 +337,7 @@ namespace Mijin.Library.App.Driver
 
                 }
             }
-            
+
         }
 
         /// <summary>

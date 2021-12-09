@@ -22,6 +22,8 @@ namespace Mijin.Library.App.Driver
         /// </summary>
         /// <returns></returns>
         MessageModel<bool> Auto232Connect();
+        MessageModel<bool> Close();
+
         /// <summary>
         /// 连接读写器
         /// </summary>
@@ -50,6 +52,9 @@ namespace Mijin.Library.App.Driver
         /// <param name="antIds"></param>
         /// <returns></returns>
         MessageModel<bool> ReadByAntId(List<string> antIdStrs);
+        MessageModel<bool> ReadByAntIdNoTid(List<string> antIdStrs);
+        MessageModel<bool> ReadNoTid();
+
         /// <summary>
         /// 只读一次，读到标签后返回
         /// </summary>
