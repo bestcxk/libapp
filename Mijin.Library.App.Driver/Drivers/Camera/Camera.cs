@@ -91,6 +91,7 @@ namespace Mijin.Library.App.Driver
             {
                 if (!_taskIsRunning) {
                     await Task.Delay(40);
+                    continue;
                 };
                 try
                 {
