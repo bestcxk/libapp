@@ -159,7 +159,7 @@ namespace Mijin.Library.App.Driver
         /// <returns></returns>
         public MessageModel<string> OpenBox(Int64 boxIndex)
         {
-            var controller = (int)(boxIndex / 24) + 1;
+            var controller = (int)(boxIndex / 25) + 1; 
             var index = boxIndex;
 
             while (index > 24)
@@ -273,7 +273,7 @@ namespace Mijin.Library.App.Driver
             {
                 sendData = sendData.Append(SerialPortHelper.Get_CheckXor(sendData)).ToArray(); // 添加校验和
                 int timeOut = 0;
-                int time = 5, len = 0;
+                int time = 3, len = 0;
                 while (--time > 0)
                 {
                     ClearTempRead();
