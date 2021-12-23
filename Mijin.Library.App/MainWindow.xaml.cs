@@ -1,4 +1,5 @@
-﻿using MahApps.Metro.Controls;
+﻿using Bing.Extensions;
+using MahApps.Metro.Controls;
 using Mijin.Library.App.Driver;
 using Mijin.Library.App.Model;
 using Mijin.Library.App.Views;
@@ -81,7 +82,7 @@ namespace Mijin.Library.App
 
         private void labelConvert_Click(object sender, RoutedEventArgs e)
         {
-            this._webView.openUrl = Url.Combine(this._clientSettings.LibraryManageUrl, "labelSwitch");
+            this._webView.openUrl = this._clientSettings.LabelConvertUrl.IsEmpty() ? Url.Combine(this._clientSettings.LibraryManageUrl, "labelSwitch") : this._clientSettings.LabelConvertUrl;
             this._webView.Show();
             this.Hide();
         }
