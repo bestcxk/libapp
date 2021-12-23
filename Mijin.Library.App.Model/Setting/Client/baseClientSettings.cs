@@ -104,6 +104,10 @@ namespace Mijin.Library.App.Model
 
         public int CameraIndex { get; set; } = 0;
 
+        public string LabelConvertUrl { get; set; }
+
+        public string DoorControllerUrl { get; set; }
+
     }
 
     /// <summary>
