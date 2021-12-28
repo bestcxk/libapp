@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using CH340;
 using IsUtil;
 using Extensions = Util.Extensions;
+using Util.Logs.Extensions;
+using Util.Logs;
 
 namespace Mijin.Library.App.Driver
 {
@@ -222,22 +224,29 @@ namespace Mijin.Library.App.Driver
                     }
 
                     bw.Close();
-                    if (File.Exists("zp.wlt"))
-                    {
-                        string path; int b = 1;
-                        path = ("zp.wlt");
-                        byte[] byteArray = Encoding.Default.GetBytes(path);
-                        int aa = GetBmp(byteArray, b);
 
-                        if (File.Exists("zp.bmp"))
+                    try
+                    {
+                        if (File.Exists("zp.wlt"))
                         {
-                            System.Drawing.Image img = System.Drawing.Image.FromFile("zp.bmp");
-                            user.FacePicBase64 = ImageHelper.ToBase64Str(new System.Drawing.Bitmap(img));
-                            img.Dispose();
+                            string path; int b = 1;
+                            path = ("zp.wlt");
+                            byte[] byteArray = Encoding.Default.GetBytes(path);
+                            int aa = GetBmp(byteArray, b);
+
+                            if (File.Exists("zp.bmp"))
+                            {
+                                System.Drawing.Image img = System.Drawing.Image.FromFile("zp.bmp");
+                                user.FacePicBase64 = ImageHelper.ToBase64Str(new System.Drawing.Bitmap(img));
+                                img.Dispose();
+                            }
                         }
-                        
-                        
                     }
+                    catch (Exception e)
+                    {
+                        e.Log(Log.GetLog());
+                    }
+
                 }
                 else
                 {

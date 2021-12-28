@@ -38,6 +38,7 @@ namespace Mijin.Library.App.Driver.Extentions
             services.AddSingleton<ICkDoorController, CkDoorController>();
             services.AddSingleton<ITrack, Track>();
             services.AddSingleton<IMultiGrfid, MultiGrfid>();
+            services.AddSingleton<ISudo, Sudo>();
 
             #region HFReader IOC 
             if (clientSettings.HFReader == HFReaderEnum.BlackReader)

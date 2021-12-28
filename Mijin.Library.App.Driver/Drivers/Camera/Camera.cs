@@ -9,9 +9,10 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using IsUtil;
 using Util.Logs;
 using Util.Logs.Extensions;
+using System.Drawing.Imaging;
+using Bing.Extensions;
 
 namespace Mijin.Library.App.Driver
 {
@@ -89,8 +90,9 @@ namespace Mijin.Library.App.Driver
         {
             while (true)
             {
-                if (!_taskIsRunning) {
-                    await Task.Delay(40);
+                if (!_taskIsRunning)
+                {
+                    await Task.Delay(100);
                     continue;
                 };
                 try
@@ -108,11 +110,14 @@ namespace Mijin.Library.App.Driver
                     };
                     this.OnCameraGetImage.Invoke(SendModel);
 
+
+
                 }
                 catch (Exception e)
                 {
                     e.GetBaseException().Log(Log.GetLog().Caption(@$"摄像头{nameof(GetPicOnCameraHandle)}异常"));
                 }
+                await Task.Delay(330);
             }
         }
 
@@ -122,9 +127,7 @@ namespace Mijin.Library.App.Driver
         /// <returns></returns>
         private string GetCameraImageForBase64()
         {
-            //var image = _capture.QueryFrame().ToImage<Bgr, byte>().ToBitmap();
-            var bitmap = _capture.QueryFrame()?.Bitmap;
-            return ImageHelper.ToBase64Str(bitmap);
+            return _capture.QueryFrame()?.Bitmap?.ToBase64String(ImageFormat.Jpeg);
         }
     }
 }
