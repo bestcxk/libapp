@@ -11,5 +11,7 @@ namespace Mijin.Library.App.Driver
         MessageModel<string> AutoConnect(string baud = "115200");
 
         MessageModel<bool> SerialPortIsOpen();
+
+        MessageModel<string> WatchQrCode(bool watch);
     }
 }
