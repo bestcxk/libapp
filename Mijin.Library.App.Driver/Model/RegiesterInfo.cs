@@ -16,6 +16,10 @@ namespace Mijin.Library.App.Driver
         /// </summary>
         public string Identity { get; set; } = "";
         /// <summary>
+        /// 卡号
+        /// </summary>
+        public string CardNo { get; set; } = "";
+        /// <summary>
         /// 密码
         /// </summary>
         public string Pw { get; set; } = "";
@@ -39,6 +43,8 @@ namespace Mijin.Library.App.Driver
         /// 用户创建类型
         /// </summary>
         public string Type { get; set; } = "";
+
+        public string Birth { get; set; } = "";
         /// <summary>
         /// 用户押金
         /// </summary>
