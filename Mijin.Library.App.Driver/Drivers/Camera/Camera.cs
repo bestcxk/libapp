@@ -50,14 +50,14 @@ namespace Mijin.Library.App.Driver
         {
             // 第一次启动获取摄像头操作对象
             if (_capture == null)
-                _capture = new Capture(_systemFunc.ClientSettings.CameraIndex);
+                _capture = new Capture(_systemFunc?.ClientSettings?.CameraIndex ?? 0);
 
             _taskIsRunning = true;
 
             if (_task == null)
             {
                 _task = GetPicOnCameraHandle();
-                _task.Start();
+                //_task.Start();
             }
 
 
