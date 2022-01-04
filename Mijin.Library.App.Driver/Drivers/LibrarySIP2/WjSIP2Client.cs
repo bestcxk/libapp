@@ -286,15 +286,15 @@ namespace Mijin.Library.App.Driver
         /// </summary>
         /// <param name="bookserial"></param>
         /// <returns></returns>
-        public MessageModel<object> GetBookInfo(string bookserial)
+        public MessageModel<object> GetBookInfo(string bookserial,string libCode)
         {
             var dic = new Dictionary<string, object>();
             var bookInfo = new SIP2BookInfo();
             var readerInfo = new SIP2ReaderInfo();
             var data = new MessageModel<object>();
-            var sendStr = $@"17{DateTime.Now.ToString("yyyyMMddHHmmss")}AO|AB{bookserial}|AC|AY4AZF455";
+            var sendStr = $@"17{DateTime.Now.ToString("yyyyMMddHHmmss")}AO{libCode}|AB{bookserial}|AC|AY4AZF455";
 
-            sendStr = @$"1720080828    AO|AB{bookserial}|AY1AZF7E3";
+            //sendStr = @$"1720080828    AO|AB{bookserial}|AY1AZF7E3";
             string message = null;
             try
             {
@@ -469,7 +469,7 @@ namespace Mijin.Library.App.Driver
 
             }
 
-            var sendStr = @$"81{DateTime.Now.ToString("yyyyMMddHHmmss")}    100514|AA{readerInfo.CardNo}|AD{readerInfo.Pw}|AE{readerInfo.Name}|AO{readerInfo.CreateReaderLibrary}|AM{readerInfo.CreateReaderLibrary}|BP{readerInfo.Phone}|BD{readerInfo.Addr}|XO{readerInfo.Identity}|XH{readerInfo.Birth}|XT{readerInfo.Type}|BV{readerInfo.Moeny}|XM{(readerInfo.Sex ? "1" : "0")}|XK{readerInfo.Type}|AY3AZEDB7";
+            var sendStr = @$"81{DateTime.Now.ToString("yyyyMMddHHmmss")}    100514|AA{readerInfo.CardNo}|AD{readerInfo.Pw}|AE{readerInfo.Name}|AO{readerInfo.CreateReaderLibrary}|AM{readerInfo.CreateReaderLibrary}|BP{readerInfo.Phone}|BD{readerInfo.Addr}|XO{readerInfo.Identity}|XH{readerInfo.Birth}|XT02|BV{readerInfo.Moeny}|XM{(readerInfo.Sex ? "1" : "0")}|XK{readerInfo.Type}|AY3AZEDB7";
 
             //var testStr = "8120190522    100514|AO800021250301|AA182102|AD654321|AE533813|AM800021250301|BP18262605389|MP18262608976|BE27488522@qq.com|BD美国白宫|XO320682199504145512|XT2|BV100|XB|XH19950414|XN汉|XP|XF|XD|XE20190621|XM1|XA|XK01|AY3AZEDB7";
 

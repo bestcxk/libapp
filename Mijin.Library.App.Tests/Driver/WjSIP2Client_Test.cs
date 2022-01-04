@@ -60,7 +60,7 @@ namespace Mijin.Library.App.Tests.Driver
         public void GetBookInfo_Test()
         {
             Login_Test();
-            var res = wjSIP2Client.GetBookInfo("00000002");
+            var res = wjSIP2Client.GetBookInfo("00000002",libCode);
             Assert.True(res.success);
         }
 
