@@ -151,6 +151,15 @@ namespace Mijin.Library.App.Driver
             {
                 // 反射执行完方法后转换成 WebMessageModel 类
                 var method = acionInstance.GetType().GetMethod(mthod, parametersTypes);
+
+                if(method == null)
+                {
+                    return new MessageModel<object>()
+                    {
+                        msg = "未匹配到执行方法"
+                    };
+                }
+
                 var invoke = method.Invoke(acionInstance, parameters);
                 return invoke.JsonMapTo<MessageModel<object>>();
             }
