@@ -81,7 +81,8 @@ namespace Mijin.Library.App.Driver
                 }
 
                 _tcpClient.Connect(host, port.ToInt());
-
+                _tcpClient.ReceiveBufferSize = 1024*1024;
+                _tcpClient.SendBufferSize = 1024*1024;
                 if (_tcpClient.Connected)
                     ReadTimeOut = 3000;
             }

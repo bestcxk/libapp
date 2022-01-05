@@ -10,7 +10,7 @@ using Util.Dependency;
 
 namespace Mijin.Library.App.Driver
 {
-    public class VbarQrCode : IVbarQrCode
+    public class VbarQrCode : IQrCode
     {
         public event Action<WebViewSendModel<string>> OnScanQrCode;
 

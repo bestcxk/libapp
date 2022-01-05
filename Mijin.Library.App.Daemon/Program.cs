@@ -29,15 +29,6 @@ namespace Mijin.Library.App.Daemon
                     Process pro = Process.GetProcessesByName("Mijin.Library.App").FirstOrDefault();
                     if (pro == null)
                     {
-                        //Process proc = new Process();
-                        //proc.StartInfo.FileName = @$"Mijin.Library.App.exe";
-                        //proc.StartInfo.UseShellExecute = false;
-                        //proc.StartInfo.RedirectStandardInput = true;
-                        //proc.StartInfo.RedirectStandardOutput = true;
-                        //proc.StartInfo.RedirectStandardError = true;
-                        //proc.StartInfo.CreateNoWindow = false;
-                        //proc.Start();
-                        //proc.WaitForExit();
                         var mPro = Process.Start(@$"Mijin.Library.App.exe");
                         Console.WriteLine("启动成功");
                         mPro.WaitForExit();

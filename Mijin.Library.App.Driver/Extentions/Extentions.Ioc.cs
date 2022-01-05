@@ -24,6 +24,11 @@ namespace Mijin.Library.App.Driver.Extentions
             else
                 services.AddSingleton<IdentityReader, WonteReader>();
 
+            if (clientSettings.QrcodeDriver == QrcodeDriver.qrcode)
+                services.AddSingleton<IQrCode, QrCode>();
+            else
+                services.AddSingleton<IQrCode, VbarQrCode>();
+
 
             services.AddSingleton<IRRfid, RRfid>();
             services.AddSingleton<IRfid, GRfid>();
@@ -34,13 +39,11 @@ namespace Mijin.Library.App.Driver.Extentions
             services.AddSingleton<ICardSender, CardSender>();
             services.AddSingleton<IDoorController, ZktDoorController>();
             services.AddSingleton<ITuChuangSIP2Client, TuChuangSIP2Client>();
-            services.AddSingleton<IQrCode, QrCode>();
             services.AddSingleton<ICkDoorController, CkDoorController>();
             services.AddSingleton<ITrack, Track>();
             services.AddSingleton<IMultiGrfid, MultiGrfid>();
             services.AddSingleton<ISudo, Sudo>();
             services.AddSingleton<IWjSIP2Client, WjSIP2Client>();
-            services.AddSingleton<IVbarQrCode, VbarQrCode>();
 
             #region HFReader IOC 
             if (clientSettings.HFReader == HFReaderEnum.BlackReader)

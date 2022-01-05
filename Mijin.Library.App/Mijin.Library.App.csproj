@@ -9,7 +9,7 @@
     <RootNamespace>Mijin.Library.App</RootNamespace>
     <ApplicationIcon>library.ico</ApplicationIcon>
     <SatelliteResourceLanguages>zh-Hans</SatelliteResourceLanguages>
-    <Version>3.0.4</Version>
+    <Version>3.0.5</Version>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
 
@@ -23,12 +23,12 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1054.31" />
     <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
-    <PackageReference Include="Util.Logs" Version="3.0.0.3" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Mijin.Library.App.Common\Mijin.Library.App.Common.csproj" />
     <ProjectReference Include="..\Mijin.Library.App.Driver\Mijin.Library.App.Driver.csproj" />
+    <ProjectReference Include="..\Mijin.Library.App.Setting\Mijin.Library.App.Setting.csproj" />
   </ItemGroup>
 
   <ItemGroup>

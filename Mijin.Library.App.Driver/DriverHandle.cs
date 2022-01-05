@@ -16,7 +16,6 @@ namespace Mijin.Library.App.Driver
         private IMultiGrfid _multiGrfid { get; }
         private ISudo _sudo { get; }
         private IWjSIP2Client WjSIP2Client { get; }
-        private IVbarQrCode _vbarQrCode { get; }
         private IWenhuaSIP2Client _sIP2Client { get; }
         private ICabinetLock _cabinetLock { get; }
         private IPosPrint _posPrint { get; }
@@ -77,14 +76,13 @@ namespace Mijin.Library.App.Driver
             IPosPrint posPrint, IdentityReader identityReader, IHFReader HFReader, IRfid rfid, IKeyboard keyboard,
             ICamera camera, ICardSender cardSender, IDoorController doorController,
             IGRfidDoorController gRfidDoorController, ITuChuangSIP2Client tuChuangSIP2Client, IRRfid rRfid,
-            IQrCode qrCode, ICkDoorController ckDoorController, ITrack track, IMultiGrfid multiGrfid, ISudo sudo, IWjSIP2Client wjSIP2Client, IVbarQrCode vbarQrCode)
+            IQrCode qrCode, ICkDoorController ckDoorController, ITrack track, IMultiGrfid multiGrfid, ISudo sudo, IWjSIP2Client wjSIP2Client)
         {
             _ckDoorController = ckDoorController;
             _track = track;
             _multiGrfid = multiGrfid;
             _sudo = sudo;
             WjSIP2Client = wjSIP2Client;
-            _vbarQrCode = vbarQrCode;
             _systemFunc = systemFunc;
             _sIP2Client = sIP2Client;
             _cabinetLock = cabinetLock;

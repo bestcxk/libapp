@@ -45,7 +45,7 @@ namespace Mijin.Library.App.Views
             InitializeComponent();
             InitializeAsync(); // 初始化
 
-            Title = _clientSettings.Titles?.App ?? "图书管理系统";
+            Title = _clientSettings.Title?.App ?? "图书管理系统";
 
             DisableWPFTabletSupport();
 

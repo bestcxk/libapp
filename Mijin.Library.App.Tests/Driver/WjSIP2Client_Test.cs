@@ -1,6 +1,7 @@
 ﻿using Mijin.Library.App.Driver;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,8 +14,8 @@ namespace Mijin.Library.App.Tests.Driver
     {
         public WjSIP2Client wjSIP2Client;
 
-        const string ip =  "11.176.26.77";
-        const string port =  "2001";
+        const string ip = "11.176.26.77";
+        const string port = "2001";
         const string loginAccount = "250302admin";
         const string loginPw = "Wj123456";
         const int drivceId = 464;
@@ -46,8 +47,8 @@ namespace Mijin.Library.App.Tests.Driver
             var res = wjSIP2Client.RegiesterReader(new RegiesterInfo()
             {
                 Name = "黄石测试用户",
-                CardNo = "0123456789",
-                Identity = "500113199706286714",
+                CardNo = "3336636077131",
+                Identity = "500113199706286715",
                 Pw = "012345678",
                 CreateReaderLibrary = libCode,
                 Type = "01",
@@ -60,7 +61,7 @@ namespace Mijin.Library.App.Tests.Driver
         public void GetBookInfo_Test()
         {
             Login_Test();
-            var res = wjSIP2Client.GetBookInfo("00000002",libCode);
+            var res = wjSIP2Client.GetBookInfo("00000001", libCode);
             Assert.True(res.success);
         }
 
@@ -76,7 +77,7 @@ namespace Mijin.Library.App.Tests.Driver
         public void LendBook_Test()
         {
             Login_Test();
-            var res = wjSIP2Client.LendBook("00000002", "012345678911", libCode);
+            var res = wjSIP2Client.LendBook("00000001", "012345678911", libCode);
             Assert.True(res.success);
         }
 
@@ -92,8 +93,16 @@ namespace Mijin.Library.App.Tests.Driver
         public void BackBook_Test()
         {
             Login_Test();
-            var res = wjSIP2Client.BackBook("00000002", libCode);
+            var res = wjSIP2Client.BackBook("00000001", libCode);
             Assert.True(res.success);
+        }
+
+        [Fact, TestPriority(2)]
+        public void GetBookInfos_Test()
+        {
+            Login_Test();
+
+            
         }
 
     }

@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net5.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <Platforms>AnyCPU;x64</Platforms>
+    <ApplicationIcon>setting.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="setting.ico" />
+  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="MahApps.Metro" Version="2.4.9" />
+		<PackageReference Include="MahApps.Metro.IconPacks" Version="4.11.0" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
+		<PackageReference Include="System.Drawing.Common" Version="6.0.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Mijin.Library.App.Common\Mijin.Library.App.Common.csproj" />
+		<ProjectReference Include="..\Mijin.Library.App.Driver\Mijin.Library.App.Driver.csproj" />
+	</ItemGroup>
+</Project>

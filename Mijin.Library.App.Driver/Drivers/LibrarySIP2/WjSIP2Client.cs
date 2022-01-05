@@ -89,7 +89,7 @@ namespace Mijin.Library.App.Driver
             stream.Write(sendBytes, 0, sendBytes.Length);
             stream.Flush();
 
-            var data = new byte[65536];
+            var data = new byte[1024 * 1024];
             int len = await stream.ReadAsync(data, 0, data.Length);
             return Encoding.GetEncoding("GBK").GetString(data.Take(len).ToArray());
         }

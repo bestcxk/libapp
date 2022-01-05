@@ -100,13 +100,18 @@ namespace Mijin.Library.App.Model
 
         public bool IsM513IdentityReader { get; set; }
 
-        public Title Titles { get; set; } = new Title();
+        public Title Title { get; set; } = new Title();
 
         public int CameraIndex { get; set; } = 0;
 
         public string LabelConvertUrl { get; set; }
 
         public string DoorControllerUrl { get; set; }
+
+        /// <summary>
+        /// 二维码扫描模块
+        /// </summary>
+        public QrcodeDriver QrcodeDriver { get; set; } = QrcodeDriver.qrcode;
 
     }
 
@@ -118,22 +123,27 @@ namespace Mijin.Library.App.Model
         /// <summary>
         /// 不清空
         /// </summary>
+        [Description("保留")]
         Default = 0,
         /// <summary>
         /// 清空cookie
         /// </summary>
+        [Description("清空cookie")]
         Cookie = 1,
         /// <summary>
         /// 清空LocalState
         /// </summary>
+        [Description("清空LocalState")]
         LocalState = 2,
         /// <summary>
         /// 删除webview 下的Default文件
         /// </summary>
+        [Description("删除Default文件")]
         DefaultCache = 3,
         /// <summary>
         /// 删除整个webview 的Cache文件
         /// </summary>
+        [Description("删除整个Cache文件")]
         AllCache = 4,
     }
 
@@ -150,6 +160,11 @@ namespace Mijin.Library.App.Model
         public string App { get; set; } = "图书管理系统";
         public string Manager { get; set; } = "后台管理系统";
         public string Terminal { get; set; } = "自助借阅";
+    }
+    public enum QrcodeDriver
+    {
+        qrcode,
+        vbarQrcode
     }
 
 }

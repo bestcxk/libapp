@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using IsUtil.Helper;
 using Util.Logs;
+using Mijin.Library.App.Setting;
 
 namespace Mijin.Library.App
 {
@@ -48,7 +49,7 @@ namespace Mijin.Library.App
             // 注册主window
             services.AddSingleton<MainWindow>();
             services.AddSingleton<WebViewWindow>();
-            services.AddSingleton<SettingsWindow>();
+            services.AddSingleton<SettingWindow>();
             // 注册Nlog
             services.AddNLog();
             // 注册MemoryCache

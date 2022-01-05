@@ -85,6 +85,7 @@ namespace Mijin.Library.App.Model.Setting
         /// <value></value>
         public bool ReadCardUseByIdentity { get; set; } = false;
 
+        
 
     }
 
@@ -164,4 +165,6 @@ namespace Mijin.Library.App.Model.Setting
         /// </summary>
         right = 2
     }
+
+    
 }

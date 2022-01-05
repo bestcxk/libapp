@@ -2,6 +2,7 @@
 using MahApps.Metro.Controls;
 using Mijin.Library.App.Driver;
 using Mijin.Library.App.Model;
+using Mijin.Library.App.Setting;
 using Mijin.Library.App.Views;
 using System;
 using System.Collections.Generic;
@@ -29,10 +30,10 @@ namespace Mijin.Library.App
     {
         public WebViewWindow _webView { get; }
         public ClientSettings _clientSettings { get; }
-        public SettingsWindow _settingsWindow { get; }
+        public SettingWindow _settingsWindow { get; }
         public ISystemFunc _systemFunc { get; }
 
-        public MainWindow(WebViewWindow webView, SettingsWindow settingsWindow, ISystemFunc systemFunc)
+        public MainWindow(WebViewWindow webView, SettingWindow settingsWindow, ISystemFunc systemFunc)
         {
             //显示在显示器最中间
             this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
@@ -44,9 +45,9 @@ namespace Mijin.Library.App
             _settingsWindow = settingsWindow;
             _systemFunc = systemFunc;
 
-            Title = _clientSettings.Titles?.App ?? "图书管理系统";
-            manager.Title = _clientSettings.Titles?.Manager ?? "后台管理";
-            autoLend.Title = _clientSettings.Titles?.Terminal ?? "自助借阅";
+            Title = _clientSettings.Title?.App ?? "图书管理系统";
+            manager.Title = _clientSettings.Title?.Manager ?? "后台管理";
+            autoLend.Title = _clientSettings.Title?.Terminal ?? "自助借阅";
         }
 
         private void MetroWindow_Loaded(object sender, RoutedEventArgs e)
@@ -65,7 +66,7 @@ namespace Mijin.Library.App
             Tile tile = sender as Tile;
             if (tile != null)
             {
-                if (_clientSettings.Titles?.Manager == tile.Title)
+                if (_clientSettings.Title?.Manager == tile.Title)
                     this._webView.openUrl = _clientSettings.LibraryManageUrl;
                 else
                     this._webView.openUrl = _clientSettings.ReaderActionUrl;
