@@ -62,6 +62,10 @@ namespace Mijin.Library.App.Driver
         /// </summary>
         public string HoldItems { get; set; }
         /// <summary>
+        /// 身份证号码
+        /// </summary>
+        public string Identity { get; set; }
+        /// <summary>
         /// 当前借阅，已超期的图书条码
         /// </summary>
         public string OverdueItems { get; set; }
