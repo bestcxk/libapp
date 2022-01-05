@@ -398,7 +398,7 @@ namespace Mijin.Library.App.Driver
                 return data;
             }
 
-            var sendStr = @$"81{DateTime.Now.ToString("yyyyMMddHHmmss")}    144920AOYB|AA{readerInfo.Identity}|AD{readerInfo.Pw}|AE{readerInfo.Name}|AM{readerInfo.CreateReaderLibrary}|BP{readerInfo.Phone}|BD{readerInfo.Addr}|XO{readerInfo.Identity}|XT{readerInfo.Type}|BV{readerInfo.Moeny}|XM{(readerInfo.Sex ? "1" : "0")}|XK01|AY1AZB92E";
+            var sendStr = @$"81{DateTime.Now.ToString("yyyyMMddHHmmss")}    144920AOYB|AA{readerInfo.CardNo}|AD{readerInfo.Pw}|AE{readerInfo.Name}|AM{readerInfo.CreateReaderLibrary}|BP{readerInfo.Phone}|BD{readerInfo.Addr}|XO{readerInfo.Identity}|XT{readerInfo.Type}|BV{readerInfo.Moeny}|XM{(readerInfo.Sex ? "1" : "0")}|XK01|AY1AZB92E";
 
             string message = null;
             try
@@ -438,7 +438,7 @@ namespace Mijin.Library.App.Driver
         /// </summary>
         /// <param name="readerInfo"></param>
         /// <returns></returns>
-        MessageModel<object> RegiesterReader(object readerInfo)
+        public MessageModel<object> RegiesterReader(object readerInfo)
         {
             return RegiesterReader(readerInfo.JsonMapTo<RegiesterInfo>());
         }

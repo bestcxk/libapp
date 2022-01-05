@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using IsUtil;
 using IsUtil.Maps;
+using System.Text.RegularExpressions;
 
 namespace Mijin.Library.App.Driver
 {
@@ -123,23 +124,82 @@ namespace Mijin.Library.App.Driver
             return data;
         }
 
+        public MessageModel<object> CheckIdentity(string identity)
+        {
+            var data = new MessageModel<object>();
+            var sendStr = $@"91{DateTime.Now.ToString("yyyyMMdd")}    081303Y         AO|XO{identity}|XK1|AY1AZF4A6|";
+            string message = null;
+            try
+            {
+                message = SendAsync(sendStr).Result;
+            }
+            catch (Exception e)
+            {
+                data.msg = e.ToString();
+                data.success = false;
+                return data;
+            }
+            
+            if(message == null)
+            {
+                data.msg = "获取数据失败，返回信息为空";
+                data.success = false;
+                return data;
+            }
+            data.success = message.Search("AC", "|") == "0";
+            if (!data.success)
+            {
+                data.msg = "该身份证已被注册";
+                return data;
+            }
+            data.msg = "查重成功";
+            return data;
+
+
+        }
+
         /// <summary>
         /// 查询读者信息
         /// </summary>
         /// <param name="readerNo"></param>
         /// <param name="readerPw">可为空，可做校验读者密码是否正确，读者登录使用</param>
         /// <returns></returns>
-        public MessageModel<object> GetReaderInfo(string readerNo, string readerPw = null)
+        public MessageModel<object> GetReaderInfo(string readerNo = null, string readerPw = null)
         {
             var dic = new Dictionary<string, object>();
             var bookInfo = new SIP2BookInfo();
             var readerInfo = new SIP2ReaderInfo();
             var data = new MessageModel<object>();
-
+            Regex objReg = new Regex(@"^(\d{15}$|^\d{18}$|^\d{17}(\d|X|x))$");
+            var getCardNoByIdCard = "";
             if (readerPw.IsEmpty()) readerPw = null;
-
-            var sendStr = $@"63001{DateTime.Now.ToString("yyyyMMdd")}    081303Y         AO|AA{readerNo}|AD{readerPw}|AY1AZF4A6|";
+            var sendStr = "";
             string message = null;
+            if (objReg.IsMatch(readerNo))
+            {
+                sendStr = $@"85{DateTime.Now.ToString("yyyyMMdd")}    081303Y         AO|XO{readerNo}|AD|AY1AZF4A6|XK13|";
+                try
+                {
+                    message = SendAsync(sendStr).Result;
+                }
+                catch(Exception e)
+                {
+                    data.msg = e.ToString();
+                    return data;
+                }
+                if (message == null)
+                {
+                    data.msg = "获取数据失败，返回信息为空";
+                    return data;
+                }
+                getCardNoByIdCard = message.Search("OX", "]]"); //获取返回的第一个读者证号
+                sendStr = $@"63001{DateTime.Now.ToString("yyyyMMdd")}    081303Y         AO|AA{getCardNoByIdCard}|AD{readerPw}|AY1AZF4A6|";
+            }
+            else
+            {
+                sendStr = $@"63001{DateTime.Now.ToString("yyyyMMdd")}    081303Y         AO|AA{readerNo}|AD{readerPw}|AY1AZF4A6|";
+            }
+            
             try
             {
                 message = SendAsync(sendStr).Result;
@@ -181,6 +241,7 @@ namespace Mijin.Library.App.Driver
             readerInfo.Loanedvalue = message.Search("XC", "|");
             readerInfo.HoldItemsLimit = message.Search("BZ", "|");
             readerInfo.ReaderType = message.Search("XT", "|");
+            readerInfo.Identity = message.Search("OX", "|");
             readerInfo.Enddate = message.Search("XD", "|");
 
             var books = message.Split("|AS");
@@ -337,14 +398,22 @@ namespace Mijin.Library.App.Driver
         public MessageModel<object> RegiesterReader(RegiesterInfo readerInfo)
         {
             var data = new MessageModel<object>();
-
+            Regex objReg = new Regex(@"^(\d{15}$|^\d{18}$|^\d{17}(\d|X|x))$");
             if (readerInfo == null)
             {
                 data.msg = "readerInfo实体不可为空";
                 return data;
             }
-
-            var sendStr = @$"81YN{DateTime.Now.ToString("yyyyMMddHHmmss")}    144920AOYB|AA{readerInfo.Identity}|AD{readerInfo.Pw}|AE{readerInfo.Name}|AM{readerInfo.CreateReaderLibrary}|BP{readerInfo.Phone}|BD{readerInfo.Addr}|XO{readerInfo.Identity}|XT{readerInfo.Type}|BV{readerInfo.Moeny}|XM{(readerInfo.Sex ? "1" : "0")}|XK01|AY1AZB92E";
+            if(readerInfo.Identity != "")
+            {
+                data = CheckIdentity(readerInfo.Identity);
+                if (!data.success)
+                {
+                    return data;
+                }
+            }
+            
+            var sendStr = @$"81YN{DateTime.Now.ToString("yyyyMMddHHmmss")}    144920AOYB|AA{readerInfo.CardNo}|AD{readerInfo.Pw}|AE{readerInfo.Name}|AM{readerInfo.CreateReaderLibrary}|BP{readerInfo.Phone}|BD{readerInfo.Addr}|XO{readerInfo.Identity}|XT{readerInfo.Type}|BV{readerInfo.Moeny}|XM{(readerInfo.Sex ? "1" : "0")}|XK01|AY1AZB92E";
 
             string message = null;
             try
@@ -384,7 +453,7 @@ namespace Mijin.Library.App.Driver
         /// </summary>
         /// <param name="readerInfo"></param>
         /// <returns></returns>
-        MessageModel<object> RegiesterReader(object readerInfo)
+        public MessageModel<object> RegiesterReader(object readerInfo)
         {
             return RegiesterReader(readerInfo.JsonMapTo<RegiesterInfo>());
         }
