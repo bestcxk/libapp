@@ -202,8 +202,10 @@ namespace Mijin.Library.App.Driver
 
         //private bool 
 
+        #region 扩展方法
 
-        public static String byteHEX(Byte ib)
+        
+        private static String byteHEX(Byte ib)
         {
             String _str = String.Empty;
             try
@@ -223,7 +225,7 @@ namespace Mijin.Library.App.Driver
 
         }
 
-        public static byte GetHexBitsValue(byte ch)
+        private static byte GetHexBitsValue(byte ch)
         {
             byte sz = 0;
             if (ch <= '9' && ch >= '0')
@@ -236,7 +238,7 @@ namespace Mijin.Library.App.Driver
             return sz;
         }
 
-        public static byte[] ToDigitsBytes(string theHex)
+        private static byte[] ToDigitsBytes(string theHex)
         {
             byte[] bytes = new byte[theHex.Length / 2 + (((theHex.Length % 2) > 0) ? 1 : 0)];
             for (int i = 0; i < bytes.Length; i++)
@@ -257,7 +259,7 @@ namespace Mijin.Library.App.Driver
             return bytes;
         }
 
-        public static string ToHexString(byte[] bytes, byte len)
+        private static string ToHexString(byte[] bytes, byte len)
         {
             String hexString = String.Empty;
             for (int i = 0; i < len; i++)
@@ -265,6 +267,7 @@ namespace Mijin.Library.App.Driver
 
             return hexString;
         }
+        #endregion
 
 
         public MessageModel<string> ReadBlockForTC()
