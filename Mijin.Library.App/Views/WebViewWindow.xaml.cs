@@ -80,11 +80,12 @@ namespace Mijin.Library.App.Views
                         return;
                     }
                     // 获取webview 进程id 并杀掉，否则无法删除文件
-                    var process = Process.GetProcessById((int)this.webView.CoreWebView2.BrowserProcessId);
-                    process.Kill();
-                    process.WaitForExit();
-                    //_webViewWindow.webView.Dispose();
-                    //GC.Collect();
+                    if(_clientSettings.OnExitClearWebCache != ClearWebViewCacheModeEnum.Default)
+                    {
+                        var process = Process.GetProcessById((int)this.webView.CoreWebView2.BrowserProcessId);
+                        process.Kill();
+                        process.WaitForExit();
+                    }
 
                     //等待500毫秒等待文件被释放
                     await Task.Delay(500);
