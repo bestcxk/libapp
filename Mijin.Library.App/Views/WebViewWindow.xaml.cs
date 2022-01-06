@@ -404,7 +404,7 @@ namespace Mijin.Library.App.Views
             if (obj.status == 1001)
                 this.Dispatcher.Invoke(new Action(() => _doorViewWindow.webView.CoreWebView2.ExecuteScriptAsync(webLog)));
             else
-                this.Dispatcher.Invoke(new Action(() => _webViewWindow.webView.CoreWebView2.ExecuteScriptAsync(webLog)));
+                this.Dispatcher.Invoke(new Action(() => _webViewWindow?.webView?.CoreWebView2?.ExecuteScriptAsync(webLog)));
 
         }
         #endregion
