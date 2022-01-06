@@ -38,7 +38,7 @@ namespace Mijin.Library.App.Setting
             // 显示在最中间
             this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
             InitializeComponent();
-            _clientSettings = new ClientSettings();
+            _clientSettings = systemFunc.ClientSettings;
 
             this.DataContext = _clientSettings;
 
@@ -92,7 +92,7 @@ namespace Mijin.Library.App.Setting
                     catch (Exception e)
                     {
                     }
-                    _systemFunc.ClientSettings.SetPropValue(_clientSettings, true);
+                    //_systemFunc.ClientSettings.SetPropValue(_clientSettings, true);
                     _clientSettings.Write();
 
                 }));
@@ -112,6 +112,7 @@ namespace Mijin.Library.App.Setting
             if (!string.IsNullOrWhiteSpace(this.LibraryManageUrlText.Text))
             {
                 this.ReaderActionUrlText.Text = this.LibraryManageUrlText.Text + @$"{(this.LibraryManageUrlText.Text.Last() == '/' ? "" : "/")}terminal";
+                this._clientSettings.ReaderActionUrl = this.ReaderActionUrlText.Text;
             }
         }
 

@@ -84,7 +84,7 @@
                     Controls:TextBoxHelper.ClearTextButton="True"
                     Controls:TextBoxHelper.WatermarkAlignment="Right"
                     SpellCheck.IsEnabled="True"
-                    Text="{Binding LibraryManageUrl}" />
+                    Text="{Binding LibraryManageUrl, Mode=TwoWay}" />
                 <Button
                     Name="syncUrl"
                     Margin="5,0,0,0"
