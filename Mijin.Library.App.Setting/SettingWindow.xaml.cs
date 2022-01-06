@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using IsUtil;
 using IsUtil.Helpers;
 using MahApps.Metro.Controls;
 using Mijin.Library.App.Driver;
@@ -27,11 +28,12 @@ namespace Mijin.Library.App.Setting
     {
 
         public ClientSettings _clientSettings { get; set; }
+        public ISystemFunc _systemFunc { get; }
 
         private static readonly string startFilePath =
             System.IO.Path.Combine(@$"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp", "Mijin.Library.App.lnk");
 
-        public SettingWindow()
+        public SettingWindow(ISystemFunc systemFunc)
         {
             // 显示在最中间
             this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
@@ -55,6 +57,7 @@ namespace Mijin.Library.App.Setting
             }
             this.idCom.ItemsSource = idComSources;
             this.cameraIndex.ItemsSource = cameraSources;
+            _systemFunc = systemFunc;
         }
 
         private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -89,7 +92,9 @@ namespace Mijin.Library.App.Setting
                     catch (Exception e)
                     {
                     }
+                    _systemFunc.ClientSettings.SetPropValue(_clientSettings, true);
                     _clientSettings.Write();
+
                 }));
             });
             await Task.Delay(500);

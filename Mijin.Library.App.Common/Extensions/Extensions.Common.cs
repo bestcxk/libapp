@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 namespace IsUtil {
     /// <summary>
@@ -53,6 +56,32 @@ namespace IsUtil {
         /// <param name="separator">分隔符，默认使用逗号分隔</param>
         public static string Join<T>( this IEnumerable<T> list, string quotes = "", string separator = "," ) {
             return IsUtil.Helpers.String.Join( list, quotes, separator );
+        }
+
+        /// <summary>
+        /// 给现有对象属性赋值，覆盖相同 属性名和属性类型 的字段
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="resource"></param>
+        /// <param name="override">覆盖字段</param>
+        public static void SetPropValue(this object obj, object resource, bool @override = false)
+        {
+            PropertyInfo[] objProps = obj.GetType().GetProperties();
+            foreach (PropertyInfo reProp in resource.GetType().GetProperties())
+            {
+                if (!@override)
+                {
+                    Type type = reProp.GetType();
+                    object defaultValue = type.IsValueType ? Activator.CreateInstance(type) : null;
+                    if (reProp.GetValue(obj) != defaultValue)
+                        continue;
+                }
+                PropertyInfo setProp = objProps.FirstOrDefault(o => o.Name == reProp.Name && o.PropertyType == reProp.PropertyType);
+                if (!setProp.IsNull())
+                {
+                    setProp.SetValue(obj, reProp.GetValue(resource));
+                }
+            }
         }
     }
 }

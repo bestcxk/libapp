@@ -47,7 +47,7 @@ namespace Mijin.Library.App.Model
         /// 读本地文件 appsettings.json ,如果没有则返回null
         /// </summary>
         /// <returns></returns>
-        private baseClientSettings ReadToBaseModel()
+        public baseClientSettings ReadToBaseModel()
         {
             // 是否含有 appsettings.json 文件
             if (File.Exists("./appsettings.json"))

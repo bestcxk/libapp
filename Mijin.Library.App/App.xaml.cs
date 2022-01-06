@@ -34,9 +34,6 @@ namespace Mijin.Library.App
 
         public IConfiguration Configuration { get; }
 
-        public IServiceProvider _serviceProvider { get; }
-
-
         public App()
         {
             // 程序启动检测
