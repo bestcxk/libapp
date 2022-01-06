@@ -55,6 +55,14 @@ namespace Mijin.Library.App.Setting
             }
             this.idCom.ItemsSource = idComSources;
             this.cameraIndex.ItemsSource = cameraSources;
+
+            this.Closed += (s, e) =>
+            {
+                if(!Process.GetProcessesByName("Mijin.Library.App").Any())
+                {
+                    Environment.Exit(0);
+                }
+            };
         }
 
         private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
