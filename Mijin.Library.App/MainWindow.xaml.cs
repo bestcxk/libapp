@@ -52,7 +52,7 @@ namespace Mijin.Library.App
 
         private void MetroWindow_Loaded(object sender, RoutedEventArgs e)
         {
-
+            this.versionLabel.Content = @$"版本号：{Assembly.GetExecutingAssembly().GetName().Version}";
         }
 
         private void OpenSettingsWindow(object sender, RoutedEventArgs e)
