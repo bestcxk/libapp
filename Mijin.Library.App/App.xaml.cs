@@ -53,6 +53,13 @@ namespace Mijin.Library.App
             containerRegistry.RegisterSingleton<SettingWindow>();
         }
 
+
+        protected override void OnInitialized()
+        {
+            App_OnStartup(null,null);
+            base.OnInitialized();
+        }
+
         protected override Window CreateShell()
         {
             return Container.Resolve<MainWindow>();
@@ -60,7 +67,6 @@ namespace Mijin.Library.App
 
         protected override IContainerExtension CreateContainerExtension()
         {
-
             ConfigureServices(_serviceCollection);
             return new DryIocContainerExtension(new Container(CreateContainerRules())
                 .WithDependencyInjectionAdapter(_serviceCollection));
@@ -84,10 +90,10 @@ namespace Mijin.Library.App
         // 使用了ioc后，只能使用该方式进行启动,把app.xaml的StartupUrl 修改成 Startup = App_OnStartup
         private void App_OnStartup(object sender, StartupEventArgs e)
         {
-
-            var mainWindow = _serviceProvider.GetService<MainWindow>();
-            var webviewWindow = _serviceProvider.GetService<WebViewWindow>();
-            var settings = _serviceProvider.GetService<ISystemFunc>().ClientSettings;
+            
+            var mainWindow = Container.Resolve<MainWindow>();
+            var webviewWindow = Container.Resolve<WebViewWindow>();
+            var settings = Container.Resolve<ISystemFunc>().ClientSettings;
 
             WebViewWindow._webViewWindow = webviewWindow;
 
