@@ -18,15 +18,19 @@ using System.Linq;
 using IsUtil.Helper;
 using Util.Logs;
 using Mijin.Library.App.Setting;
+using Prism.DryIoc;
+using Prism.Ioc;
+using DryIoc;
+using DryIoc.Microsoft.DependencyInjection;
 
 namespace Mijin.Library.App
 {
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
-    public partial class App : Application
+    public partial class App : PrismApplication
     {
-        public IServiceCollection _serviceCollection { get; }
+        public IServiceCollection _serviceCollection { get; } = new ServiceCollection();
 
         public IConfiguration Configuration { get; }
 
@@ -38,10 +42,28 @@ namespace Mijin.Library.App
             // 程序启动检测
             this.BeforeStart();
 
-            _serviceCollection = new ServiceCollection();
+            
+            //_serviceProvider = _serviceCollection.BuildServiceProvider();
+        }
+
+        protected override void RegisterTypes(IContainerRegistry containerRegistry)
+        {
+            containerRegistry.RegisterSingleton<MainWindow>();
+            containerRegistry.RegisterSingleton<WebViewWindow>();
+            containerRegistry.RegisterSingleton<SettingWindow>();
+        }
+
+        protected override Window CreateShell()
+        {
+            return Container.Resolve<MainWindow>();
+        }
+
+        protected override IContainerExtension CreateContainerExtension()
+        {
 
             ConfigureServices(_serviceCollection);
-            _serviceProvider = _serviceCollection.BuildServiceProvider();
+            return new DryIocContainerExtension(new Container(CreateContainerRules())
+                .WithDependencyInjectionAdapter(_serviceCollection));
         }
 
         private void ConfigureServices(IServiceCollection services)
@@ -57,15 +79,7 @@ namespace Mijin.Library.App
 
             // 注册Driver
             services.AddDriver();
-
-            // 注册客户端设置类
-            //services.AddSingleton<ClientSettings>();
         }
-
-        //public void Configure(IApplicationBuilder app)
-        //{ 
-        //     app.UseSignalR()
-        //}
 
         // 使用了ioc后，只能使用该方式进行启动,把app.xaml的StartupUrl 修改成 Startup = App_OnStartup
         private void App_OnStartup(object sender, StartupEventArgs e)
@@ -79,9 +93,6 @@ namespace Mijin.Library.App
 
             // 全局异常处理
             this.DispatcherUnhandledException += GlobalExceptionsFilter.OnException;
-            //AppDomain.CurrentDomain.UnhandledException += TestException;
-            ////Task线程内未捕获异常处理事件
-            //TaskScheduler.UnobservedTaskException += TestException;
 
             // 其中一个窗口触发了关闭事件则直接退出全部程序
             mainWindow.Closed += (s, e) =>
@@ -116,7 +127,9 @@ namespace Mijin.Library.App
         }
 
 
-        // 启动程序前检测
+        /// <summary>
+        /// 启动程序前检测
+        /// </summary>
         private void BeforeStart()
         {
             #region 检测是否管理员启动
@@ -209,5 +222,7 @@ namespace Mijin.Library.App
             System.Security.Principal.WindowsPrincipal principal = new System.Security.Principal.WindowsPrincipal(identity);
             return principal.IsInRole(System.Security.Principal.WindowsBuiltInRole.Administrator);
         }
+
+
     }
 }

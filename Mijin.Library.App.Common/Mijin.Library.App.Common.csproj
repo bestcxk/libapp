@@ -10,6 +10,7 @@
     <PackageReference Include="Bing.Data" Version="2.1.0" />
     <PackageReference Include="Bing.Utils" Version="1.2.5" />
     <PackageReference Include="Bing.Utils.Drawing" Version="1.2.5" />
+    <PackageReference Include="DryIoc.Microsoft.DependencyInjection" Version="5.1.0" />
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="6.0.0" />
