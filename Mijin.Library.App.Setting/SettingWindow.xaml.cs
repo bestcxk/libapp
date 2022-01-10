@@ -28,18 +28,17 @@ namespace Mijin.Library.App.Setting
     {
 
         public ClientSettings _clientSettings { get; set; }
-        public ISystemFunc _systemFunc { get; }
 
         private static readonly string startFilePath =
             System.IO.Path.Combine(@$"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp", "Mijin.Library.App.lnk");
 
-        public SettingWindow(ISystemFunc systemFunc)
+        public SettingWindow()
         {
             // 显示在最中间
             this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
             InitializeComponent();
-            _clientSettings = systemFunc.ClientSettings;
 
+            _clientSettings = new ClientSettings();
             this.DataContext = _clientSettings;
 
             // 添加缓存 comBox选项
@@ -57,7 +56,10 @@ namespace Mijin.Library.App.Setting
             }
             this.idCom.ItemsSource = idComSources;
             this.cameraIndex.ItemsSource = cameraSources;
-            _systemFunc = systemFunc;
+        }
+        public SettingWindow(ISystemFunc systemFunc):this()
+        {
+            _clientSettings = systemFunc.ClientSettings;
         }
 
         private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
