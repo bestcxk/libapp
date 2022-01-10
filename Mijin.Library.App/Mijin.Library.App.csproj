@@ -11,6 +11,7 @@
     <SatelliteResourceLanguages>zh-Hans</SatelliteResourceLanguages>
     <Version>3.0.9</Version>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+	<LangVersion>10</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
