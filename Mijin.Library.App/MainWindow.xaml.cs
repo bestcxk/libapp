@@ -56,7 +56,6 @@ namespace Mijin.Library.App
             manager.Title = _clientSettings.Title?.Manager ?? "后台管理";
             autoLend.Title = _clientSettings.Title?.Terminal ?? "自助借阅";
         }
-
         private void MetroWindow_Loaded(object sender, RoutedEventArgs e)
         {
             this.versionLabel.Content = @$"版本号：{Assembly.GetExecutingAssembly().GetName().Version}";

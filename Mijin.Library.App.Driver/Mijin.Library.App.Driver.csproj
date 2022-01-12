@@ -39,9 +39,6 @@
     <Reference Include="GReaderApi">
       <HintPath>..\DLL\GReaderApi.dll</HintPath>
     </Reference>
-    <Reference Include="HFReader9CSharp">
-      <HintPath>..\DLL\HFReader9CSharp.dll</HintPath>
-    </Reference>
     <Reference Include="SimpleTcp">
       <HintPath>..\DLL\SimpleTcp.dll</HintPath>
     </Reference>

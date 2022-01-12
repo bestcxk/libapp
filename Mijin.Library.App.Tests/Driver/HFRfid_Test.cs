@@ -40,7 +40,7 @@ namespace Mijin.Library.App.Tests.Driver
                 Assert.True(res.success);
             }
             {
-                var readOnceRes = _rRfid.ReadOnce();
+                var readOnceRes = _rRfid.ReadOnce(0,2);
                 Assert.True(readOnceRes.success);
                 var res = _rRfid.SetAFI(readOnceRes.response.UidHexStr, 6);
                 Assert.True(res.success);

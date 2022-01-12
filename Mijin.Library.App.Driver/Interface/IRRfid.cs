@@ -18,7 +18,7 @@ namespace Mijin.Library.App.Driver
         MessageModel<List<ScanDataModel>> NewScan(long startBlockNum = -1, long readBlockCount = -1);
         MessageModel<string> Read();
         MessageModel<string> Stop();
-        MessageModel<ScanDataModel> ReadOnce();
+        MessageModel<ScanDataModel> ReadOnce(Int64 startBlockNum = -1, Int64 readBlockCount = -1);
         MessageModel<string> WriteLabel(string uidHex, byte[] data, long actionBlockSize = -1, long writeState = -1);
         MessageModel<string> WriteLabel(string uidHex, string hexData, long actionBlockSize = -1, long writeState = -1);
         MessageModel<string> SetEAS(List<long> uid, bool enabled);
