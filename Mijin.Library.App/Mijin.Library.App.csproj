@@ -5,7 +5,6 @@
     <TargetFramework>net5.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <Platforms>AnyCPU;x64;X86</Platforms>
-    <AssemblyName>Mijin.Library.App</AssemblyName>
     <RootNamespace>Mijin.Library.App</RootNamespace>
     <ApplicationIcon>library.ico</ApplicationIcon>
     <SatelliteResourceLanguages>zh-Hans</SatelliteResourceLanguages>
@@ -28,6 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Mijin.Library.App.Authorization\Mijin.Library.App.Authorization.csproj" />
     <ProjectReference Include="..\Mijin.Library.App.Common\Mijin.Library.App.Common.csproj" />
     <ProjectReference Include="..\Mijin.Library.App.Driver\Mijin.Library.App.Driver.csproj" />
     <ProjectReference Include="..\Mijin.Library.App.Setting\Mijin.Library.App.Setting.csproj" />

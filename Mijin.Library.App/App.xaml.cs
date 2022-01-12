@@ -22,6 +22,10 @@ using Prism.DryIoc;
 using Prism.Ioc;
 using DryIoc;
 using DryIoc.Microsoft.DependencyInjection;
+using Mijin.Library.App.Common.Helper;
+using Bing.IO;
+using System.Text;
+using Mijin.Library.App.Authorization;
 
 namespace Mijin.Library.App
 {
@@ -39,7 +43,7 @@ namespace Mijin.Library.App
             // 程序启动检测
             this.BeforeStart();
 
-            
+
             //_serviceProvider = _serviceCollection.BuildServiceProvider();
         }
 
@@ -48,18 +52,28 @@ namespace Mijin.Library.App
             containerRegistry.RegisterSingleton<MainWindow>();
             containerRegistry.RegisterSingleton<WebViewWindow>();
             containerRegistry.RegisterSingleton<SettingWindow>();
+            containerRegistry.RegisterSingleton<AuthWindow>();
         }
 
 
         protected override void OnInitialized()
         {
-            App_OnStartup(null,null);
+            if (Auth.IsAuth())
+                App_OnStartup();
             base.OnInitialized();
         }
 
         protected override Window CreateShell()
         {
+            // 非开发环境
+#if (!DEBUG)
+            if (!Auth.IsAuth())
+                return Container.Resolve<AuthWindow>();
+            else
+                return Container.Resolve<MainWindow>();
+#else
             return Container.Resolve<MainWindow>();
+#endif
         }
 
         protected override IContainerExtension CreateContainerExtension()
@@ -85,9 +99,9 @@ namespace Mijin.Library.App
         }
 
         // 使用了ioc后，只能使用该方式进行启动,把app.xaml的StartupUrl 修改成 Startup = App_OnStartup
-        private void App_OnStartup(object sender, StartupEventArgs e)
+        private void App_OnStartup()
         {
-            
+
             var mainWindow = Container.Resolve<MainWindow>();
             var webviewWindow = Container.Resolve<WebViewWindow>();
             var settings = Container.Resolve<ISystemFunc>().ClientSettings;

@@ -45,6 +45,13 @@ namespace Mijin.Library.App
             _settingsWindow = settingsWindow;
             _systemFunc = systemFunc;
 
+            if (!_clientSettings.ShowTitleBarBtns)
+            {
+                this.doorBtn.Visibility = Visibility.Hidden;
+                this.labelConvertBtn.Visibility = Visibility.Hidden;
+            }
+
+
             Title = _clientSettings.Title?.App ?? "图书管理系统";
             manager.Title = _clientSettings.Title?.Manager ?? "后台管理";
             autoLend.Title = _clientSettings.Title?.Terminal ?? "自助借阅";

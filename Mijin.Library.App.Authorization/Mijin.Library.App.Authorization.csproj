@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net5.0-windows</TargetFramework>
+		<Nullable>enable</Nullable>
+		<UseWPF>true</UseWPF>
+		<LangVersion>10</LangVersion>
+		<Platforms>AnyCPU;x64;X86</Platforms>
+		<ApplicationIcon>favicon.ico</ApplicationIcon>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <Content Include="favicon.ico" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Prism.DryIoc" Version="8.1.97" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Mijin.Library.App.Common\Mijin.Library.App.Common.csproj" />
+	</ItemGroup>
+
+</Project>
