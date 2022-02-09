@@ -25,14 +25,15 @@ namespace Mijin.Library.App.Driver
                 return res;
             };
 
-            epc = epc.Substring(8, epc.Length - 1);
+            epc = epc.Substring(8);
 
             var bytes = new byte[15];
-            Encoding.ASCII.GetBytes(epc).CopyTo(bytes, 0);
+
+            epc.HexStringToBytes().CopyTo(bytes, 0);
 
             var len = iRFID_Decode96bit(bytes);
 
-            res.response = Encoding.ASCII.GetString(bytes);
+            res.response = Encoding.ASCII.GetString(bytes).Replace("\0", "");
             res.success = true;
             res.msg = "获取成功";
             return res;
