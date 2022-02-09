@@ -60,6 +60,7 @@ namespace Mijin.Library.App.Setting
         public SettingWindow(ISystemFunc systemFunc):this()
         {
             _clientSettings = systemFunc.ClientSettings;
+            this.DataContext = _clientSettings;
         }
 
         private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)

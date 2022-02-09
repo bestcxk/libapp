@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31919.166
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleApp", "ConsoleApp\ConsoleApp.csproj", "{E9926A03-74F0-4D0B-BB38-16ED19E14D08}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01_src", "01_src", "{461AC4D2-A80C-4FFA-B019-D931742707EB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "03_tests", "03_tests", "{74CD57EE-4434-4423-A639-433794218C82}"
@@ -25,6 +23,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mijin.Library.App.Setting",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mijin.Library.App.Authorization", "Mijin.Library.App.Authorization\Mijin.Library.App.Authorization.csproj", "{1A92C0D1-BE91-46C6-8C69-EB7645857B50}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02_framework_auth", "02_framework_auth", "{7011275F-FFD3-4D61-8BCF-01F674793335}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mijin.Library.App.Framework.Auth", "Mijin.Library.App.Framework.Auth\Mijin.Library.App.Framework.Auth.csproj", "{5D27128A-FF0B-48D8-8F77-205CBB78D571}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,18 +37,6 @@ Global
 		Release|X86 = Release|X86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{E9926A03-74F0-4D0B-BB38-16ED19E14D08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E9926A03-74F0-4D0B-BB38-16ED19E14D08}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E9926A03-74F0-4D0B-BB38-16ED19E14D08}.Debug|x64.ActiveCfg = Debug|x64
-		{E9926A03-74F0-4D0B-BB38-16ED19E14D08}.Debug|x64.Build.0 = Debug|x64
-		{E9926A03-74F0-4D0B-BB38-16ED19E14D08}.Debug|X86.ActiveCfg = Debug|X86
-		{E9926A03-74F0-4D0B-BB38-16ED19E14D08}.Debug|X86.Build.0 = Debug|X86
-		{E9926A03-74F0-4D0B-BB38-16ED19E14D08}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E9926A03-74F0-4D0B-BB38-16ED19E14D08}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E9926A03-74F0-4D0B-BB38-16ED19E14D08}.Release|x64.ActiveCfg = Release|x64
-		{E9926A03-74F0-4D0B-BB38-16ED19E14D08}.Release|x64.Build.0 = Release|x64
-		{E9926A03-74F0-4D0B-BB38-16ED19E14D08}.Release|X86.ActiveCfg = Release|X86
-		{E9926A03-74F0-4D0B-BB38-16ED19E14D08}.Release|X86.Build.0 = Release|X86
 		{C64D2F3B-C5AF-48CD-9EA4-2646955240B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C64D2F3B-C5AF-48CD-9EA4-2646955240B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C64D2F3B-C5AF-48CD-9EA4-2646955240B7}.Debug|x64.ActiveCfg = Debug|x64
@@ -143,6 +133,18 @@ Global
 		{1A92C0D1-BE91-46C6-8C69-EB7645857B50}.Release|x64.Build.0 = Release|Any CPU
 		{1A92C0D1-BE91-46C6-8C69-EB7645857B50}.Release|X86.ActiveCfg = Release|Any CPU
 		{1A92C0D1-BE91-46C6-8C69-EB7645857B50}.Release|X86.Build.0 = Release|Any CPU
+		{5D27128A-FF0B-48D8-8F77-205CBB78D571}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D27128A-FF0B-48D8-8F77-205CBB78D571}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D27128A-FF0B-48D8-8F77-205CBB78D571}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{5D27128A-FF0B-48D8-8F77-205CBB78D571}.Debug|x64.Build.0 = Debug|Any CPU
+		{5D27128A-FF0B-48D8-8F77-205CBB78D571}.Debug|X86.ActiveCfg = Debug|Any CPU
+		{5D27128A-FF0B-48D8-8F77-205CBB78D571}.Debug|X86.Build.0 = Debug|Any CPU
+		{5D27128A-FF0B-48D8-8F77-205CBB78D571}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D27128A-FF0B-48D8-8F77-205CBB78D571}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D27128A-FF0B-48D8-8F77-205CBB78D571}.Release|x64.ActiveCfg = Release|Any CPU
+		{5D27128A-FF0B-48D8-8F77-205CBB78D571}.Release|x64.Build.0 = Release|Any CPU
+		{5D27128A-FF0B-48D8-8F77-205CBB78D571}.Release|X86.ActiveCfg = Release|Any CPU
+		{5D27128A-FF0B-48D8-8F77-205CBB78D571}.Release|X86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -156,6 +158,7 @@ Global
 		{7BA2C2DE-7AEB-4DE7-83DB-9F3AC03F072B} = {461AC4D2-A80C-4FFA-B019-D931742707EB}
 		{EBB2D053-49CC-4C01-931D-13D2DA7CDD1E} = {461AC4D2-A80C-4FFA-B019-D931742707EB}
 		{1A92C0D1-BE91-46C6-8C69-EB7645857B50} = {461AC4D2-A80C-4FFA-B019-D931742707EB}
+		{5D27128A-FF0B-48D8-8F77-205CBB78D571} = {7011275F-FFD3-4D61-8BCF-01F674793335}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5D94C33A-68BA-43F0-9E5E-8EE765E5FA70}

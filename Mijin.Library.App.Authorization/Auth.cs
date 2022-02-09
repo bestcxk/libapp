@@ -1,4 +1,5 @@
-﻿using Bing.IO;
+﻿
+using Bing.IO;
 using IsUtil.Helpers;
 using Mijin.Library.App.Common.Helper;
 using System;
@@ -8,8 +9,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
+
 namespace Mijin.Library.App.Authorization
 {
+
+
+
     public class Auth
     {
         private static EncryptApp app = null;

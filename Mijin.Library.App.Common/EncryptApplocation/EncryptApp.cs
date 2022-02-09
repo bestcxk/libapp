@@ -48,7 +48,19 @@ namespace Mijin.Library.App.Common.Helper
 
         public string GetEncryptStr()
         {
-            var infoStr = @$"{Computer.CpuID}{Computer.DiskID}{Computer.SystemType}{Computer.TotalPhysicalMemory}";
+            var fileName = "enc.dll";
+            var infoStr = "";
+            if (File.Exists(fileName))
+            {
+                infoStr = File.ReadAllText(fileName, Encoding.UTF8);
+            }
+
+            if (infoStr.IsEmpty())
+            {
+                infoStr = @$"{Computer.CpuID}{Computer.DiskID}{Computer.SystemType}{Computer.TotalPhysicalMemory}{DateTime.Now.ToChineseDateTimeString()}";
+
+                File.WriteAllText(fileName, infoStr);
+            }
 
             var str = Encrypt.Sha256(infoStr).Substring(0, 16).ToUpper();
 

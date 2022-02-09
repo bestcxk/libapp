@@ -28,7 +28,7 @@
                     Width="100"
                     HorizontalContentAlignment="Center"
                     Content="摄像头索引：" />
-                <ComboBox Name="cameraIndex" Text="{Binding CameraIndex}" />
+                <ComboBox Name="cameraIndex" Text="{Binding CameraIndex, Mode=TwoWay}" />
             </StackPanel>
             <StackPanel
                 Height="30"
@@ -119,7 +119,7 @@
                     Name="NoSelectOpenUrlText"
                     Width="250"
                     Controls:TextBoxHelper.ClearTextButton="True"
-                    Text="{Binding NoSelectOpenUrl}"
+                    Text="{Binding NoSelectOpenUrl, Mode=TwoWay}"
                     ToolTip="该输入框存在值时，则直接打开该值地址页" />
             </StackPanel>
             <StackPanel

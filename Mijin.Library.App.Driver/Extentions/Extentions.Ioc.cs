@@ -44,6 +44,7 @@ namespace Mijin.Library.App.Driver.Extentions
             services.AddSingleton<IMultiGrfid, MultiGrfid>();
             services.AddSingleton<ISudo, Sudo>();
             services.AddSingleton<IWjSIP2Client, WjSIP2Client>();
+            services.AddSingleton<IDataConvert, DataConvert>();
 
             #region HFReader IOC 
             if (clientSettings.HFReader == HFReaderEnum.BlackReader)

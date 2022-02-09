@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿
+//#define IsAuth
+using Microsoft.Extensions.DependencyInjection;
 using Mijin.Library.App.Filters;
 using System;
 using System.Windows;
@@ -58,15 +60,20 @@ namespace Mijin.Library.App
 
         protected override void OnInitialized()
         {
+#if(IsAuth)
             if (Auth.IsAuth())
                 App_OnStartup();
+#else
+            App_OnStartup();
+#endif
+
             base.OnInitialized();
         }
 
         protected override Window CreateShell()
         {
             // 非开发环境
-#if (!DEBUG)
+#if (IsAuth)
             if (!Auth.IsAuth())
                 return Container.Resolve<AuthWindow>();
             else
