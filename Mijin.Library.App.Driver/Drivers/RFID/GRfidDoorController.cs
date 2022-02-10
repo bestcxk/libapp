@@ -275,6 +275,29 @@ namespace Mijin.Library.App.Driver
         }
         #endregion
 
+        public MessageModel<string> CloseAll()
+        {
+            var res = new MessageModel<string>();
+
+            if(doors.IsEmpty())
+            {
+                res.msg = "未连接上任何通道门";
+                return res;
+            }
+
+            foreach (var door in doors)
+            {
+                door.RfidDoor.Close();
+            }
+
+            doors.Clear();
+
+            res.success = true;
+            res.msg = "关闭所有通道门连接成功";
+            return res;
+
+        }
+
     }
 
     public class DoorControllerModel

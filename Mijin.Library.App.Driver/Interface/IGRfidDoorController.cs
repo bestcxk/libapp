@@ -10,6 +10,7 @@ namespace Mijin.Library.App.Driver
         event Action<WebViewSendModel<PeopleInOut>> OnDoorPeopleInOut;
         event Action<WebViewSendModel<LabelInfo>> OnDoorReadUHFLabel;
 
+        MessageModel<string> CloseAll();
         MessageModel<string> ConnectDoors(Dictionary<int, DoorSetting> connectDic);
         MessageModel<List<object>> GetConnectDoorInfos();
         MessageModel<Dictionary<int, Dictionary<byte, byte>>> GetDoorsPower();
