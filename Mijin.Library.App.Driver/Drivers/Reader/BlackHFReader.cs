@@ -278,9 +278,6 @@ namespace Mijin.Library.App.Driver
             int status;
             byte bcnt = 0;
             byte[] dataBuffer = new byte[64];
-            byte[] dataBuffer2 = new byte[64];
-            byte[] dataBuffer3 = new byte[64];
-            byte[] dataBuffer4 = new byte[64];
             byte lenByUid = 0;
             byte block;
             //IntPtr pSnr;
@@ -288,6 +285,8 @@ namespace Mijin.Library.App.Driver
             byte readLen2 = 0;
             byte readLen3 = 0;
             byte readLen4 = 0;
+            byte readLen5 = 0;
+            byte readLen6 = 0;
 
             //检查读卡器是否连接
             if (true != Sys_IsOpen(g_hDevice))
@@ -316,7 +315,7 @@ namespace Mijin.Library.App.Driver
             //=================== Read block data =====================
             byte[] bytesUID = ToDigitsBytes(Uid);
             block = Convert.ToByte("0");
-            status = I15693_Read(g_hDevice, 0x02, bytesUID, block, 1, dataBuffer2, ref readLen2);//读取区块0数据
+            status = I15693_Read(g_hDevice, 0x02, bytesUID, block, 1, dataBuffer, ref readLen2);//读取区块0数据
             if (status != 0)
             {
                 result.devMsg = "I15693_Read failed !";
@@ -325,10 +324,10 @@ namespace Mijin.Library.App.Driver
 
             byte[] bytesData1 = new byte[64];
             for (int i = 0; i < readLen2; i++)
-                bytesData1[i] = Marshal.ReadByte(dataBuffer2, i);
+                bytesData1[i] = Marshal.ReadByte(dataBuffer, i);
 
             block = Convert.ToByte("1");
-            status = I15693_Read(g_hDevice, 0x02, bytesUID, block, 1, dataBuffer3, ref readLen3);//读取区块1数据
+            status = I15693_Read(g_hDevice, 0x02, bytesUID, block, 1, dataBuffer, ref readLen3);//读取区块1数据
             if (status != 0)
             {
                 result.devMsg = "I15693_Read1 failed !";
@@ -337,10 +336,10 @@ namespace Mijin.Library.App.Driver
 
             byte[] bytesData2 = new byte[64];
             for (int i = 0; i < readLen3; i++)
-                bytesData2[i] = Marshal.ReadByte(dataBuffer3, i);
+                bytesData2[i] = Marshal.ReadByte(dataBuffer, i);
 
             block = Convert.ToByte("2");
-            status = I15693_Read(g_hDevice, 0x02, bytesUID, block, 1, dataBuffer4, ref readLen4); //读取区块2数据
+            status = I15693_Read(g_hDevice, 0x02, bytesUID, block, 1, dataBuffer, ref readLen4); //读取区块2数据
             if (status != 0)
             {
                 result.devMsg = "I15693_Read1 failed !";
@@ -348,9 +347,31 @@ namespace Mijin.Library.App.Driver
             }
             byte[] bytesData3 = new byte[64];
             for (int i = 0; i < readLen4; i++)
-                bytesData3[i] = Marshal.ReadByte(dataBuffer4, i);
+                bytesData3[i] = Marshal.ReadByte(dataBuffer, i);
 
-            result.response = ToHexString(bytesData1, readLen2) + ToHexString(bytesData2, readLen3)+ ToHexString(bytesData3, readLen4); //  Encoding.ASCII.GetString(bts, 0, bts.Length);
+            block = Convert.ToByte("3");
+            status = I15693_Read(g_hDevice, 0x02, bytesUID, block, 1, dataBuffer, ref readLen5); //读取区块2数据
+            if (status != 0)
+            {
+                result.devMsg = "I15693_Read1 failed !";
+                return result;
+            }
+            byte[] bytesData4 = new byte[64];
+            for (int i = 0; i < readLen5; i++)
+                bytesData4[i] = Marshal.ReadByte(dataBuffer, i);
+
+            block = Convert.ToByte("4");
+            status = I15693_Read(g_hDevice, 0x02, bytesUID, block, 1, dataBuffer, ref readLen6); //读取区块2数据
+            if (status != 0)
+            {
+                result.devMsg = "I15693_Read1 failed !";
+                return result;
+            }
+            byte[] bytesData5 = new byte[64];
+            for (int i = 0; i < readLen6; i++)
+                bytesData5[i] = Marshal.ReadByte(dataBuffer, i);
+
+            result.response = ToHexString(bytesData1, readLen2) + ToHexString(bytesData2, readLen3)+ ToHexString(bytesData3, readLen4) + ToHexString(bytesData4, readLen5) + ToHexString(bytesData5, readLen6); //  Encoding.ASCII.GetString(bts, 0, bts.Length);
 
             result.success = true;
             result.msg = "读卡成功";
