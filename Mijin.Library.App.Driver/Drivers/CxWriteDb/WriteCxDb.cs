@@ -7,6 +7,8 @@ using Bing.Extensions;
 using IsUtil.Maps;
 using Mijin.Library.App.Model;
 using Util.Dependency;
+using Util.Logs;
+using Util.Logs.Extensions;
 
 namespace Mijin.Library.App.Driver
 {
@@ -41,6 +43,7 @@ namespace Mijin.Library.App.Driver
             catch (Exception e)
             {
                 res.msg = @$"写入失败：{e}";
+                e.Log(Log.GetLog().Caption("超鑫写数据库"));
             }
             return res;
         }

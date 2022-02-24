@@ -148,6 +148,13 @@ namespace Mijin.Library.App
             {
                 mainWindow.Show();
             }
+
+            // 直接打开门禁页面
+            if (settings.DoorControllerStart)
+            {
+                webviewWindow.ShowDoorViewBtn(null, null);
+            }
+
         }
 
 

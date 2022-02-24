@@ -107,6 +107,10 @@ namespace Mijin.Library.App.Model
         public string LabelConvertUrl { get; set; }
 
         public string DoorControllerUrl { get; set; }
+        /// <summary>
+        /// 门禁随系统直接启动
+        /// </summary>
+        public bool DoorControllerStart { get; set; }
 
         /// <summary>
         /// 二维码扫描模块

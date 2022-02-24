@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using IsUtil.Maps;
+using Bing.Extensions;
 
 namespace Mijin.Library.App.Driver
 {
@@ -78,7 +79,7 @@ namespace Mijin.Library.App.Driver
             IPosPrint posPrint, IdentityReader identityReader, IHFReader HFReader, IRfid rfid, IKeyboard keyboard,
             ICamera camera, ICardSender cardSender, IDoorController doorController,
             IGRfidDoorController gRfidDoorController, ITuChuangSIP2Client tuChuangSIP2Client, IRRfid rRfid,
-            IQrCode qrCode, ICkDoorController ckDoorController, ITrack track, IMultiGrfid multiGrfid, ISudo sudo, IWjSIP2Client wjSIP2Client,IDataConvert dataConvert,IWriteCxDb writeCxDb)
+            IQrCode qrCode, ICkDoorController ckDoorController, ITrack track, IMultiGrfid multiGrfid, ISudo sudo, IWjSIP2Client wjSIP2Client, IDataConvert dataConvert, IWriteCxDb writeCxDb)
         {
             _ckDoorController = ckDoorController;
             _track = track;
@@ -143,6 +144,19 @@ namespace Mijin.Library.App.Driver
                 .Where(p => p.Name == mthod).FirstOrDefault();
             if (proInfo != null)
             {
+                if (!parameters.IsEmpty())
+                {
+                    proInfo.SetValue(acionInstance, parameters[0]);
+                    return new MessageModel<object>()
+                    {
+                        devMsg = "因为该属性是参数，请不要判断 success，请判断 response",
+                        success = true,
+                        msg = "参数设置成功",
+                        response = proInfo.GetValue(acionInstance)
+                    };
+                }
+
+
                 return new MessageModel<object>()
                 {
                     devMsg = "因为该属性是参数，请不要判断 success，请判断 response",
@@ -156,7 +170,7 @@ namespace Mijin.Library.App.Driver
                 // 反射执行完方法后转换成 WebMessageModel 类
                 var method = acionInstance.GetType().GetMethod(mthod, parametersTypes);
 
-                if(method == null)
+                if (method == null)
                 {
                     return new MessageModel<object>()
                     {
