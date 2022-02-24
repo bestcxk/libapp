@@ -17,6 +17,7 @@ namespace Mijin.Library.App.Driver
         private ISudo _sudo { get; }
         private IWjSIP2Client WjSIP2Client { get; }
         public IDataConvert _dataConvert { get; }
+        public IWriteCxDb _writeCxDb { get; }
         private IWenhuaSIP2Client _sIP2Client { get; }
         private ICabinetLock _cabinetLock { get; }
         private IPosPrint _posPrint { get; }
@@ -77,7 +78,7 @@ namespace Mijin.Library.App.Driver
             IPosPrint posPrint, IdentityReader identityReader, IHFReader HFReader, IRfid rfid, IKeyboard keyboard,
             ICamera camera, ICardSender cardSender, IDoorController doorController,
             IGRfidDoorController gRfidDoorController, ITuChuangSIP2Client tuChuangSIP2Client, IRRfid rRfid,
-            IQrCode qrCode, ICkDoorController ckDoorController, ITrack track, IMultiGrfid multiGrfid, ISudo sudo, IWjSIP2Client wjSIP2Client,IDataConvert dataConvert)
+            IQrCode qrCode, ICkDoorController ckDoorController, ITrack track, IMultiGrfid multiGrfid, ISudo sudo, IWjSIP2Client wjSIP2Client,IDataConvert dataConvert,IWriteCxDb writeCxDb)
         {
             _ckDoorController = ckDoorController;
             _track = track;
@@ -85,6 +86,7 @@ namespace Mijin.Library.App.Driver
             _sudo = sudo;
             WjSIP2Client = wjSIP2Client;
             _dataConvert = dataConvert;
+            _writeCxDb = writeCxDb;
             _systemFunc = systemFunc;
             _sIP2Client = sIP2Client;
             _cabinetLock = cabinetLock;
