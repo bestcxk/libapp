@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Bing.Extensions;
+using IsUtil.Maps;
 using Mijin.Library.App.Model;
 using Util.Dependency;
 
@@ -42,6 +43,11 @@ namespace Mijin.Library.App.Driver
                 res.msg = @$"写入失败：{e}";
             }
             return res;
+        }
+
+        public MessageModel<string> WriteDb(string entity)
+        {
+            return WriteDb(entity.JsonMapTo<CxEntity>());
         }
 
 

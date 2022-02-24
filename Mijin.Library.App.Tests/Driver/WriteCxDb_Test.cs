@@ -16,8 +16,14 @@ namespace Mijin.Library.App.Tests.Driver
         [Fact]
         public void Write_Test()
         {
+            // 设置数据库连接字符串
+            writeCxDb.ConnectDbStr = "Server=192.168.0.83;Database=mj;User=thirdlib;Password=Thirdlib@123;MultipleActiveResultSets=True;";
+
+            // 设置实体
             var entity = new CxEntity();
             entity.sn_code = "test";
+
+            // 写数据库
             var res = writeCxDb.WriteDb(entity);
             Assert.True(res.success);
         }
