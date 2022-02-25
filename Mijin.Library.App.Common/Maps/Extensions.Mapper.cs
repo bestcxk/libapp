@@ -129,7 +129,7 @@ namespace IsUtil.Maps {
         /// <returns>目标对象</returns>
         private static TDestination JsonMap<TDestination>(object source)
         {
-            return Json.ToObject<TDestination>(Json.ToJson(source));
+            return Json.ToObject<TDestination>(source.ToString());
         }
 
         /// <summary>
