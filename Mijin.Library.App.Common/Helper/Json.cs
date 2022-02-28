@@ -6,15 +6,20 @@ namespace IsUtil
     /// <summary>
     /// Json操作
     /// </summary>
-    public static partial class Json {
+    public static partial class Json
+    {
         /// <summary>
         /// 将Json字符串转换为对象
         /// </summary>
         /// <param name="json">Json字符串</param>
-        public static T ToObject<T>( string json ) {
-            if ( string.IsNullOrWhiteSpace( json ) )
+        public static T ToObject<T>(string json)
+        {
+            if (string.IsNullOrWhiteSpace(json))
                 return default(T);
-            return JsonConvert.DeserializeObject<T>( json );
+
+            var obj = JsonConvert.DeserializeObject<T>(json);
+
+            return obj;
         }
 
         /// <summary>
@@ -32,6 +37,6 @@ namespace IsUtil
             return result;
         }
 
-        
+
     }
 }
