@@ -1,5 +1,5 @@
 ﻿using Bing.IO;
-using Mijin.Library.App.Common.Helper;
+using Mijin.Library.App.Common.EncryptApplocation;
 using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
@@ -26,7 +26,7 @@ namespace Mijin.Library.App.Authorization
     public partial class AuthWindow : Window
     {
         public Content content { get; set; } = new Content();
-        private EncryptApp app = Auth.App;
+        private EncryptApp app = new EncryptApp();
 
         public AuthWindow()
         {
@@ -35,7 +35,7 @@ namespace Mijin.Library.App.Authorization
 
             content.Code = app.GetEncryptStr();
 
-            if (Auth.IsAuth())
+            if (app.IsAuth())
             {
                 SetAuth();
             }
@@ -61,7 +61,7 @@ namespace Mijin.Library.App.Authorization
         }
         private void Authorization(object sender, RoutedEventArgs e)
         {
-            
+
             var dir = new DirectoryInfo(Environment.CurrentDirectory);
 #if (!DEBUG)
  if (!dir.GetFiles().Any(f => f.Name == "Mijin.Library.App.dll"))
@@ -71,16 +71,15 @@ namespace Mijin.Library.App.Authorization
             }
 #endif
 
-
-            var key = app.GetDeEncryptStr(app.GetEncryptStr());
-
-            if (key != content.Key)
+            if (app.Authorization(content.Key))
+            {
+                SetAuth();
+                FileHelper.SaveFile("KeyCode", content.Key, Encoding.UTF8);
+            }
+            else
             {
                 MessageBox.Show("激活码不正确");
-                return;
             }
-            SetAuth();
-            FileHelper.SaveFile("KeyCode", key, Encoding.UTF8);
         }
     }
 
@@ -99,7 +98,8 @@ namespace Mijin.Library.App.Authorization
         public string IsAuth
         {
             get { return isAuth; }
-            set {
+            set
+            {
                 SetProperty(ref isAuth, value);
             }
         }

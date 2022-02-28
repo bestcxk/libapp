@@ -1,6 +1,6 @@
 ﻿using Bing.Extensions;
 using Bing.Helpers;
-using Mijin.Library.App.Common.Helper;
+using Mijin.Library.App.Common.EncryptApplocation;
 using System;
 using System.Collections.Generic;
 using System.Linq;

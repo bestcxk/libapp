@@ -1,5 +1,4 @@
 ﻿
-//#define IsAuth
 using Microsoft.Extensions.DependencyInjection;
 using Mijin.Library.App.Filters;
 using System;
@@ -24,10 +23,10 @@ using Prism.DryIoc;
 using Prism.Ioc;
 using DryIoc;
 using DryIoc.Microsoft.DependencyInjection;
-using Mijin.Library.App.Common.Helper;
 using Bing.IO;
 using System.Text;
 using Mijin.Library.App.Authorization;
+using Mijin.Library.App.Common.EncryptApplocation;
 
 namespace Mijin.Library.App
 {
@@ -39,6 +38,8 @@ namespace Mijin.Library.App
         public IServiceCollection _serviceCollection { get; } = new ServiceCollection();
 
         public IConfiguration Configuration { get; }
+
+        public EncryptApp app { get; set; } = new EncryptApp();
 
         public App()
         {
@@ -60,8 +61,8 @@ namespace Mijin.Library.App
 
         protected override void OnInitialized()
         {
-#if(IsAuth)
-            if (Auth.IsAuth())
+#if !DEBUG
+            if (app.IsAuth())
                 App_OnStartup();
 #else
             App_OnStartup();
@@ -73,8 +74,8 @@ namespace Mijin.Library.App
         protected override Window CreateShell()
         {
             // 非开发环境
-#if (IsAuth)
-            if (!Auth.IsAuth())
+#if (!DEBUG)
+            if (!app.IsAuth())
                 return Container.Resolve<AuthWindow>();
             else
                 return Container.Resolve<MainWindow>();

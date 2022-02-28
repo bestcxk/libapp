@@ -10,7 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Mijin.Library.App.Common.Helper
+namespace Mijin.Library.App.Common.EncryptApplocation
 {
     public class EncryptApp
     {
@@ -45,7 +45,22 @@ namespace Mijin.Library.App.Common.Helper
             }
         }
 
+        /// <summary>
+        /// 是否已授权
+        /// </summary>
+        /// <returns></returns>
+        public bool IsAuth()
+        {
+            var key = Bing.IO.FileHelper.ReadToString("KeyCode", Encoding.UTF8)?.Replace("-", "")?.ToUpper();
+            var enCode = GetEncryptStr();
+            var enKey = GetDeEncryptStr(enCode).Replace("-", "").ToUpper();
+            return enKey == key;
+        }
 
+        /// <summary>
+        /// 获取加密字符串
+        /// </summary>
+        /// <returns></returns>
         public string GetEncryptStr()
         {
             var fileName = "enc.dll";
@@ -57,7 +72,17 @@ namespace Mijin.Library.App.Common.Helper
 
             if (infoStr.IsEmpty())
             {
-                infoStr = @$"{Computer.CpuID}{Computer.DiskID}{Computer.SystemType}{Computer.TotalPhysicalMemory}{DateTime.Now.ToChineseDateTimeString()}";
+                var platform = Environment.OSVersion.Platform;
+                var isWindows =
+                    platform == PlatformID.Win32NT ||
+                    platform == PlatformID.Win32S ||
+                    platform == PlatformID.WinCE ||
+                    platform == PlatformID.Win32Windows;
+
+                if (isWindows)
+                    infoStr = @$"{Computer.CpuID}{Computer.DiskID}{Computer.SystemType}{Computer.TotalPhysicalMemory}{DateTime.Now.ToChineseDateTimeString()}";
+                else
+                    infoStr = DateTime.Now.ToChineseDateTimeString();
 
                 File.WriteAllText(fileName, infoStr);
             }
@@ -69,6 +94,27 @@ namespace Mijin.Library.App.Common.Helper
             return key;
         }
 
+        /// <summary>
+        /// 授权
+        /// </summary>
+        /// <returns></returns>
+        public bool Authorization(string inputKey)
+        {
+            var key = GetDeEncryptStr(GetEncryptStr());
+
+            if (key != inputKey)
+            {
+                return false;
+            }
+            FileHelper.SaveFile("KeyCode", key, Encoding.UTF8);
+            return true;
+        }
+
+        /// <summary>
+        /// 获取解密字符串
+        /// </summary>
+        /// <param name="encryptStr"></param>
+        /// <returns></returns>
         public string GetDeEncryptStr(string encryptStr)
         {
             if (encryptStr.IsEmpty())

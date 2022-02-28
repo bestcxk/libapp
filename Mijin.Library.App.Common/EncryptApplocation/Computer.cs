@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Management;
 
-namespace Mijin.Library.App.Common.Helper
+namespace Mijin.Library.App.Common.EncryptApplocation
 {
     ///Computer Information 
     public class Computer
