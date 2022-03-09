@@ -119,13 +119,27 @@ namespace Mijin.Library.App
             // 全局异常处理
             this.DispatcherUnhandledException += GlobalExceptionsFilter.OnException;
 
+            var clseEvent = () =>
+           {
+
+               if (!mainWindow.IsVisible && !webviewWindow.IsVisible && WebViewWindow._doorViewWindow?.IsVisible != true)
+               {
+                   // 退出整个应用
+                   Environment.Exit(0);
+               }
+           };
+
             // 其中一个窗口触发了关闭事件则直接退出全部程序
             mainWindow.Closed += (s, e) =>
             {
-                // 退出整个应用
-                Environment.Exit(0);
+                clseEvent.Invoke();
             };
-            //webviewWindow.Closed += ExitApplication;
+
+            // 其中一个窗口触发了关闭事件则直接退出全部程序
+            webviewWindow.Closed += (s, e) =>
+            {
+                clseEvent.Invoke();
+            };
 
             // 不可被关闭
             if (settings.CannotClosed)
@@ -254,7 +268,5 @@ namespace Mijin.Library.App
             System.Security.Principal.WindowsPrincipal principal = new System.Security.Principal.WindowsPrincipal(identity);
             return principal.IsInRole(System.Security.Principal.WindowsBuiltInRole.Administrator);
         }
-
-
     }
 }

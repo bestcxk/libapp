@@ -17,6 +17,8 @@ using IsUtil;
 using System.ComponentModel;
 using System.Reflection;
 using System.Windows.Input;
+using AspectCore.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Mijin.Library.App.Views
 {
@@ -30,6 +32,7 @@ namespace Mijin.Library.App.Views
         public static WebViewWindow _doorViewWindow { get; set; } = null;
         public static WebViewWindow _webViewWindow { get; set; } = null;
         public ISystemFunc _systemFunc { get; }
+        public IServiceProvider _serviceProvider { get; }
         public string openUrl { get; set; }
 
         static private bool hasRegisterEvent = false;
@@ -37,10 +40,11 @@ namespace Mijin.Library.App.Views
         static private string logColor = "32"; // 32 或者 34
 
         #region 构造函数
-        public WebViewWindow(IDriverHandle driverHandle, ISystemFunc systemFunc)
+        public WebViewWindow(IDriverHandle driverHandle, ISystemFunc systemFunc, IServiceProvider serviceProvider)
         {
             _driverHandle = driverHandle;
             _systemFunc = systemFunc;
+            _serviceProvider = serviceProvider;
             _clientSettings = systemFunc.ClientSettings;
             InitializeComponent();
             InitializeAsync(); // 初始化
@@ -48,19 +52,12 @@ namespace Mijin.Library.App.Views
             Title = _clientSettings.Title?.App ?? "图书管理系统";
 
             DisableWPFTabletSupport();
-
         }
         #endregion
 
         ~WebViewWindow()
         {
 
-        }
-
-        protected override void OnClosing(CancelEventArgs e)
-        {
-            if (_doorViewWindow != null && _doorViewWindow.IsVisible)
-                _doorViewWindow.Close();
         }
 
         #region 初始化
@@ -80,7 +77,7 @@ namespace Mijin.Library.App.Views
                         return;
                     }
                     // 获取webview 进程id 并杀掉，否则无法删除文件
-                    if(_clientSettings.OnExitClearWebCache != ClearWebViewCacheModeEnum.Default)
+                    if (_clientSettings.OnExitClearWebCache != ClearWebViewCacheModeEnum.Default)
                     {
                         var process = Process.GetProcessById((int)this.webView.CoreWebView2.BrowserProcessId);
                         process.Kill();
@@ -136,11 +133,10 @@ namespace Mijin.Library.App.Views
                     ex.Log(Log.GetLog().Caption("退出时清空浏览器缓存"));
                 }
 
-
                 //ReStartApp();
                 #endregion
                 // 退出整个应用
-                Environment.Exit(0);
+                // Environment.Exit(0);
             };
 
             await this.webView.EnsureCoreWebView2Async(null);
@@ -413,10 +409,27 @@ namespace Mijin.Library.App.Views
         {
             if (_doorViewWindow == null)
             {
-                _doorViewWindow = new WebViewWindow(_driverHandle, _systemFunc);
+                _doorViewWindow = new WebViewWindow(_driverHandle, _systemFunc, _serviceProvider);
                 var url = this._clientSettings.LibraryManageUrl + (this._clientSettings.LibraryManageUrl.Last() == '/' ? "door" : "/door");
                 _doorViewWindow.openUrl = this._clientSettings.DoorControllerUrl.IsEmpty() ? url : this._clientSettings.DoorControllerUrl;
                 _doorViewWindow.Title = "通道门";
+
+                var mainWindow = _serviceProvider.GetService<MainWindow>();
+                var clseEvent = () =>
+                {
+                    if (!mainWindow.IsVisible && !_webViewWindow.IsVisible && _doorViewWindow?.IsVisible != true)
+                    {
+                        // 退出整个应用
+                        Environment.Exit(0);
+                    }
+                };
+
+
+
+                _doorViewWindow.Closed += (s, e) =>
+                {
+                    clseEvent?.Invoke();
+                };
             }
             _doorViewWindow.Show();
         }

@@ -30,7 +30,6 @@ namespace Mijin.Library.App.Driver
         // gpi触发Action ,默认不处理
         protected GpiAction _gpiAction = GpiAction.Default;
 
-
         // 标签触发事件
         public event Action<WebViewSendModel<LabelInfo>> OnReadUHFLabel;
 

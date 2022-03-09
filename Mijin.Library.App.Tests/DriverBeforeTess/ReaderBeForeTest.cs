@@ -1,5 +1,7 @@
-﻿using Mijin.Library.App.Driver;
+﻿using IsUtil.Maps;
+using Mijin.Library.App.Driver;
 using Mijin.Library.App.Model.Setting;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -88,6 +90,17 @@ namespace Mijin.Library.App.Tests.DriverBeforeTess
             sysFunc.LibrarySettings.IcSettings.ICLength = 100;
             result = IcSettings.DataHandle(data, sysFunc.LibrarySettings.IcSettings);
             Assert.Equal(data, result);
+        }
+
+        [Fact]
+        public void JsonConvert_Test()
+        {
+            var str = "{ user_id: \"123\" }";
+
+            var cx = new CxEntity();
+            cx.sn_code = "123";
+            var st = JsonConvert.SerializeObject(cx);
+            var ds = st.JsonMapTo<CxEntity>();
         }
     }
 }

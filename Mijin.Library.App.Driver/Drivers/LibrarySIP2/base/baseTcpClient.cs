@@ -81,8 +81,8 @@ namespace Mijin.Library.App.Driver
                 }
 
                 _tcpClient.Connect(host, port.ToInt());
-                _tcpClient.ReceiveBufferSize = 1024*1024;
-                _tcpClient.SendBufferSize = 1024*1024;
+                _tcpClient.ReceiveBufferSize = 1024 * 1024;
+                _tcpClient.SendBufferSize = 1024 * 1024;
                 if (_tcpClient.Connected)
                     ReadTimeOut = 3000;
             }
@@ -110,12 +110,12 @@ namespace Mijin.Library.App.Driver
                 throw new Exception("未连接到socket");
             }
             var sendBytes = UTF8Encoding.UTF8.GetBytes(message + "\r\n");
-            var stream = _tcpClient.GetStream();
+            using var stream = _tcpClient.GetStream();
 
             stream.Write(sendBytes, 0, sendBytes.Length);
             stream.Flush();
 
-            var data = new byte[65536];
+            var data = new byte[1024 * 1024];
             stream.Read(data, 0, data.Length);
             return UTF8Encoding.UTF8.GetString(data);
         }
@@ -143,12 +143,12 @@ namespace Mijin.Library.App.Driver
                     throw new Exception("未连接到socket");
             }
             var sendBytes = UTF8Encoding.UTF8.GetBytes(message + "\r\n");
-            var stream = _tcpClient.GetStream();
+            using var stream = _tcpClient.GetStream();
 
             stream.Write(sendBytes, 0, sendBytes.Length);
             stream.Flush();
 
-            var data = new byte[65536];
+            var data = new byte[1024 * 1024];
             var len = await stream.ReadAsync(data, 0, data.Length);
             return UTF8Encoding.UTF8.GetString(data.Take(len).ToArray());
         }
