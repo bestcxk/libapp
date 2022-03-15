@@ -431,7 +431,17 @@ namespace Mijin.Library.App.Views
                     clseEvent?.Invoke();
                 };
             }
-            _doorViewWindow.Show();
+
+            try
+            {
+                _doorViewWindow.Show();
+            }
+            catch (Exception)
+            {
+                _doorViewWindow = null;
+                ShowDoorViewBtn(null, null);
+            }
+
         }
 
         // 修复 win7 触屏 
