@@ -25,12 +25,25 @@ VALUES('{cx.user_id}','{cx.visit_date_time}','{cx.visit_date}','{cx.visit_time}'
             {
                 var count = SQLHelper.Execute("cx", str, null, CommandType.Text);
                 Console.WriteLine("写入数据库成功");
-
             }
             catch (Exception e)
             {
-                Console.WriteLine($@"写数据库失败：{e.ToString()}" + "\r\n" + e.StackTrace);
+                Console.WriteLine($@"写数据库失败：{e}" + "\r\n" + e.StackTrace);
                 throw;
+            }
+        }
+
+        public static DataTable Read(string dateTime)
+        {
+            var str = $@"select * FROM visit_data_log WHERE visit_date_time='{dateTime}'";
+            try
+            {
+                var data = SQLHelper.QueryDataTable("cx", str, null, CommandType.Text);
+                return data;
+            }
+            catch (Exception e)
+            {
+                return null;
             }
         }
     }

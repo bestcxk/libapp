@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Bing.Extensions;
 using IsUtil.Maps;
 using Mijin.Library.App.Model;
+using Newtonsoft.Json;
 using Util.Dependency;
 using Util.Logs;
 using Util.Logs.Extensions;
@@ -53,7 +54,17 @@ namespace Mijin.Library.App.Driver
             return WriteDb(entity.JsonMapTo<CxEntity>());
         }
 
+        public MessageModel<string> ReadData(string datetime)
+        {
+            var data = CxVisitHelper.Read(datetime);
 
+            return new MessageModel<string>()
+            {
+                success = true,
+                msg = "获取成功",
+                response = JsonConvert.SerializeObject(data)
+            };
+        }
 
     }
 }

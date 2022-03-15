@@ -6,6 +6,7 @@ namespace Mijin.Library.App.Driver
     {
         string ConnectDbStr { get; set; }
 
+        MessageModel<string> ReadData(string datetime);
         MessageModel<string> WriteDb(CxEntity entity);
     }
 }
