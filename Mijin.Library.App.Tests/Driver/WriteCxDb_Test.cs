@@ -33,9 +33,8 @@ namespace Mijin.Library.App.Tests.Driver
         public void Read_Test()
         {
             writeCxDb.ConnectDbStr = "Server=192.168.0.81;Database=mj;User=thirdlib;Password=Thirdlib@123;MultipleActiveResultSets=True;";
-            var data = CxVisitHelper.Read("2022-03-09 11:31:21");
-            var str = JsonConvert.SerializeObject(data);
-            Assert.NotNull(str);
+            var res = writeCxDb.ReadData("2022-03-09 11:31:21");
+            Assert.NotNull(res);
         }
 
     }
