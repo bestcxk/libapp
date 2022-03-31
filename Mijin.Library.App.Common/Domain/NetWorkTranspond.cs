@@ -76,11 +76,26 @@ namespace Mijin.Library.App.Common.Domain
             try
             {
                 var address = Dns.GetHostEntry(TargetHost)?.AddressList;
+                ip = address.First(a => !a.ToString().Contains(":"));
             }
             catch (Exception e)
             {
-                ip = IPAddress.Parse(TargetHost);
             }
+
+            try
+            {
+                if (ip == null)
+                {
+                    ip = IPAddress.Parse(TargetHost);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+
+
+
 
             while (true)
             {
