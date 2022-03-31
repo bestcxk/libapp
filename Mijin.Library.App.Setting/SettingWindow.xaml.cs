@@ -27,6 +27,8 @@ namespace Mijin.Library.App.Setting
     public partial class SettingWindow : MetroWindow
     {
 
+        public event Action OnSettingsChange;
+
         public ClientSettings _clientSettings { get; set; }
 
         private static readonly string startFilePath =
@@ -100,6 +102,7 @@ namespace Mijin.Library.App.Setting
 
                 }));
             });
+            OnSettingsChange?.Invoke();
             await Task.Delay(500);
             this.saveLoading.Visibility = Visibility.Hidden;
             button.IsEnabled = true;

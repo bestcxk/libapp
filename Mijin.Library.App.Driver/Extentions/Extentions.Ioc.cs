@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Mijin.Library.App.Driver.Services.Network;
 using Mijin.Library.App.Model;
 using System;
 using System.Collections.Generic;
@@ -46,6 +47,9 @@ namespace Mijin.Library.App.Driver.Extentions
             services.AddSingleton<IWjSIP2Client, WjSIP2Client>();
             services.AddSingleton<IDataConvert, DataConvert>();
             services.AddSingleton<IWriteCxDb, WriteCxDb>();
+            services.AddSingleton<INetWorkTranspondService, NetWorkTranspondService>();
+
+
 
             #region HFReader IOC 
             if (clientSettings.HFReader == HFReaderEnum.BlackReader)

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using IsUtil;
 using IsUtil.Maps;
+using NLog.Fluent;
 
 namespace Mijin.Library.App.Driver
 {
@@ -69,8 +70,10 @@ namespace Mijin.Library.App.Driver
                 data.msg = "获取数据失败，返回信息为空";
                 return data;
             }
+
             data.success = message.Contains("登录成功");
             data.msg = data.success ? "登录成功" : "登录失败";
+            data.devMsg = message;
             return data;
         }
         internal async override Task<string> SendAsync(string message)

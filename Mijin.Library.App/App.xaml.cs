@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Mijin.Library.App.Filters;
 using System;
+using System.Collections.Generic;
 using System.Windows;
 using Util.Logs.Extensions;
 using Microsoft.Extensions.Configuration;
@@ -27,6 +28,16 @@ using Bing.IO;
 using System.Text;
 using Mijin.Library.App.Authorization;
 using Mijin.Library.App.Common.EncryptApplocation;
+using System.Net.Sockets;
+using System.Net;
+using System.Threading;
+using Bing.Extensions;
+using Bing.Helpers;
+using Exceptionless.Utility;
+using IdentityModel.Client;
+using Microsoft.AspNetCore.Http.Extensions;
+using Mijin.Library.App.Common.Domain;
+using Mijin.Library.App.Driver.Services.Network;
 
 namespace Mijin.Library.App
 {
@@ -45,9 +56,6 @@ namespace Mijin.Library.App
         {
             // 程序启动检测
             this.BeforeStart();
-
-
-            //_serviceProvider = _serviceCollection.BuildServiceProvider();
         }
 
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
@@ -156,7 +164,7 @@ namespace Mijin.Library.App
             // 是否直接打开webview
             if (!string.IsNullOrEmpty(settings.NoSelectOpenUrl))
             {
-                webviewWindow.openUrl = settings.NoSelectOpenUrl;
+                webviewWindow.OpenUrl = settings.NoSelectOpenUrl;
                 webviewWindow.Show();
             }
             else
@@ -170,8 +178,14 @@ namespace Mijin.Library.App
                 webviewWindow.ShowDoorViewBtn(null, null);
             }
 
-        }
+            Container.Resolve<INetWorkTranspondService>().StartOrUpdateListen(settings);
+            var settingWindow = Container.Resolve<SettingWindow>();
+            settingWindow.OnSettingsChange += () =>
+            {
+                Container.Resolve<INetWorkTranspondService>().StartOrUpdateListen(Container.Resolve<ISystemFunc>().ClientSettings);
+            };
 
+        }
 
         /// <summary>
         /// 启动程序前检测
@@ -268,5 +282,6 @@ namespace Mijin.Library.App
             System.Security.Principal.WindowsPrincipal principal = new System.Security.Principal.WindowsPrincipal(identity);
             return principal.IsInRole(System.Security.Principal.WindowsBuiltInRole.Administrator);
         }
+
     }
 }

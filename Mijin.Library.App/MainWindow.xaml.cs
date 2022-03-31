@@ -19,7 +19,11 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Mijin.Library.App.Driver.Services.Network;
 using Util.Helpers;
+using Bing.Text;
+using System.Windows.Automation;
+using ClientSettings = Mijin.Library.App.Model.ClientSettings;
 
 namespace Mijin.Library.App
 {
@@ -28,13 +32,15 @@ namespace Mijin.Library.App
     /// </summary>
     public partial class MainWindow : MetroWindow
     {
+        private readonly INetWorkTranspondService _netWorkTranspondService;
         public WebViewWindow _webView { get; }
         public ClientSettings _clientSettings { get; }
         public SettingWindow _settingsWindow { get; }
         public ISystemFunc _systemFunc { get; }
 
-        public MainWindow(WebViewWindow webView, SettingWindow settingsWindow, ISystemFunc systemFunc)
+        public MainWindow(WebViewWindow webView, SettingWindow settingsWindow, ISystemFunc systemFunc, INetWorkTranspondService netWorkTranspondService)
         {
+            _netWorkTranspondService = netWorkTranspondService;
             //显示在显示器最中间
             this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
@@ -73,9 +79,11 @@ namespace Mijin.Library.App
             if (tile != null)
             {
                 if (_clientSettings.Title?.Manager == tile.Title)
-                    this._webView.openUrl = _clientSettings.LibraryManageUrl;
+                    //this._webView.openUrl = _netWorkTranspondService.GetVisitUrl(_clientSettings.LibraryManageUrl);
+                    this._webView.OpenUrl = _clientSettings.LibraryManageUrl;
                 else
-                    this._webView.openUrl = _clientSettings.ReaderActionUrl;
+                    //this._webView.openUrl = _netWorkTranspondService.GetVisitUrl(_clientSettings.ReaderActionUrl);
+                    this._webView.OpenUrl = _clientSettings.ReaderActionUrl;
                 this._webView.Show();
                 this.Hide();
             }
@@ -89,9 +97,12 @@ namespace Mijin.Library.App
 
         private void labelConvert_Click(object sender, RoutedEventArgs e)
         {
-            this._webView.openUrl = this._clientSettings.LabelConvertUrl.IsEmpty() ? Url.Combine(this._clientSettings.LibraryManageUrl, "labelSwitch") : this._clientSettings.LabelConvertUrl;
+            this._webView.OpenUrl = this._clientSettings.LabelConvertUrl.IsEmpty() ? Url.Combine(this._clientSettings.LibraryManageUrl, "labelSwitch") : this._clientSettings.LabelConvertUrl;
+            //this._webView.openUrl = _netWorkTranspondService.GetVisitUrl(this._clientSettings.LabelConvertUrl.IsEmpty() ? Url.Combine(this._clientSettings.LibraryManageUrl, "labelSwitch") : this._clientSettings.LabelConvertUrl);
             this._webView.Show();
             this.Hide();
         }
+
+
     }
 }

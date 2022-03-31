@@ -17,8 +17,10 @@ using IsUtil;
 using System.ComponentModel;
 using System.Reflection;
 using System.Windows.Input;
+using System.Windows.Navigation;
 using AspectCore.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
+using Mijin.Library.App.Driver.Services.Network;
 
 namespace Mijin.Library.App.Views
 {
@@ -28,21 +30,35 @@ namespace Mijin.Library.App.Views
     public partial class WebViewWindow : MetroWindow
     {
         private readonly IDriverHandle _driverHandle;
+        private readonly INetWorkTranspondService _netWorkTranspondService;
         private readonly ClientSettings _clientSettings;
         public static WebViewWindow _doorViewWindow { get; set; } = null;
         public static WebViewWindow _webViewWindow { get; set; } = null;
         public ISystemFunc _systemFunc { get; }
         public IServiceProvider _serviceProvider { get; }
-        public string openUrl { get; set; }
+
+
+        private string openUrl;
+
+        public string OpenUrl
+        {
+            get
+            {
+                var url = _netWorkTranspondService.GetVisitUrl(openUrl);
+                return url;
+            }
+            set => openUrl = value;
+        }
 
         static private bool hasRegisterEvent = false;
 
         static private string logColor = "32"; // 32 或者 34
 
         #region 构造函数
-        public WebViewWindow(IDriverHandle driverHandle, ISystemFunc systemFunc, IServiceProvider serviceProvider)
+        public WebViewWindow(IDriverHandle driverHandle, ISystemFunc systemFunc, IServiceProvider serviceProvider,INetWorkTranspondService netWorkTranspondService)
         {
             _driverHandle = driverHandle;
+            _netWorkTranspondService = netWorkTranspondService;
             _systemFunc = systemFunc;
             _serviceProvider = serviceProvider;
             _clientSettings = systemFunc.ClientSettings;
@@ -227,15 +243,15 @@ namespace Mijin.Library.App.Views
             // 直达webView模式
             if (!string.IsNullOrEmpty(_clientSettings.NoSelectOpenUrl))
             {
-                openUrl = _clientSettings.NoSelectOpenUrl;
+                OpenUrl = _clientSettings.NoSelectOpenUrl;
             }
 
             #region 当前路由处理
-            if (!string.IsNullOrWhiteSpace(openUrl) && openUrl.Substring(0, 2) == @$".\")
+            if (!string.IsNullOrWhiteSpace(OpenUrl) && OpenUrl.Substring(0, 2) == @$".\")
             {
-                this.openUrl = @$"{Path.Combine(Environment.CurrentDirectory, openUrl.Substring(2)).Replace(@$"\", @$"/")}";
+                this.OpenUrl = @$"{Path.Combine(Environment.CurrentDirectory, OpenUrl.Substring(2)).Replace(@$"\", @$"/")}";
             }
-            this.webView.Source = new Uri(this.openUrl);
+            this.webView.Source = new Uri(this.OpenUrl);
             #endregion
 
 
@@ -409,11 +425,12 @@ namespace Mijin.Library.App.Views
         {
             if (_doorViewWindow == null)
             {
-                _doorViewWindow = new WebViewWindow(_driverHandle, _systemFunc, _serviceProvider);
+                _doorViewWindow = new WebViewWindow(_driverHandle, _systemFunc, _serviceProvider,_netWorkTranspondService);
                 var url = this._clientSettings.LibraryManageUrl + (this._clientSettings.LibraryManageUrl.Last() == '/' ? "door" : "/door");
-                _doorViewWindow.openUrl = this._clientSettings.DoorControllerUrl.IsEmpty() ? url : this._clientSettings.DoorControllerUrl;
-                _doorViewWindow.Title = "通道门";
+                //_doorViewWindow.openUrl = _netWorkTranspondService.GetVisitUrl(this._clientSettings.DoorControllerUrl.IsEmpty() ? url : this._clientSettings.DoorControllerUrl);
+                _doorViewWindow.OpenUrl = this._clientSettings.DoorControllerUrl.IsEmpty() ? url : this._clientSettings.DoorControllerUrl;
 
+                _doorViewWindow.Title = "通道门";
                 var mainWindow = _serviceProvider.GetService<MainWindow>();
                 var clseEvent = () =>
                 {

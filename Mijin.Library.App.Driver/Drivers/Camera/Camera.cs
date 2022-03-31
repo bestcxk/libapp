@@ -117,7 +117,12 @@ namespace Mijin.Library.App.Driver
                 {
                     e.GetBaseException().Log(Log.GetLog().Caption(@$"摄像头{nameof(GetPicOnCameraHandle)}异常"));
                 }
-                await Task.Delay(330);
+#if DEBUG
+                await Task.Delay(50);
+#else
+                await Task.Delay(1000);
+#endif
+
             }
         }
 
