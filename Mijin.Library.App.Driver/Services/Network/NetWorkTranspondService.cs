@@ -56,7 +56,7 @@ namespace Mijin.Library.App.Driver.Services.Network
             for (int i = 0; i < urls.Count; i++)
             {
                 var originUrl = urls[i];
-                var url = Url.GetMainDomain(urls[i]).Replace("https://", "").Replace("http://", "").Replace("/", "");
+                var url = Url.GetMainDomain(urls[i]).Replace("https://", "").Replace("http://", "").Split("/")[0];
 
                 if (Transponds.Any(p => p.ToTargetString() == url))
                     continue;
