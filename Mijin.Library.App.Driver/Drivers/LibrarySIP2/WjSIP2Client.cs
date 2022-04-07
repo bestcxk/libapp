@@ -127,9 +127,6 @@ namespace Mijin.Library.App.Driver
                 return data;
             }
 
-            data.success = message.Search("12", "YYY")?.ToInt() == 1;
-
-
             bookInfo.Title = message.Search("AJ", "|");
             bookInfo.Serial = bookserial;
             bookInfo.ShuldBackDate = message.Search("AH", "|");
@@ -138,8 +135,8 @@ namespace Mijin.Library.App.Driver
             bookInfo.ScreenMsg = message.Search("AF", "|")?.Replace(bookserial, "");
             bookInfo.PrintLine = message.Search("AG", "|");
 
+            data.success = bookInfo.ScreenMsg?.Contains("成功") ?? false;
             data.msg = data.success ? "借阅成功" : bookInfo.ScreenMsg ?? "未知错误";
-
 
             dic["bookInfo"] = bookInfo;
             dic["readerInfo"] = readerInfo;
@@ -178,7 +175,6 @@ namespace Mijin.Library.App.Driver
                 return data;
             }
 
-            data.success = message.Search("10", "YYN")?.ToInt() == 1;
 
 
             readerInfo.CardNo = message.Search("AA", "|");
@@ -194,6 +190,9 @@ namespace Mijin.Library.App.Driver
 
             bookInfo.ScreenMsg = message.Search("AF", "|")?.Replace(bookserial, "");
             bookInfo.PrintLine = message.Search("AG", "|");
+
+            data.success = bookInfo.ScreenMsg?.Contains("成功") ?? false;
+
 
             data.msg = data.success ? "归还书籍成功" : bookInfo.ScreenMsg ?? "未知错误";
 
@@ -289,7 +288,7 @@ namespace Mijin.Library.App.Driver
         /// </summary>
         /// <param name="bookserial"></param>
         /// <returns></returns>
-        public MessageModel<object> GetBookInfo(string bookserial,string libCode)
+        public MessageModel<object> GetBookInfo(string bookserial, string libCode)
         {
             var dic = new Dictionary<string, object>();
             var bookInfo = new SIP2BookInfo();
