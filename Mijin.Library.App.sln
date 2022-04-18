@@ -27,6 +27,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02_framework_auth", "02_fra
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mijin.Library.App.Framework.Auth", "Mijin.Library.App.Framework.Auth\Mijin.Library.App.Framework.Auth.csproj", "{5D27128A-FF0B-48D8-8F77-205CBB78D571}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Extensions", "Extensions", "{E8F283DF-5313-41E5-B08E-6BCC63EF2ED2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -159,6 +161,7 @@ Global
 		{EBB2D053-49CC-4C01-931D-13D2DA7CDD1E} = {461AC4D2-A80C-4FFA-B019-D931742707EB}
 		{1A92C0D1-BE91-46C6-8C69-EB7645857B50} = {461AC4D2-A80C-4FFA-B019-D931742707EB}
 		{5D27128A-FF0B-48D8-8F77-205CBB78D571} = {7011275F-FFD3-4D61-8BCF-01F674793335}
+		{E8F283DF-5313-41E5-B08E-6BCC63EF2ED2} = {461AC4D2-A80C-4FFA-B019-D931742707EB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5D94C33A-68BA-43F0-9E5E-8EE765E5FA70}
