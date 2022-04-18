@@ -16,6 +16,15 @@ namespace Mijin.Library.App.Tests.Driver
         private readonly ITestOutputHelper _tempOutput;
         public WjSIP2Client wjSIP2Client;
 
+        // 金盘
+        //const string ip = "192.168.0.159";
+        //const string port = "6789";
+        //const string loginAccount = "ACS01";
+        //const string loginPw = "Acs123456";
+        //const int drivceId = 1;
+        //const string libCode = "30008200001";
+
+        // 超鑫线上
         const string ip = "113.209.194.191";
         const string port = "2329";
         const string loginAccount = "ACS01";

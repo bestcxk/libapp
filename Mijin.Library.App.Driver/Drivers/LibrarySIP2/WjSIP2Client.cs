@@ -454,7 +454,7 @@ namespace Mijin.Library.App.Driver
         /// </summary>
         /// <param name="readerInfo"></param>
         /// <returns></returns>
-        public MessageModel<object> RegiesterReader(RegiesterInfo readerInfo)
+        public virtual MessageModel<object> RegiesterReader(RegiesterInfo readerInfo)
         {
             var data = new MessageModel<object>();
 
