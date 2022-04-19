@@ -18,8 +18,8 @@ namespace Mijin.Library.App.Driver
         private IMultiGrfid _multiGrfid { get; }
         private ISudo _sudo { get; }
         private IWjSIP2Client WjSIP2Client { get; }
-        public IDataConvert _dataConvert { get; }
-        public IWriteCxDb _writeCxDb { get; }
+        private IDataConvert _dataConvert { get; }
+        private IWriteCxDb _writeCxDb { get; }
         private IJpSip2Client _jpSip2Client { get; }
         private IWenhuaSIP2Client _sIP2Client { get; }
         private ICabinetLock _cabinetLock { get; }
