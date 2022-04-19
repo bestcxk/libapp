@@ -17,7 +17,7 @@ namespace Mijin.Library.App.Driver.Drivers.LibrarySIP2
     /// <summary>
     /// 金盘Sip2
     /// </summary>
-    public class JpSip2Client
+    public class JpSip2Client : IJpSip2Client
     {
         public Sip2Client Sip2Client { get; set; } = new Sip2Client();
 

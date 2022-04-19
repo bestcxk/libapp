@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using IsUtil.Maps;
 using Bing.Extensions;
+using Mijin.Library.App.Driver.Drivers.LibrarySIP2;
 
 namespace Mijin.Library.App.Driver
 {
@@ -19,6 +20,7 @@ namespace Mijin.Library.App.Driver
         private IWjSIP2Client WjSIP2Client { get; }
         public IDataConvert _dataConvert { get; }
         public IWriteCxDb _writeCxDb { get; }
+        private IJpSip2Client _jpSip2Client { get; }
         private IWenhuaSIP2Client _sIP2Client { get; }
         private ICabinetLock _cabinetLock { get; }
         private IPosPrint _posPrint { get; }
@@ -79,7 +81,7 @@ namespace Mijin.Library.App.Driver
             IPosPrint posPrint, IdentityReader identityReader, IHFReader HFReader, IRfid rfid, IKeyboard keyboard,
             ICamera camera, ICardSender cardSender, IDoorController doorController,
             IGRfidDoorController gRfidDoorController, ITuChuangSIP2Client tuChuangSIP2Client, IRRfid rRfid,
-            IQrCode qrCode, ICkDoorController ckDoorController, ITrack track, IMultiGrfid multiGrfid, ISudo sudo, IWjSIP2Client wjSIP2Client, IDataConvert dataConvert, IWriteCxDb writeCxDb)
+            IQrCode qrCode, ICkDoorController ckDoorController, ITrack track, IMultiGrfid multiGrfid, ISudo sudo, IWjSIP2Client wjSIP2Client, IDataConvert dataConvert, IWriteCxDb writeCxDb,IJpSip2Client jpSip2Client)
         {
             _ckDoorController = ckDoorController;
             _track = track;
@@ -88,6 +90,7 @@ namespace Mijin.Library.App.Driver
             WjSIP2Client = wjSIP2Client;
             _dataConvert = dataConvert;
             _writeCxDb = writeCxDb;
+            _jpSip2Client = jpSip2Client;
             _systemFunc = systemFunc;
             _sIP2Client = sIP2Client;
             _cabinetLock = cabinetLock;

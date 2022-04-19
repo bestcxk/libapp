@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Mijin.Library.App.Driver.Drivers.LibrarySIP2;
 
 namespace Mijin.Library.App.Driver.Extentions
 {
@@ -48,9 +49,7 @@ namespace Mijin.Library.App.Driver.Extentions
             services.AddSingleton<IDataConvert, DataConvert>();
             services.AddSingleton<IWriteCxDb, WriteCxDb>();
             services.AddSingleton<INetWorkTranspondService, NetWorkTranspondService>();
-
-
-
+            services.AddSingleton<IJpSip2Client, JpSip2Client>();
             #region HFReader IOC 
             if (clientSettings.HFReader == HFReaderEnum.BlackReader)
                 services.AddSingleton<IHFReader, BlackHFReader>();
