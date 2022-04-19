@@ -461,7 +461,8 @@ namespace Mijin.Library.App.Driver
 
         public MessageModel<string> WriteLabel(string uidHex, string hexData, Int64 actionBlockSize = -1, Int64 writeState = -1)
         {
-            return WriteLabel(uidHex, SerialPortHelper.HexStringToByteArray(hexData), actionBlockSize, writeState);
+            var data = SerialPortHelper.HexStringToByteArray(hexData);
+            return WriteLabel(uidHex, data, actionBlockSize, writeState);
         }
 
         public MessageModel<string> WriteLabelByAscii(string uidHex, string asciiData, Int64 actionBlockSize = -1, Int64 writeState = -1)

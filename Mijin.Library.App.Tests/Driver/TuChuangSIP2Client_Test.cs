@@ -21,19 +21,20 @@ namespace Mijin.Library.App.Tests.Driver
         public void Connect_Test()
         {
             // 阳西  自助机账号 002042ACS
-            var res = tuChuangSIP2Client.Connect("47.107.119.27", "2042");
-            //var bkRes = tuChuangSIP2Client.GetBookInfo("0420069486");
+            //var res = tuChuangSIP2Client.Connect("222.89.181.140", "2001");
+            var res = tuChuangSIP2Client.Connect("4", "2042");
+            var bkRes = tuChuangSIP2Client.GetBookInfo("0420020575");
+            var getReaderRes = tuChuangSIP2Client.GetReaderInfo("00000464");
             var regiesterRes = tuChuangSIP2Client.RegiesterReader(new RegiesterInfo()
             {
-                Identity = "500113199706286714",
-                Pw="123456",
-                Name="米进测试用户",
+                CardNo = "445281199805091111",
+                Identity = "445281199805091111",
+                Pw ="123456",
+                Name = "napama",
                 CreateReaderLibrary= "002042",
                 Moeny = 0,
                 Type = "999_SFZYH2C"
             });
-
-            var getReaderRes = tuChuangSIP2Client.GetReaderInfo("500113199706286714");
 
         }
 
@@ -41,9 +42,17 @@ namespace Mijin.Library.App.Tests.Driver
         public void Login_Test()
         {
             {
-                var res = tuChuangSIP2Client.Connect("222.89.181.140", "2001");
-                var dt = tuChuangSIP2Client.LendBook("0200082261", "411002020100117", "wdqacs011");
-                var dt1 = tuChuangSIP2Client.GetReaderInfo("411002020100117");
+                //var res = tuChuangSIP2Client.Connect("222.89.181.140", "2001");//连接
+                //var res = tuChuangSIP2Client.Connect("47.107.119.27", "2042");
+                var res = tuChuangSIP2Client.Connect("218.14.113.25", "2001");
+                var gbRes = tuChuangSIP2Client.GetBookInfo("75240010007856");
+                //var getReaderRes = tuChuangSIP2Client.GetReaderInfo("75240000000063");
+               
+                var dt = tuChuangSIP2Client.LendBook("75240010007856", "75240000000063", "BZJ_005");//借书
+                
+                
+                var bkRes = tuChuangSIP2Client.BackBook("75240010007856", "");
+                var cbt = tuChuangSIP2Client.ContinueBook("75240010022850", "75240000000063", "BZJ_005");//续借书
             }
         }
     }
