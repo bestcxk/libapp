@@ -16,7 +16,7 @@ namespace Mijin.Library.App.Driver
     }
 
     /// <summary>
-    /// 文华用户信息
+    /// 用户信息
     /// </summary>
     public class SIP2ReaderInfo : baseSIP2ReaderInfo
     {

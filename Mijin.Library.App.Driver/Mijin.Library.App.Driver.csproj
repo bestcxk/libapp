@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Extensions\SIP2Client\SIP2Client.csproj" />
     <ProjectReference Include="..\Mijin.Library.App.Common\Mijin.Library.App.Common.csproj" />
     <ProjectReference Include="..\Mijin.Library.App.Model\Mijin.Library.App.Model.csproj" />
   </ItemGroup>

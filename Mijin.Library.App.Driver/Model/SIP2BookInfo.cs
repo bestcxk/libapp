@@ -12,7 +12,7 @@ namespace Mijin.Library.App.Driver
         public string Serial { get; set; }
     }
     /// <summary>
-    /// 文华图书信息
+    /// 图书信息
     /// </summary>
     public class SIP2BookInfo : baseSIP2BookInfo
     {
