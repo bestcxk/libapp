@@ -402,7 +402,7 @@ namespace Mijin.Library.App.Driver
         /// </summary>
         /// <param name="readerInfo"></param>
         /// <returns></returns>
-        public MessageModel<object> GerReaderInfo(RegiesterInfo readerInfo)
+        public MessageModel<object> GetReaderInfo(RegiesterInfo readerInfo)
         {
             var data = new MessageModel<object>();
 
@@ -463,7 +463,7 @@ namespace Mijin.Library.App.Driver
                 data.msg = "readerInfo实体不可为空";
                 return data;
             }
-            var checkRes = GerReaderInfo(readerInfo);
+            var checkRes = GetReaderInfo(readerInfo);
             if (!checkRes.success)
             {
                 checkRes.msg = "已存在重复用户";
