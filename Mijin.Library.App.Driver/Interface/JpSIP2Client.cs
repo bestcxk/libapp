@@ -23,9 +23,11 @@ namespace Mijin.Library.App.Driver.Drivers.LibrarySIP2
 
         public MessageModel<string> Init(Sip2Model sip2Info)
         {
+            var success = Sip2Client.Init(sip2Info);
             return new MessageModel<string>()
             {
-                msg = Sip2Client.Init(sip2Info) ? "初始化成功" : "初始化失败"
+                msg = success ? "初始化成功" : "初始化失败",
+                success = success
             };
         }
 
