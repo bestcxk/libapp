@@ -15,6 +15,12 @@ namespace Mijin.Library.App.Driver.Services.Network
 
         const int startPort = 50000;
 
+        ~NetWorkTranspondService()
+        {
+            Transponds?.ForEach(t => t?.Dispose());
+        }
+
+
 
         public string GetVisitUrl(string url)
         {
