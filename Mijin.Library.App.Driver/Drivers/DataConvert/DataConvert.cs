@@ -1,14 +1,10 @@
-﻿using Bing.Extensions;
-using Mijin.Library.App.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography;
+﻿using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
+using Bing.Extensions;
+using Mijin.Library.App.Driver.Interface;
+using Mijin.Library.App.Model;
 
-namespace Mijin.Library.App.Driver
+namespace Mijin.Library.App.Driver.Drivers.DataConvert
 {
     public class DataConvert : IDataConvert
     {

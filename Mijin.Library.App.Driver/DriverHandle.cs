@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using IsUtil.Maps;
 using Bing.Extensions;
 using Mijin.Library.App.Driver.Drivers.LibrarySIP2;
+using Mijin.Library.App.Driver.Interface;
 
 namespace Mijin.Library.App.Driver
 {
