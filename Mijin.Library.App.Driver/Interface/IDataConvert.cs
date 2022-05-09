@@ -1,6 +1,6 @@
 ﻿using Mijin.Library.App.Model;
 
-namespace Mijin.Library.App.Driver
+namespace Mijin.Library.App.Driver.Interface
 {
     public interface IDataConvert
     {
