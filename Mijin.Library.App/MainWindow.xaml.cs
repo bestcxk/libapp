@@ -32,15 +32,13 @@ namespace Mijin.Library.App
     /// </summary>
     public partial class MainWindow : MetroWindow
     {
-        private readonly INetWorkTranspondService _netWorkTranspondService;
         public WebViewWindow _webView { get; }
         public ClientSettings _clientSettings { get; }
         public SettingWindow _settingsWindow { get; }
         public ISystemFunc _systemFunc { get; }
 
-        public MainWindow(WebViewWindow webView, SettingWindow settingsWindow, ISystemFunc systemFunc, INetWorkTranspondService netWorkTranspondService)
+        public MainWindow(WebViewWindow webView, SettingWindow settingsWindow, ISystemFunc systemFunc)
         {
-            _netWorkTranspondService = netWorkTranspondService;
             //显示在显示器最中间
             this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
 

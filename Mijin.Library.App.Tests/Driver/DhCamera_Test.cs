@@ -12,6 +12,7 @@ namespace Mijin.Library.App.Tests.Driver
     public class DhCamera_Test
     {
         ITestOutputHelper output;
+
         public DhCamera_Test(ITestOutputHelper output)
         {
             this.output = output;
@@ -30,14 +31,12 @@ namespace Mijin.Library.App.Tests.Driver
         [Fact]
         public void GetFace_Test()
         {
+            dh.Init();
             dh.Login(ip, port, name, password);
-            var task = new Task(() =>
-            {
-                dh.GetFace();
-            });
+            var task = new Task(() => { dh.RegisterCutFaceEvent(); });
             task.Start();
 
-            dh.OnGetFaceImage += (image) =>
+            dh.OnDhGetFaceImageBase64 += (image) =>
             {
                 Assert.NotNull(image);
                 output.WriteLine("已获取到图片");
@@ -45,7 +44,6 @@ namespace Mijin.Library.App.Tests.Driver
 
             while (true)
             {
-                
             }
         }
 
@@ -54,23 +52,14 @@ namespace Mijin.Library.App.Tests.Driver
         {
             dh.Login(ip, port, name, password);
 
-            var task = new Task(() =>
-            {
-                dh.HumanSum();
-            });
+            var task = new Task(() => { dh.RegisterPeopleInoutEvent(); });
             task.Start();
 
-            dh.OnPeopleInOut += (info) =>
-            {
-                output.WriteLine($"进{info.In}, 出{info.Out}");
-            };
+            dh.OnDhPeopleInOut += (info) => { output.WriteLine($"进{info.response.In}, 出{info.response.Out}"); };
 
             while (true)
             {
-
             }
         }
-
-
     }
 }

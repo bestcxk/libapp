@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Mijin.Library.App.Model;
 
 namespace Mijin.Library.App.Driver.Interface
 {
@@ -15,12 +16,12 @@ namespace Mijin.Library.App.Driver.Interface
         /// <summary>
         /// 人流量统计事件
         /// </summary>
-        event Action<(int In, int Out)> OnPeopleInOut;
+        event Action<WebViewSendModel<(int In, int Out)>> OnDhPeopleInOut;
 
         /// <summary>
         /// 截取人脸事件
         /// </summary>
-        event Action<Image> OnGetFaceImage;
+        event Action<WebViewSendModel<string>> OnDhGetFaceImageBase64;
 
         /// <summary>
         /// 登录
@@ -29,16 +30,18 @@ namespace Mijin.Library.App.Driver.Interface
         /// <param name="netPort">端口</param>
         /// <param name="name">用户名</param>
         /// <param name="password">密码</param>
-        void Login(string ip, string netPort, string name, string password);
+        MessageModel<string> Login(string ip, string netPort, string name, string password);
 
         /// <summary>
         /// 截取人脸
         /// </summary>
-        void GetFace();
+        MessageModel<string> RegisterCutFaceEvent();
 
         /// <summary>
         /// 人流量统计
         /// </summary>
-        void HumanSum();
+        MessageModel<string> RegisterPeopleInoutEvent();
+
+        MessageModel<string> Init();
     }
 }

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using IsUtil.Maps;
 using Bing.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 using Mijin.Library.App.Driver.Drivers.LibrarySIP2;
 using Mijin.Library.App.Driver.Interface;
 
@@ -14,6 +15,8 @@ namespace Mijin.Library.App.Driver
 {
     public class DriverHandle : IDriverHandle
     {
+        private readonly IDhCamera _dhCamera;
+        private readonly IRfidDoor _rfidDoor;
         private ICkDoorController _ckDoorController { get; }
         private ITrack _track { get; }
         private IMultiGrfid _multiGrfid { get; }
@@ -39,7 +42,7 @@ namespace Mijin.Library.App.Driver
         private IQrCode _qrCode { get; }
 
 
-        public static string[] BlackListLogMethod = { "ISystemFunc.SetLibrarySettings", "OnLockEvent" };
+        public static string[] BlackListLogMethod = {"ISystemFunc.SetLibrarySettings", "OnLockEvent"};
 
         string[] IDriverHandle.BlackListLogMethod
         {
@@ -82,8 +85,12 @@ namespace Mijin.Library.App.Driver
             IPosPrint posPrint, IdentityReader identityReader, IHFReader HFReader, IRfid rfid, IKeyboard keyboard,
             ICamera camera, ICardSender cardSender, IDoorController doorController,
             IGRfidDoorController gRfidDoorController, ITuChuangSIP2Client tuChuangSIP2Client, IRRfid rRfid,
-            IQrCode qrCode, ICkDoorController ckDoorController, ITrack track, IMultiGrfid multiGrfid, ISudo sudo, IWjSIP2Client wjSIP2Client, IDataConvert dataConvert, IWriteCxDb writeCxDb,IJpSip2Client jpSip2Client)
+            IQrCode qrCode, ICkDoorController ckDoorController, ITrack track, IMultiGrfid multiGrfid, ISudo sudo,
+            IWjSIP2Client wjSIP2Client, IDataConvert dataConvert, IWriteCxDb writeCxDb, IJpSip2Client jpSip2Client,
+            IDhCamera dhCamera, IRfidDoor rfidDoor)
         {
+            _dhCamera = dhCamera;
+            _rfidDoor = rfidDoor;
             _ckDoorController = ckDoorController;
             _track = track;
             _multiGrfid = multiGrfid;
@@ -127,8 +134,8 @@ namespace Mijin.Library.App.Driver
             // 反射通过cls 获取 同名接口的 属性
             var bindingFlags = BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public;
 
-            PropertyInfo propertyInfo = this.GetType().GetProperties(bindingFlags)
-                .Where(p => p.PropertyType.Name == cls).FirstOrDefault();
+            PropertyInfo propertyInfo = this.GetType()
+                .GetProperties(bindingFlags).FirstOrDefault(p => p.PropertyType.Name == cls);
 
             // 匹配不到执行类
             if (propertyInfo == null)
@@ -143,9 +150,10 @@ namespace Mijin.Library.App.Driver
             var acionInstance = propertyInfo.GetValue(this);
 
             // 访问的是参数
-            var proInfo = acionInstance.GetType()
+            var proInfo = acionInstance
+                .GetType()
                 .GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static)
-                .Where(p => p.Name == mthod).FirstOrDefault();
+                .FirstOrDefault(p => p.Name == mthod);
             if (proInfo != null)
             {
                 if (!parameters.IsEmpty())

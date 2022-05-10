@@ -1,8 +1,12 @@
 ﻿using Mijin.Library.App.Driver.Interface;
 using System;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.InteropServices;
+using Bing.Extensions;
+using Bing.Helpers;
+using Mijin.Library.App.Model;
 
 namespace Mijin.Library.App.Driver.Drivers.DhCamera
 {
@@ -14,18 +18,21 @@ namespace Mijin.Library.App.Driver.Drivers.DhCamera
         /// <summary>
         /// 人流量统计事件
         /// </summary>
-        public event Action<(int In, int Out)> OnPeopleInOut;
+        public event Action<WebViewSendModel<(int In, int Out)>> OnDhPeopleInOut;
 
         /// <summary>
         /// 截取人脸事件
         /// </summary>
-        public event Action<Image> OnGetFaceImage;
+        public event Action<WebViewSendModel<string>> OnDhGetFaceImageBase64;
+
+        public bool _type { get; set; }
 
         //声明静态委托，普通委托可能会出现回调之前就将其释放的错误
         /// <summary>
         /// 事件数据回调函数
         /// </summary>
         private static DhSdk.fAnalyzerDataCallBack m_AnalyzerDataCallBack { get; set; }
+
         /// <summary>
         /// 断线回调函数
         /// </summary>
@@ -37,6 +44,7 @@ namespace Mijin.Library.App.Driver.Drivers.DhCamera
         /// 视频统计摘要信息回调函数
         /// </summary>
         private static DhSdk.fVideoStatSumCallBack m_VideoStatSumCallBack { get; set; }
+
         /// <summary>
         /// 登录句柄
         /// </summary>
@@ -48,6 +56,8 @@ namespace Mijin.Library.App.Driver.Drivers.DhCamera
         private IntPtr m_AnalyzerID = IntPtr.Zero;
         private DhStruct.NET_DEVICEINFO_Ex m_DevInfo = new();
 
+        private bool isInit = false;
+
         /// <summary>
         /// 人脸图片保存地址
         /// </summary>
@@ -58,11 +68,6 @@ namespace Mijin.Library.App.Driver.Drivers.DhCamera
             m_VideoStatSumCallBack = VideoStatSumCallBack;
             m_DisConnectCallBack = DisConnectCallBack;
             m_AnalyzerDataCallBack = AnalyzerDataCallBack;
-            //初始化
-            if (!DhSdk.Init(m_DisConnectCallBack, IntPtr.Zero, null))
-            {
-                throw new Exception("初始化失败");
-            }
         }
 
         #region 回调方法
@@ -81,8 +86,16 @@ namespace Mijin.Library.App.Driver.Drivers.DhCamera
                 // TODO: 可能需要抛出异常，目前不做处理
                 // return new DhStruct.NET_VIDEOSTAT_SUMMARY();
             }
-            DhStruct.NET_VIDEOSTAT_SUMMARY info = (DhStruct.NET_VIDEOSTAT_SUMMARY)Marshal.PtrToStructure(pBuf, typeof(DhStruct.NET_VIDEOSTAT_SUMMARY))!;
-            OnPeopleInOut?.Invoke((info.stuEnteredSubtotal.nTotal, info.stuExitedSubtotal.nTotal));
+
+            DhStruct.NET_VIDEOSTAT_SUMMARY info =
+                (DhStruct.NET_VIDEOSTAT_SUMMARY) Marshal.PtrToStructure(pBuf, typeof(DhStruct.NET_VIDEOSTAT_SUMMARY))!;
+            OnDhPeopleInOut?.Invoke(new WebViewSendModel<(int In, int Out)>()
+            {
+                success = true,
+                method = nameof(OnDhPeopleInOut),
+                response = (info.stuEnteredSubtotal.nTotal, info.stuExitedSubtotal.nTotal),
+                msg = "获取成功"
+            });
         }
 
         private void OnDeviceDisconnected()
@@ -107,11 +120,13 @@ namespace Mijin.Library.App.Driver.Drivers.DhCamera
                 DhSdk.StopRealPlay(m_PlayID);
                 m_PlayID = IntPtr.Zero;
             }
+
             if (m_AnalyzerID != IntPtr.Zero)
             {
                 DhSdk.StopLoadPic(m_AnalyzerID);
                 m_AnalyzerID = IntPtr.Zero;
             }
+
             OnDeviceDisconnected();
         }
 
@@ -127,23 +142,31 @@ namespace Mijin.Library.App.Driver.Drivers.DhCamera
         /// <param name="nSequence"></param>
         /// <param name="reserved"></param>
         /// <returns></returns>
-        private int AnalyzerDataCallBack(IntPtr lAnalyzerHandle, uint dwEventType, IntPtr pEventInfo, IntPtr pBuffer, uint dwBufSize, IntPtr dwUser, int nSequence, IntPtr reserved)
+        private int AnalyzerDataCallBack(IntPtr lAnalyzerHandle, uint dwEventType, IntPtr pEventInfo, IntPtr pBuffer,
+            uint dwBufSize, IntPtr dwUser, int nSequence, IntPtr reserved)
         {
             if (m_AnalyzerID != lAnalyzerHandle) return 0;
             switch (dwEventType)
             {
                 //截取人脸
-                case (uint)DhStruct.EM_EVENT_IVS_TYPE.FACEDETECT:
-                    {
-                        byte[] personFaceInfo = new byte[dwBufSize];
+                case (uint) DhStruct.EM_EVENT_IVS_TYPE.FACEDETECT:
+                {
+                    byte[] personFaceInfo = new byte[dwBufSize];
 
-                        Marshal.Copy(pBuffer, personFaceInfo, 0, (int)dwBufSize);
-                        using MemoryStream stream = new MemoryStream(personFaceInfo);
-                        Image bitmap = Image.FromStream(stream);
-                        OnGetFaceImage?.Invoke(bitmap);
-                    }
+                    Marshal.Copy(pBuffer, personFaceInfo, 0, (int) dwBufSize);
+                    using MemoryStream stream = new MemoryStream(personFaceInfo);
+                    Image bitmap = Image.FromStream(stream);
+                    OnDhGetFaceImageBase64?.Invoke(new WebViewSendModel<string>()
+                    {
+                        success = true,
+                        response = bitmap.ToBase64String(ImageFormat.Png),
+                        method = nameof(bitmap),
+                        msg = "获取成功"
+                    });
+                }
                     break;
             }
+
             return 0;
         }
 
@@ -161,8 +184,9 @@ namespace Mijin.Library.App.Driver.Drivers.DhCamera
         /// <param name="password">密码</param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public void Login(string ip, string netPort, string name, string password)
+        public MessageModel<string> Login(string ip, string netPort, string name, string password)
         {
+            var res = new MessageModel<string>();
             if (IntPtr.Zero == m_LoginID)
             {
                 ushort port = 0;
@@ -172,69 +196,145 @@ namespace Mijin.Library.App.Driver.Drivers.DhCamera
                 }
                 catch
                 {
-                    throw new Exception("输入的端口有误");
+                    res.msg = "输入的端口有误";
+                    return res;
                 }
 
                 //登录
-                m_LoginID = DhSdk.LoginWithHighLevelSecurity(ip, port, name, password, DhStruct.EM_LOGIN_SPAC_CAP_TYPE.TCP, IntPtr.Zero, ref m_DevInfo);
+                m_LoginID = DhSdk.LoginWithHighLevelSecurity(ip, port, name, password,
+                    DhStruct.EM_LOGIN_SPAC_CAP_TYPE.TCP, IntPtr.Zero, ref m_DevInfo);
                 if (IntPtr.Zero == m_LoginID)
                 {
-                    throw new Exception(DhSdk.GetLastError());
+                    res.msg = DhSdk.GetLastError();
+                    return res;
                 }
+
                 //判断设备是否有通道
                 if (m_DevInfo.nChanNum == 0)
                 {
                     bool ret = DhSdk.Logout(m_LoginID);
                     if (!ret)
                     {
-                        throw new Exception(DhSdk.GetLastError());
+                        res.msg = DhSdk.GetLastError();
+                        return res;
                     }
 
                     m_LoginID = IntPtr.Zero;
-                    throw new Exception("Cannot get channel info 获取不到通道号！\n Device unspport 设备不支持");
+                    res.msg = "Cannot get channel info 获取不到通道号！\n Device unspport 设备不支持";
+                    return res;
                 }
             }
+
+            res.msg = "登录成功";
+            res.success = true;
+            return res;
         }
+
+        public MessageModel<string> Init()
+        {
+            var res = new MessageModel<string>();
+
+            if (isInit)
+            {
+                res.success = true;
+                res.msg = "已经完成初始化，无需再次初始化";
+                return res;
+            }
+
+            //初始化
+            if (!DhSdk.Init(m_DisConnectCallBack, IntPtr.Zero, null))
+            {
+                res.msg = "初始化失败";
+                return res;
+            }
+
+            isInit = true;
+
+            res.msg = "初始化成功";
+            res.success = true;
+
+            return res;
+        }
+
+
+        private bool _isRegisterCutFaceEvent = false;
 
         /// <summary>
         /// 截取人脸
         /// </summary>
         /// <exception cref="Exception"></exception>
-        public void GetFace()
+        public MessageModel<string> RegisterCutFaceEvent()
         {
+            var res = new MessageModel<string>();
+
+            if (_isRegisterCutFaceEvent)
+            {
+                res.success = true;
+                res.msg = "已经注册时间，无需再次注册";
+                return res;
+            }
+
             //订阅人脸检测事件
-            IntPtr realLoadPictureHandle = DhSdk.RealLoadPicture(m_LoginID, 0, (uint)DhStruct.EM_EVENT_IVS_TYPE.FACEDETECT, true, m_AnalyzerDataCallBack, IntPtr.Zero, IntPtr.Zero);
+            IntPtr realLoadPictureHandle = DhSdk.RealLoadPicture(m_LoginID, 0,
+                (uint) DhStruct.EM_EVENT_IVS_TYPE.FACEDETECT, true, m_AnalyzerDataCallBack, IntPtr.Zero, IntPtr.Zero);
             m_AnalyzerID = realLoadPictureHandle;
             if (IntPtr.Zero == realLoadPictureHandle)
             {
-                throw new Exception(DhSdk.GetLastError());
+                res.msg = DhSdk.GetLastError();
+                return res;
             }
+
+            _isRegisterCutFaceEvent = true;
+            res.success = true;
+            res.msg = "注册成功";
+            return res;
         }
+
+        private bool _isRegisterPeopleInoutEvent = false;
 
         /// <summary>
         /// 人流量统计
         /// </summary>
-        public void HumanSum()
+        public MessageModel<string> RegisterPeopleInoutEvent()
         {
-            if (m_AttactID != IntPtr.Zero) return;
+            var res = new MessageModel<string>();
+
+            if (_isRegisterPeopleInoutEvent)
+            {
+                res.success = true;
+                res.msg = "已经注册时间，无需再次注册";
+                return res;
+            }
+
+            if (m_AttactID != IntPtr.Zero)
+            {
+                res.msg = "空指针异常";
+                return res;
+            }
 
             DhStruct.NET_IN_ATTACH_VIDEOSTAT_SUM inParam = new DhStruct.NET_IN_ATTACH_VIDEOSTAT_SUM
             {
-                dwSize = (uint)Marshal.SizeOf(typeof(DhStruct.NET_IN_ATTACH_VIDEOSTAT_SUM)),
+                dwSize = (uint) Marshal.SizeOf(typeof(DhStruct.NET_IN_ATTACH_VIDEOSTAT_SUM)),
                 nChannel = 0,
                 cbVideoStatSum = m_VideoStatSumCallBack
             };
 
             DhStruct.NET_OUT_ATTACH_VIDEOSTAT_SUM outParam = new DhStruct.NET_OUT_ATTACH_VIDEOSTAT_SUM
             {
-                dwSize = (uint)Marshal.SizeOf(typeof(DhStruct.NET_OUT_ATTACH_VIDEOSTAT_SUM))
+                dwSize = (uint) Marshal.SizeOf(typeof(DhStruct.NET_OUT_ATTACH_VIDEOSTAT_SUM))
             };
             //订阅人流量统计信息
             m_AttactID = DhSdk.AttachVideoStatSummary(m_LoginID, ref inParam, ref outParam, 5000);
             if (IntPtr.Zero == m_AttactID)
             {
-                throw new Exception(DhSdk.GetLastError());
+                res.msg = DhSdk.GetLastError();
+                return res;
             }
+
+            _isRegisterPeopleInoutEvent = true;
+            res.success = true;
+            res.msg = "注册成功";
+            return res;
         }
 
         #endregion
