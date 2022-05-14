@@ -117,6 +117,11 @@ namespace Mijin.Library.App.Model
         /// </summary>
         public QrcodeDriver QrcodeDriver { get; set; } = QrcodeDriver.qrcode;
 
+        /// <summary>
+        /// 禁用代理
+        /// </summary>
+        public bool DisibleProxy { get; set; }
+
     }
 
     /// <summary>

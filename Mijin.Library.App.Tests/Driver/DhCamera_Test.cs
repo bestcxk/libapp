@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Bing.Extensions;
 using Mijin.Library.App.Driver.Drivers.DhCamera;
 using Xunit;
 using Xunit.Abstractions;
@@ -59,6 +60,24 @@ namespace Mijin.Library.App.Tests.Driver
 
             while (true)
             {
+            }
+        }
+
+        [Fact]
+        public void CutCameraBase64Image_Test()
+        {
+            var res = dh.Init();
+            Assert.True(res.success);
+            res = dh.Login(ip, port, name, password);
+            Assert.True(res.success);
+
+
+            int count = 10;
+            while (--count > 0)
+            {
+                res = dh.CutCameraBase64Image();
+                Assert.True(res.success);
+                 Assert.True(!res.response.IsEmpty());
             }
         }
     }

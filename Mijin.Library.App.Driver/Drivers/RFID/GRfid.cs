@@ -622,24 +622,46 @@ namespace Mijin.Library.App.Driver
 
             alerting = true;
 
-            result = SetGpo(new Dictionary<string, byte>()
+            try
             {
-                {"Gpo1", 1}
-            }).JsonMapTo<MessageModel<string>>();
-
-            if (result.success)
-            {
-                Task.Run(() =>
+                result = SetGpo(new Dictionary<string, byte>()
                 {
-                    Task.Delay(ms.ToInt()).GetAwaiter().GetResult();
-                    result = SetGpo(new Dictionary<string, byte>()
+                    {"Gpo1", 1}
+                }).JsonMapTo<MessageModel<string>>();
+
+                if (result.success)
+                {
+                    Task.Run(() =>
                     {
-                        {"Gpo1", 0}
-                    }).JsonMapTo<MessageModel<string>>();
-                    alerting = false;
-                });
+                        try
+                        {
+                            Task.Delay(ms.ToInt()).GetAwaiter().GetResult();
+                        }
+                        catch (Exception e)
+                        {
+                        }
+
+                        int count = 0;
+                        while (count <= 3)
+                        {
+                            count++;
+                            var gpoResult = SetGpo(new Dictionary<string, byte>()).JsonMapTo<MessageModel<string>>();
+
+                            if (gpoResult.success)
+                            {
+                                alerting = false;
+                                break;
+                            }
+                        }
+                    });
+                }
+                else alerting = false;
             }
-            else alerting = false;
+            catch (Exception e)
+            {
+                alerting = false;
+            }
+
             return result;
         }
 

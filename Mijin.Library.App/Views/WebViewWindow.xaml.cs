@@ -408,7 +408,7 @@ namespace Mijin.Library.App.Views
                 loginfo.rtData = Json.ToJson(obj.response);
                 webLog = loginfo.WriteActionLog();
             }
-            webLog = @$"console.log('\x1B[" + logColor + @$"m%s\x1B[0m', '{webLog}')".Replace("\r\n", "\\n");
+            webLog = @$"console.debug('\x1B[" + logColor + @$"m%s\x1B[0m', '{webLog}')".Replace("\r\n", "\\n");
 
             if (logColor == "32") logColor = "34";
             else logColor = "32";

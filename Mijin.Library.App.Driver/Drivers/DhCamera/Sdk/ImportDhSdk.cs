@@ -14,7 +14,41 @@ namespace Mijin.Library.App.Driver.Drivers.DhCamera
     {
         private const string LIBRARYNETSDK = "dhnetsdk.dll";
         private const string LIBRARYCONFIGSDK = "dhconfigsdk.dll";
+        
+        /// <summary>
+        /// 抓图
+        /// </summary>
+        /// <param name="hPlayHandle"></param>
+        /// <param name="pchPicFileName"></param>
+        /// <param name="eFormat"></param>
+        /// <returns></returns>
+        [DllImport(LIBRARYNETSDK)]
+        public static extern bool CLIENT_CapturePictureEx(IntPtr hPlayHandle, string pchPicFileName, DhSdk.EM_NET_CAPTURE_FORMATS eFormat);
+        
+        [DllImport(LIBRARYNETSDK)]
+        public static extern void CLIENT_SetSnapRevCallBack(DhSdk.fSnapRevCallBack OnSnapRevMessage, IntPtr dwUser);
 
+        /// <summary>
+        /// 监视
+        /// </summary>
+        /// <param name="lLoginID"></param>
+        /// <param name="nChannelID"></param>
+        /// <param name="hWnd"></param>
+        /// <param name="rType"></param>
+        /// <returns></returns>
+        [DllImport(LIBRARYNETSDK)]
+        public static extern IntPtr CLIENT_RealPlayEx(IntPtr lLoginID, int nChannelID, IntPtr hWnd, DhStruct.EM_RealPlayType rType);
+        
+        /// <summary>
+        /// 网络抓图请求
+        /// </summary>
+        /// <param name="lLoginID"></param>
+        /// <param name="par"></param>
+        /// <param name="reserved"></param>
+        /// <returns></returns>
+        [DllImport(LIBRARYNETSDK)]
+        public static extern bool CLIENT_SnapPictureEx(IntPtr lLoginID, ref NET_SNAP_PARAMS par, IntPtr reserved);
+        
         /// <summary>
         /// 初始化
         /// </summary>

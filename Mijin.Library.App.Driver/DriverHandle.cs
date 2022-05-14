@@ -15,8 +15,9 @@ namespace Mijin.Library.App.Driver
 {
     public class DriverHandle : IDriverHandle
     {
-        private readonly IDhCamera _dhCamera;
-        private readonly IRfidDoor _rfidDoor;
+        private IDhCamera _dhCamera { get; }
+        private IRfidDoor _rfidDoor { get; }
+        public IDhPeopleInoutCamera _dhPeopleInoutCamera { get; }
         private ICkDoorController _ckDoorController { get; }
         private ITrack _track { get; }
         private IMultiGrfid _multiGrfid { get; }
@@ -87,10 +88,11 @@ namespace Mijin.Library.App.Driver
             IGRfidDoorController gRfidDoorController, ITuChuangSIP2Client tuChuangSIP2Client, IRRfid rRfid,
             IQrCode qrCode, ICkDoorController ckDoorController, ITrack track, IMultiGrfid multiGrfid, ISudo sudo,
             IWjSIP2Client wjSIP2Client, IDataConvert dataConvert, IWriteCxDb writeCxDb, IJpSip2Client jpSip2Client,
-            IDhCamera dhCamera, IRfidDoor rfidDoor)
+            IDhCamera dhCamera, IRfidDoor rfidDoor,IDhPeopleInoutCamera dhPeopleInoutCamera)
         {
             _dhCamera = dhCamera;
             _rfidDoor = rfidDoor;
+            _dhPeopleInoutCamera = dhPeopleInoutCamera;
             _ckDoorController = ckDoorController;
             _track = track;
             _multiGrfid = multiGrfid;

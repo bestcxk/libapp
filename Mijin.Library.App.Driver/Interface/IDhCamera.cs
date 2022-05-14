@@ -43,5 +43,6 @@ namespace Mijin.Library.App.Driver.Interface
         MessageModel<string> RegisterPeopleInoutEvent();
 
         MessageModel<string> Init();
+        MessageModel<string> CutCameraBase64Image();
     }
 }

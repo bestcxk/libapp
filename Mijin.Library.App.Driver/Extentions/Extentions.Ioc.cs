@@ -55,6 +55,7 @@ namespace Mijin.Library.App.Driver.Extentions
             services.AddSingleton<IJpSip2Client, JpSip2Client>();
 
             services.AddSingleton<IDhCamera, DhCamera>();
+            services.AddSingleton<IDhPeopleInoutCamera, DhCamera>();
             services.AddSingleton<IRfidDoor, GRfidDoor>();
 
 

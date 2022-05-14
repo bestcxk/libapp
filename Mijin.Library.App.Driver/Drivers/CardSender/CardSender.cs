@@ -15,6 +15,7 @@ namespace Mijin.Library.App.Driver
     public class CardSender : ICardSender
     {
         #region dll
+
         [DllImport("K720_Dll.dll")]
         public static extern int K720_CommOpen(string strport);
 
@@ -41,22 +42,28 @@ namespace Mijin.Library.App.Driver
         public static extern int K720_S50GetCardID(int ComHandle, byte MacAddr, byte[] _CardID, char[] recordInfo);
 
         [DllImport("K720_Dll.dll")]
-        public static extern int K720_S50LoadSecKey(int ComHandle, byte MacAddr, byte SectorAddr, byte _KEYType, byte[] _KEY, char[] recordInfo);
+        public static extern int K720_S50LoadSecKey(int ComHandle, byte MacAddr, byte SectorAddr, byte _KEYType,
+            byte[] _KEY, char[] recordInfo);
 
         [DllImport("K720_Dll.dll")]
-        public static extern int K720_S50ReadBlock(int ComHandle, byte MacAddr, byte SectorAddr, byte BlockAddr, byte[] _BlockData, char[] recordInfo);
+        public static extern int K720_S50ReadBlock(int ComHandle, byte MacAddr, byte SectorAddr, byte BlockAddr,
+            byte[] _BlockData, char[] recordInfo);
 
         [DllImport("K720_Dll.dll")]
-        public static extern int K720_S50WriteBlock(int ComHandle, byte MacAddr, byte SectorAddr, byte BlockAddr, byte[] _BlockData, char[] recordInfo);
+        public static extern int K720_S50WriteBlock(int ComHandle, byte MacAddr, byte SectorAddr, byte BlockAddr,
+            byte[] _BlockData, char[] recordInfo);
 
         [DllImport("K720_Dll.dll")]
-        public static extern int K720_S50InitValue(int ComHandle, byte MacAddr, byte SectorAddr, byte BlockAddr, byte[] _BlockData, char[] recordInfo);
+        public static extern int K720_S50InitValue(int ComHandle, byte MacAddr, byte SectorAddr, byte BlockAddr,
+            byte[] _BlockData, char[] recordInfo);
 
         [DllImport("K720_Dll.dll")]
-        public static extern int K720_S50Increment(int ComHandle, byte MacAddr, byte SectorAddr, byte BlockAddr, byte[] _BlockData, char[] recordInfo);
+        public static extern int K720_S50Increment(int ComHandle, byte MacAddr, byte SectorAddr, byte BlockAddr,
+            byte[] _BlockData, char[] recordInfo);
 
         [DllImport("K720_Dll.dll")]
-        public static extern int K720_S50Decrement(int ComHandle, byte MacAddr, byte SectorAddr, byte BlockAddr, byte[] _BlockData, char[] recordInfo);
+        public static extern int K720_S50Decrement(int ComHandle, byte MacAddr, byte SectorAddr, byte BlockAddr,
+            byte[] _BlockData, char[] recordInfo);
 
         [DllImport("K720_Dll.dll")]
         public static extern int K720_S50Halt(int ComHandle, byte MacAddr, char[] recordInfo);
@@ -70,22 +77,28 @@ namespace Mijin.Library.App.Driver
         public static extern int K720_S70DetectCard(int ComHandle, byte MacAddr, byte[] _CardID, char[] recordInfo);
 
         [DllImport("K720_Dll.dll")]
-        public static extern int K720_S70LoadSecKey(int ComHandle, byte MacAddr, byte SectorAddr, byte _KEYType, byte[] _KEY, char[] recordInfo);
+        public static extern int K720_S70LoadSecKey(int ComHandle, byte MacAddr, byte SectorAddr, byte _KEYType,
+            byte[] _KEY, char[] recordInfo);
 
         [DllImport("K720_Dll.dll")]
-        public static extern int K720_S70ReadBlock(int ComHandle, byte MacAddr, byte SectorAddr, byte BlockAddr, byte[] _BlockData, char[] recordInfo);
+        public static extern int K720_S70ReadBlock(int ComHandle, byte MacAddr, byte SectorAddr, byte BlockAddr,
+            byte[] _BlockData, char[] recordInfo);
 
         [DllImport("K720_Dll.dll")]
-        public static extern int K720_S70WriteBlock(int ComHandle, byte MacAddr, byte SectorAddr, byte BlockAddr, byte[] _BlockData, char[] recordInfo);
+        public static extern int K720_S70WriteBlock(int ComHandle, byte MacAddr, byte SectorAddr, byte BlockAddr,
+            byte[] _BlockData, char[] recordInfo);
 
         [DllImport("K720_Dll.dll")]
-        public static extern int K720_S70InitValue(int ComHandle, byte MacAddr, byte SectorAddr, byte BlockAddr, byte[] _BlockData, char[] recordInfo);
+        public static extern int K720_S70InitValue(int ComHandle, byte MacAddr, byte SectorAddr, byte BlockAddr,
+            byte[] _BlockData, char[] recordInfo);
 
         [DllImport("K720_Dll.dll")]
-        public static extern int K720_S70Increment(int ComHandle, byte MacAddr, byte SectorAddr, byte BlockAddr, byte[] _BlockData, char[] recordInfo);
+        public static extern int K720_S70Increment(int ComHandle, byte MacAddr, byte SectorAddr, byte BlockAddr,
+            byte[] _BlockData, char[] recordInfo);
 
         [DllImport("K720_Dll.dll")]
-        public static extern int K720_S70Decrement(int ComHandle, byte MacAddr, byte SectorAddr, byte BlockAddr, byte[] _BlockData, char[] recordInfo);
+        public static extern int K720_S70Decrement(int ComHandle, byte MacAddr, byte SectorAddr, byte BlockAddr,
+            byte[] _BlockData, char[] recordInfo);
 
         [DllImport("K720_Dll.dll")]
         public static extern int K720_S70Halt(int ComHandle, byte MacAddr, char[] recordInfo);
@@ -99,10 +112,12 @@ namespace Mijin.Library.App.Driver
         public static extern int K720_ULGetCardID(int ComHandle, byte MacAddr, byte[] _CardID, char[] recordInfo);
 
         [DllImport("K720_Dll.dll")]
-        public static extern int K720_ULReadBlock(int ComHandle, byte MacAddr, byte SectorAddr, byte BlockAddr, byte[] _BlockData, char[] recordInfo);
+        public static extern int K720_ULReadBlock(int ComHandle, byte MacAddr, byte SectorAddr, byte BlockAddr,
+            byte[] _BlockData, char[] recordInfo);
 
         [DllImport("K720_Dll.dll")]
-        public static extern int K720_ULWriteBlock(int ComHandle, byte MacAddr, byte SectorAddr, byte BlockAddr, byte[] _BlockData, char[] recordInfo);
+        public static extern int K720_ULWriteBlock(int ComHandle, byte MacAddr, byte SectorAddr, byte BlockAddr,
+            byte[] _BlockData, char[] recordInfo);
 
         [DllImport("K720_Dll.dll")]
         public static extern int K720_ULHalt(int ComHandle, byte MacAddr, char[] recordInfo);
@@ -113,7 +128,8 @@ namespace Mijin.Library.App.Driver
         public static extern int K720_CPUCardPowerOn(int ComHandle, byte MacAddr, byte[] AtrData, char[] recordInfo);
 
         [DllImport("K720_Dll.dll")]
-        public static extern int K720_CPUAPDU(int ComHandle, byte MacAddr, byte SCH, int datalen, byte[] _APDUData, byte[] RCH, byte[] _exData, int[] exdatalen, char[] recordInfo);
+        public static extern int K720_CPUAPDU(int ComHandle, byte MacAddr, byte SCH, int datalen, byte[] _APDUData,
+            byte[] RCH, byte[] _exData, int[] exdatalen, char[] recordInfo);
 
 
         /*************************************D1801***********************************************/
@@ -144,37 +160,48 @@ namespace Mijin.Library.App.Driver
 
         /*************************************15693***********************************************/
         [DllImport("K720_Dll.dll")]
-        public static extern int K720_15693LockDSFID(int ComHandle, byte MacAddr, bool Uid, byte[] UID, char[] recordInfo);
+        public static extern int K720_15693LockDSFID(int ComHandle, byte MacAddr, bool Uid, byte[] UID,
+            char[] recordInfo);
 
         [DllImport("K720_Dll.dll")]
-        public static extern int K720_15693LockAFI(int ComHandle, byte MacAddr, bool Uid, byte[] UID, char[] recordInfo);
+        public static extern int K720_15693LockAFI(int ComHandle, byte MacAddr, bool Uid, byte[] UID,
+            char[] recordInfo);
 
         [DllImport("K720_Dll.dll")]
-        public static extern int K720_15693LockBlock(int ComHandle, byte MacAddr, bool Uid, byte[] UID, byte LockAddress, char[] recordInfo);
+        public static extern int K720_15693LockBlock(int ComHandle, byte MacAddr, bool Uid, byte[] UID,
+            byte LockAddress, char[] recordInfo);
 
         [DllImport("K720_Dll.dll")]
-        public static extern int K720_15693WriteAFI(int ComHandle, byte MacAddr, bool Uid, byte[] UID, byte WriteBit, char[] recordInfo);
+        public static extern int K720_15693WriteAFI(int ComHandle, byte MacAddr, bool Uid, byte[] UID, byte WriteBit,
+            char[] recordInfo);
 
         [DllImport("K720_Dll.dll")]
-        public static extern int K720_15693WriteDSFID(int ComHandle, byte MacAddr, bool Uid, byte[] UID, byte WriteBit, char[] recordInfo);
+        public static extern int K720_15693WriteDSFID(int ComHandle, byte MacAddr, bool Uid, byte[] UID, byte WriteBit,
+            char[] recordInfo);
 
         [DllImport("K720_Dll.dll")]
-        public static extern int K720_15693ReadSafeBit(int ComHandle, byte MacAddr, bool Uid, byte[] UID, byte BlockAddr, byte BlockLen, byte[] ReadBlockLen, byte[] BlockLockStatus, char[] recordInfo);
+        public static extern int K720_15693ReadSafeBit(int ComHandle, byte MacAddr, bool Uid, byte[] UID,
+            byte BlockAddr, byte BlockLen, byte[] ReadBlockLen, byte[] BlockLockStatus, char[] recordInfo);
 
         [DllImport("K720_Dll.dll")]
-        public static extern int K720_15693GetMessage(int ComHandle, byte MacAddr, bool Uid, byte[] UID, byte[] Message, char[] recordInfo);
+        public static extern int K720_15693GetMessage(int ComHandle, byte MacAddr, bool Uid, byte[] UID, byte[] Message,
+            char[] recordInfo);
 
         [DllImport("K720_Dll.dll")]
-        public static extern int K720_15693ChooseCard(int ComHandle, byte MacAddr, bool Uid, byte[] UID, char[] recordInfo);
+        public static extern int K720_15693ChooseCard(int ComHandle, byte MacAddr, bool Uid, byte[] UID,
+            char[] recordInfo);
 
         [DllImport("K720_Dll.dll")]
-        public static extern int K720_15693WriteData(int ComHandle, byte MacAddr, bool Uid, byte[] UID, byte BlockAddr, byte BlockLen, byte[] _BlockData, byte[] WriteBlockLen, char[] recordInfo);
+        public static extern int K720_15693WriteData(int ComHandle, byte MacAddr, bool Uid, byte[] UID, byte BlockAddr,
+            byte BlockLen, byte[] _BlockData, byte[] WriteBlockLen, char[] recordInfo);
 
         [DllImport("K720_Dll.dll")]
-        public static extern int K720_15693ReadData(int ComHandle, byte MacAddr, bool Uid, byte[] UID, byte BlockAddr, byte BlockLen, byte[] _BlockData, byte[] ReadBlockLen, char[] recordInfo);
+        public static extern int K720_15693ReadData(int ComHandle, byte MacAddr, bool Uid, byte[] UID, byte BlockAddr,
+            byte BlockLen, byte[] _BlockData, byte[] ReadBlockLen, char[] recordInfo);
 
         [DllImport("K720_Dll.dll")]
         public static extern int K720_15693GetUid(int ComHandle, byte MacAddr, byte[] UID, char[] recordInfo);
+
         #endregion
 
         CardSenderInOut cardInOut;
@@ -192,8 +219,12 @@ namespace Mijin.Library.App.Driver
 
         private bool inited = false;
 
-        private static readonly string CacheDirPath = Path.Combine(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase, "CacheFiles");
-        private static readonly string CacheFilePath = Path.Combine(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase, "CacheFiles", "CardSender-CardInOut.json");
+        private static readonly string CacheDirPath =
+            Path.Combine(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase, "CacheFiles");
+
+        private static readonly string CacheFilePath =
+            Path.Combine(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase, "CacheFiles",
+                "CardSender-CardInOut.json");
 
         public CardSender(ISystemFunc systemFunc)
         {
@@ -201,6 +232,7 @@ namespace Mijin.Library.App.Driver
             {
                 Directory.CreateDirectory(CacheDirPath);
             }
+
             var path = CacheFilePath;
             if (File.Exists(path))
             {
@@ -210,6 +242,7 @@ namespace Mijin.Library.App.Driver
             {
                 cardInOut = new();
             }
+
             _systemFunc = systemFunc;
 
             Task.Run(GetStatusTask);
@@ -229,6 +262,7 @@ namespace Mijin.Library.App.Driver
                 res.success = true;
                 return res;
             }
+
             foreach (var item in coms)
             {
                 try
@@ -239,13 +273,14 @@ namespace Mijin.Library.App.Driver
                     {
                         for (i = 0; i < 16; i++)
                         {
-                            nRet = K720_AutoTestMac(ComHandle, (byte)i, recordInfo);
+                            nRet = K720_AutoTestMac(ComHandle, (byte) i, recordInfo);
                             if (nRet == 0)
                             {
-                                MacAddr = (byte)i;
+                                MacAddr = (byte) i;
                                 break;
                             }
                         }
+
                         if (nRet == 0)
                         {
                             res.msg = "连接成功";
@@ -253,7 +288,6 @@ namespace Mijin.Library.App.Driver
                             inited = true;
                             Task.Delay(1000).GetAwaiter().GetResult();
                             return res;
-
                         }
                         else
                         {
@@ -263,7 +297,6 @@ namespace Mijin.Library.App.Driver
                 }
                 catch (Exception e)
                 {
-
                 }
             }
 
@@ -293,7 +326,6 @@ namespace Mijin.Library.App.Driver
             }
             else
             {
-
                 try
                 {
                     int nRet = 0, i;
@@ -302,13 +334,14 @@ namespace Mijin.Library.App.Driver
                     {
                         for (i = 0; i < 16; i++)
                         {
-                            nRet = K720_AutoTestMac(ComHandle, (byte)i, recordInfo);
+                            nRet = K720_AutoTestMac(ComHandle, (byte) i, recordInfo);
                             if (nRet == 0)
                             {
-                                MacAddr = (byte)i;
+                                MacAddr = (byte) i;
                                 break;
                             }
                         }
+
                         if (nRet == 0)
                         {
                             res.msg = "连接成功";
@@ -316,7 +349,6 @@ namespace Mijin.Library.App.Driver
                             inited = true;
                             Task.Delay(1000).GetAwaiter().GetResult();
                             return res;
-
                         }
                         else
                         {
@@ -326,11 +358,8 @@ namespace Mijin.Library.App.Driver
                 }
                 catch (Exception e)
                 {
-
                 }
-
             }
-
 
 
             ComHandle = 0;
@@ -351,6 +380,7 @@ namespace Mijin.Library.App.Driver
                 var resInit = Init();
                 if (!resInit.success) return resInit;
             }
+
             if (nowStatusRes == null)
             {
                 nowStatusRes = GetStatus();
@@ -365,7 +395,6 @@ namespace Mijin.Library.App.Driver
             res.msg = "可以发卡";
             res.success = true;
             return res;
-
         }
 
         /// <summary>
@@ -416,9 +445,12 @@ namespace Mijin.Library.App.Driver
             {
                 return re;
             }
+
             int nRet = 0, i = 0;
             byte[] cmd = new byte[10];
+
             #region 移动卡到读卡位置
+
             cmd = new byte[10];
             cmd[0] = 0x46;
             cmd[1] = 0x43;
@@ -438,6 +470,7 @@ namespace Mijin.Library.App.Driver
                     break;
                 }
             }
+
             if (!nowStatusRes.response.CardLocation.Contains("读卡位置"))
             {
                 res.msg = "卡未到达指定位置";
@@ -445,7 +478,9 @@ namespace Mijin.Library.App.Driver
             }
 
             #endregion
+
             #region 读卡
+
             byte[] bytes = new byte[10];
             for (i = 0; i < 3; i++)
             {
@@ -453,6 +488,7 @@ namespace Mijin.Library.App.Driver
                 if (nRet == 0) break;
                 Task.Delay(50).GetAwaiter().GetResult();
             }
+
             if (nRet != 0) // 读卡失败
             {
                 res.msg = "读卡失败";
@@ -460,28 +496,37 @@ namespace Mijin.Library.App.Driver
                 if (!nouseRes.success)
                 {
                     return nouseRes;
-
                 }
+
                 cardInOut.SlotNum++;
                 cardInOut.Save();
                 return ReadLocation(); // 收卡成功后再一次发卡
-
             }
 
             #region 卡号转换
+
             int len = bytes.Where(b => b != 0).Count();
             string m_cardNo = string.Empty;
             for (int q = 0; q < len; q++)
             {
                 m_cardNo += byteHEX(bytes[q]);
             }
+
             string str = "";
             for (i = 0; i < m_cardNo.Length; i += 2)
             {
                 string dt = m_cardNo[i].ToString() + m_cardNo[i + 1].ToString();
                 str = str.Insert(0, dt);
             }
-            res.response = IcSettings.DataHandle(Convert.ToInt64(str, 16).ToString(), _systemFunc.LibrarySettings?.IcSettings);
+
+            str = Convert.ToInt64(str, 16).ToString();
+
+            if (_systemFunc.ClientSettings.HFOriginalCard)
+                res.response = str.ToUpper();
+            else
+                res.response = IcSettings.DataHandle(str,
+                    _systemFunc.LibrarySettings?.IcSettings);
+
             #endregion
 
             #endregion
@@ -609,6 +654,7 @@ namespace Mijin.Library.App.Driver
                     res.msg = "查询失败";
                     return res;
                 }
+
                 switch (stateInfo[0])
                 {
                     case 0x39:
@@ -649,6 +695,7 @@ namespace Mijin.Library.App.Driver
                         res.response.Action = "空闲";
                         break;
                 }
+
                 switch (stateInfo[2])
                 {
                     case 0x39:
@@ -710,6 +757,7 @@ namespace Mijin.Library.App.Driver
                         res.response.CardLocation = "空闲";
                         break;
                 }
+
                 res.response.MachineCode = stateInfo[0];
                 res.response.ActionCode = stateInfo[1];
                 res.response.BoxCode = stateInfo[2];
@@ -735,15 +783,13 @@ namespace Mijin.Library.App.Driver
                     }
                     catch (Exception)
                     {
-
                     }
                 }
-
-
             }
         }
 
         #region byteHEX
+
         /// <summary>
         /// 单个字节转字字符.
         /// </summary>
@@ -754,8 +800,11 @@ namespace Mijin.Library.App.Driver
             string _str = string.Empty;
             try
             {
-                char[] Digit = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A',
-                'B', 'C', 'D', 'E', 'F' };
+                char[] Digit =
+                {
+                    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A',
+                    'B', 'C', 'D', 'E', 'F'
+                };
                 char[] ob = new char[2];
                 ob[0] = Digit[(ib >> 4) & 0X0F];
                 ob[1] = Digit[ib & 0X0F];
@@ -765,11 +814,11 @@ namespace Mijin.Library.App.Driver
             {
                 new Exception("对不起有错。");
             }
+
             return _str;
-
         }
-        #endregion
 
+        #endregion
     }
 
     /// <summary>
@@ -797,6 +846,7 @@ namespace Mijin.Library.App.Driver
         /// 出卡数
         /// </summary>
         public int OutPutNum { get; set; }
+
         /// <summary>
         /// 卡槽数量
         /// </summary>
@@ -806,6 +856,5 @@ namespace Mijin.Library.App.Driver
         {
             FileHelper.WriteFile(savePath, Json.ToJson(this), Encoding.UTF8);
         }
-
     }
 }

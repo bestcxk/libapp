@@ -1,5 +1,4 @@
-﻿
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Mijin.Library.App.Filters;
 using System;
 using System.Collections.Generic;
@@ -117,7 +116,6 @@ namespace Mijin.Library.App
         // 使用了ioc后，只能使用该方式进行启动,把app.xaml的StartupUrl 修改成 Startup = App_OnStartup
         private void App_OnStartup()
         {
-
             var mainWindow = Container.Resolve<MainWindow>();
             var webviewWindow = Container.Resolve<WebViewWindow>();
             var settings = Container.Resolve<ISystemFunc>().ClientSettings;
@@ -128,26 +126,20 @@ namespace Mijin.Library.App
             this.DispatcherUnhandledException += GlobalExceptionsFilter.OnException;
 
             var clseEvent = () =>
-           {
-
-               if (!mainWindow.IsVisible && !webviewWindow.IsVisible && WebViewWindow._doorViewWindow?.IsVisible != true)
-               {
-                   // 退出整个应用
-                   Environment.Exit(0);
-               }
-           };
-
-            // 其中一个窗口触发了关闭事件则直接退出全部程序
-            mainWindow.Closed += (s, e) =>
             {
-                clseEvent.Invoke();
+                if (!mainWindow.IsVisible && !webviewWindow.IsVisible &&
+                    WebViewWindow._doorViewWindow?.IsVisible != true)
+                {
+                    // 退出整个应用
+                    Environment.Exit(0);
+                }
             };
 
             // 其中一个窗口触发了关闭事件则直接退出全部程序
-            webviewWindow.Closed += (s, e) =>
-            {
-                clseEvent.Invoke();
-            };
+            mainWindow.Closed += (s, e) => { clseEvent.Invoke(); };
+
+            // 其中一个窗口触发了关闭事件则直接退出全部程序
+            webviewWindow.Closed += (s, e) => { clseEvent.Invoke(); };
 
             // 不可被关闭
             if (settings.CannotClosed)
@@ -178,13 +170,16 @@ namespace Mijin.Library.App
                 webviewWindow.ShowDoorViewBtn(null, null);
             }
 
-            Container.Resolve<INetWorkTranspondService>().StartOrUpdateListen(settings);
-            var settingWindow = Container.Resolve<SettingWindow>();
-            settingWindow.OnSettingsChange += () =>
+            if (!settings.DisibleProxy)
             {
-                Container.Resolve<INetWorkTranspondService>().StartOrUpdateListen(Container.Resolve<ISystemFunc>().ClientSettings);
-            };
-
+                Container.Resolve<INetWorkTranspondService>().StartOrUpdateListen(settings);
+                var settingWindow = Container.Resolve<SettingWindow>();
+                settingWindow.OnSettingsChange += () =>
+                {
+                    Container.Resolve<INetWorkTranspondService>()
+                        .StartOrUpdateListen(Container.Resolve<ISystemFunc>().ClientSettings);
+                };
+            }
         }
 
         /// <summary>
@@ -193,6 +188,7 @@ namespace Mijin.Library.App
         private void BeforeStart()
         {
             #region 检测是否管理员启动
+
             //var isAdmin = IsAdministrator();
             //if (!isAdmin)
             //{
@@ -200,9 +196,11 @@ namespace Mijin.Library.App
             //    // 退出整个应用
             //    Environment.Exit(0);
             //}
+
             #endregion
 
             #region 检测程序是否已启动
+
             var prs = ProcessHelper.CheckSameAppRunProcess();
             if (prs != null)
             {
@@ -221,18 +219,23 @@ namespace Mijin.Library.App
                         //ex.Log(Log.GetLog().Caption("BeforeStart"));
                     }
                 }
+
                 MessageBox.Show("关闭成功，请重新启动", "提示", MessageBoxButton.OK);
                 Environment.Exit(0);
-
             }
+
             #endregion
 
             #region 检查是否安装了webview2
+
             string version = null;
             try
             {
                 // 注册表查询webview2 runtime 版本
-                version = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}")?.GetValue("pv")?.ToString();
+                version = Registry.LocalMachine
+                    .OpenSubKey(
+                        @"SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}")
+                    ?.GetValue("pv")?.ToString();
             }
             catch (Exception)
             {
@@ -255,16 +258,18 @@ namespace Mijin.Library.App
                     }
                     else
                     {
-                        result = MessageBox.Show("未找到本地安装包，将打开指定网页进行下载，请选择 “常青版引导程序”，是否现在下载？", "提示", MessageBoxButton.YesNoCancel);
+                        result = MessageBox.Show("未找到本地安装包，将打开指定网页进行下载，请选择 “常青版引导程序”，是否现在下载？", "提示",
+                            MessageBoxButton.YesNoCancel);
                         if (result == MessageBoxResult.Yes)
                         {
                             //调用系统默认的浏览器   
-                            Process.Start("explorer.exe", "https://developer.microsoft.com/zh-cn/microsoft-edge/webview2/#download-section");
+                            Process.Start("explorer.exe",
+                                "https://developer.microsoft.com/zh-cn/microsoft-edge/webview2/#download-section");
                             //Task.Delay(200).GetAwaiter().GetResult();
                         }
-
                     }
                 }
+
                 // 退出整个应用
                 Environment.Exit(0);
             }
@@ -279,9 +284,9 @@ namespace Mijin.Library.App
         private bool IsAdministrator()
         {
             System.Security.Principal.WindowsIdentity identity = System.Security.Principal.WindowsIdentity.GetCurrent();
-            System.Security.Principal.WindowsPrincipal principal = new System.Security.Principal.WindowsPrincipal(identity);
+            System.Security.Principal.WindowsPrincipal principal =
+                new System.Security.Principal.WindowsPrincipal(identity);
             return principal.IsInRole(System.Security.Principal.WindowsBuiltInRole.Administrator);
         }
-
     }
 }

@@ -311,6 +311,116 @@ namespace Mijin.Library.App.Driver.Drivers.DhCamera
         };
 
         /// <summary>
+        /// catch a figure type CLIENT_CapturePictureEx interface using
+        /// 抓图类型
+        /// </summary>
+        public enum EM_NET_CAPTURE_FORMATS
+        {
+            /// <summary>
+            /// BMP
+            /// BMP
+            /// </summary>
+            BMP,
+            /// <summary>
+            /// 100% quality JPEG
+            /// 100%质量的JPEG
+            /// </summary>
+            JPEG,
+            /// <summary>
+            /// 70% quality JPEG
+            /// 70%质量的JPEG
+            /// </summary>
+            JPEG_70,
+            /// <summary>
+            /// 50% quality JPEG
+            /// 50%质量的JPEG
+            /// </summary>                       
+            JPEG_50,
+            /// <summary>
+            /// 30% quality JPEG
+            /// 30%质量的JPEG
+            /// </summary>
+            JPEG_30,
+        }
+
+        /// <summary>
+        /// set snapshot callback function
+        /// 设置远程抓图回调
+        /// </summary>
+        /// <param name="OnSnapRevMessage">snapshot data callback function 抓图数据回调</param>
+        /// <param name="dwUser">user data, there is no data, please use IntPtr.Zero 用户数据</param>
+        public static void SetSnapRevCallBack(fSnapRevCallBack OnSnapRevMessage, IntPtr dwUser)
+        {
+            ImportDhSdk.CLIENT_SetSnapRevCallBack(OnSnapRevMessage, dwUser);
+        }
+
+        /// <summary>
+        /// snapshot callback function original shape
+        /// 远程抓图数据回调
+        /// </summary>
+        /// <param name="lLoginID">loginID,login returns value 登陆ID</param>
+        /// <param name="pBuf">byte array, length is RevLen 数据缓存
+        ///                    <para>pointer to data</para></param>
+        /// <param name="RevLen">pBuf's size 数据缓存大小</param>
+        /// <param name="EncodeType">image encode type：0：mpeg4 I frame;10：jpeg 编码类型</param>
+        /// <param name="CmdSerial">operation NO.,not used in Synchronous capture conditions 序列号</param>
+        /// <param name="dwUser">user data,which input above 用户数据</param>
+        public delegate void fSnapRevCallBack(IntPtr lLoginID, IntPtr pBuf, uint RevLen, uint EncodeType, uint CmdSerial, IntPtr dwUser);
+
+
+        /// <summary>
+        /// start real-time monitor.support 32bit and 64bit
+        /// 开始实时监视.支持32位和64位
+        /// </summary>
+        /// <param name="lLoginID">user LoginID:Login's returns value 登陆ID,Login返回值</param>
+        /// <param name="nChannelID">real time monitor channel NO.(from 0). 通道号</param>
+        /// <param name="hWnd">display window handle. When value is 0(IntPtr.Zero), data are not decoded or displayed 显示窗口句柄</param>
+        /// <param name="rType">realplay type 监视类型</param>
+        /// <returns>failed return 0, successful return the real time monitorID(real time monitor handle),as parameter of related function. 失败返回0，成功返回大于0的值</returns>
+        public static IntPtr RealPlay(IntPtr lLoginID, int nChannelID, IntPtr hWnd, DhStruct.EM_RealPlayType rType = DhStruct.EM_RealPlayType.Realplay)
+        {
+            IntPtr result = IntPtr.Zero;
+            result = ImportDhSdk.CLIENT_RealPlayEx(lLoginID, nChannelID, hWnd, rType);
+            NetGetLastError(result);
+            return result;
+        }
+
+
+        /// <summary>
+        ///  capture a picture
+        ///  本地抓图
+        /// </summary>
+        /// <param name="hPlayHandle">real handle or palyback handle 实时监视或回放的句柄
+        ///                            <para>StartRealPlay returns value StartRealPlay返回值</para>
+        ///                            <para>PlayBackByTime returns value PlayBackByTime返回值</para></param>
+        /// <param name="pchPicFileName">picture's saving name 保存的文件路径</param>
+        /// <param name="eFormat">picture type 图片类型</param>
+        /// <returns>failed return false, successful return true 失败返回false 成功返回true</returns>
+        public static bool CapturePicture(IntPtr hPlayHandle, string pchPicFileName, EM_NET_CAPTURE_FORMATS eFormat)
+        {
+            bool result = false;
+            result = ImportDhSdk.CLIENT_CapturePictureEx(hPlayHandle, pchPicFileName, eFormat);
+            NetGetLastError(result);
+            return result;
+        }
+
+        /// <summary>
+        /// snapshot request
+        /// 远程抓图请求
+        /// </summary>
+        /// <param name="lLoginID">user LoginID:Login's return value 登陆ID，Login返回值</param>
+        /// <param name="par">Snapshot parameter(structure) 抓图参数</param>
+        /// <param name="reserved">reserved 保留参数</param>
+        /// <returns>failed return false, successful return true 失败返回false 成功返回true</returns>
+        public static bool SnapPictureEx(IntPtr lLoginID, NET_SNAP_PARAMS par, IntPtr reserved)
+        {
+            bool result = false;
+            result = ImportDhSdk.CLIENT_SnapPictureEx(lLoginID, ref par, reserved);
+            NetGetLastError(result);
+            return result;
+        }
+
+        /// <summary>
         /// en-us language
         /// 英文错误码对应的错误信息
         /// </summary>
@@ -913,4 +1023,47 @@ namespace Mijin.Library.App.Driver.Drivers.DhCamera
             Message = message;
         }
     }
+
+
+    public struct NET_SNAP_PARAMS
+    {
+        /// <summary>
+        /// Snapshot channel
+        /// 抓图的通道
+        /// </summary>
+        public uint Channel;
+        /// <summary>
+        /// Image quality:level 1 to level 6
+        /// 画质；1~6
+        /// </summary>
+        public uint Quality;
+        /// <summary>
+        /// Video size;0:QCIF,1:CIF,2:D1
+        /// 画面大小；0：QCIF,1：CIF,2：D1
+        /// </summary>
+        public uint ImageSize;
+        /// <summary>
+        /// Snapshot mode;0:request one frame,1:send out requestion regularly,2: Request consecutively
+        /// 抓图模式；0xFFFFFFFF:表示停止抓图, 0：表示请求一帧, 1：表示定时发送请求, 2：表示连续请求
+        /// </summary>
+        public uint mode;
+        /// <summary>
+        /// Time unit is second.If mode=1, it means send out requestion regularly. The time is valid.
+        /// 时间单位秒；若mode=1表示定时发送请求时只有部分特殊设备(如：车载设备)支持通过该字段实现定时抓图时间间隔的配置建议通过 CFG_CMD_ENCODE 配置的stuSnapFormat[nSnapMode].stuVideoFormat.nFrameRate字段实现相关功能
+        /// </summary>
+        public uint InterSnap;
+        /// <summary>
+        /// Request serial number
+        /// 请求序列号，有效值范围 0~65535，超过范围会被截断为 unsigned short
+        /// </summary>
+        public uint CmdSerial;
+        /// <summary>
+        /// Reserved
+        /// 保留
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+        public uint[] Reserved;
+    }
+
+
 }

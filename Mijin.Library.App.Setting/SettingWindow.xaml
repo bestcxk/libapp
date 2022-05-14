@@ -234,6 +234,11 @@
                 FontSize="16"
                 IsChecked="{Binding IsM513IdentityReader}" />
 
+            <CheckBox
+                Content="禁用代理"
+                FontSize="16"
+                IsChecked="{Binding DisibleProxy}" />
+
         </StackPanel>
         <StackPanel>
             <Grid>

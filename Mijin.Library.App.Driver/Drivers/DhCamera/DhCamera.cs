@@ -4,17 +4,27 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
+using Bing.Conversions;
+using Bing.Drawing;
 using Bing.Extensions;
 using Bing.Helpers;
+using Bing.Utils.Timing;
+using Microsoft.AspNetCore.Http.Internal;
 using Mijin.Library.App.Model;
+using Util.Logs;
+using Util.Logs.Extensions;
+using static Mijin.Library.App.Driver.Drivers.DhCamera.DhSdk;
 
 namespace Mijin.Library.App.Driver.Drivers.DhCamera
 {
     /// <summary>
     /// 大华摄像头
     /// </summary>
-    public class DhCamera : IDhCamera
+    public class DhCamera : IDhPeopleInoutCamera
     {
+        #region 参数
+
         /// <summary>
         /// 人流量统计事件
         /// </summary>
@@ -31,19 +41,19 @@ namespace Mijin.Library.App.Driver.Drivers.DhCamera
         /// <summary>
         /// 事件数据回调函数
         /// </summary>
-        private static DhSdk.fAnalyzerDataCallBack m_AnalyzerDataCallBack { get; set; }
+        private DhSdk.fAnalyzerDataCallBack m_AnalyzerDataCallBack { get; set; }
 
         /// <summary>
         /// 断线回调函数
         /// </summary>
-        private static DhSdk.fDisConnectCallBack m_DisConnectCallBack { get; set; }
+        private DhSdk.fDisConnectCallBack m_DisConnectCallBack { get; set; }
 
         private event Action DeviceDisconnected;
 
         /// <summary>
         /// 视频统计摘要信息回调函数
         /// </summary>
-        private static DhSdk.fVideoStatSumCallBack m_VideoStatSumCallBack { get; set; }
+        private DhSdk.fVideoStatSumCallBack m_VideoStatSumCallBack { get; set; }
 
         /// <summary>
         /// 登录句柄
@@ -56,12 +66,22 @@ namespace Mijin.Library.App.Driver.Drivers.DhCamera
         private IntPtr m_AnalyzerID = IntPtr.Zero;
         private DhStruct.NET_DEVICEINFO_Ex m_DevInfo = new();
 
+        private IntPtr realLoadPictureHandle = IntPtr.Zero;
+        private IntPtr hWnd = IntPtr.Zero;
+
         private bool isInit = false;
+
+        private string networkCutbase64 = null;
+
+        private fSnapRevCallBack _SnapRevCallBack;
 
         /// <summary>
         /// 人脸图片保存地址
         /// </summary>
         private string path { get; set; }
+
+        #endregion
+
 
         public DhCamera()
         {
@@ -71,6 +91,26 @@ namespace Mijin.Library.App.Driver.Drivers.DhCamera
         }
 
         #region 回调方法
+
+        /// <summary>
+        /// 远程抓图回调
+        /// </summary>
+        /// <param name="lLoginID"></param>
+        /// <param name="pBuf"></param>
+        /// <param name="RevLen"></param>
+        /// <param name="EncodeType"></param>
+        /// <param name="CmdSerial"></param>
+        /// <param name="dwUser"></param>
+        private void SnapRevCallBack(IntPtr lLoginID, IntPtr pBuf, uint RevLen, uint EncodeType, uint CmdSerial,
+            IntPtr dwUser)
+        {
+            if (EncodeType == 10) //.jpg
+            {
+                byte[] data = new byte[RevLen];
+                Marshal.Copy(pBuf, data, 0, (int) RevLen);
+                networkCutbase64 = data.ToBase64String();
+            }
+        }
 
         /// <summary>
         /// 人流量统计回调方法
@@ -130,6 +170,9 @@ namespace Mijin.Library.App.Driver.Drivers.DhCamera
             OnDeviceDisconnected();
         }
 
+
+        private int getFaceBase64Count = 0;
+
         /// <summary>
         /// 订阅事件回调
         /// </summary>
@@ -146,6 +189,18 @@ namespace Mijin.Library.App.Driver.Drivers.DhCamera
             uint dwBufSize, IntPtr dwUser, int nSequence, IntPtr reserved)
         {
             if (m_AnalyzerID != lAnalyzerHandle) return 0;
+
+            DhStruct.NET_DEV_EVENT_FACEDETECT_INFO info =
+                (DhStruct.NET_DEV_EVENT_FACEDETECT_INFO) Marshal.PtrToStructure(pEventInfo,
+                    typeof(DhStruct.NET_DEV_EVENT_FACEDETECT_INFO));
+            if (m_GroupID != info.stuObject.nRelativeID)
+                return 0;
+
+            if (++getFaceBase64Count <= 1)
+            {
+                return 0;
+            }
+
             switch (dwEventType)
             {
                 //截取人脸
@@ -155,24 +210,38 @@ namespace Mijin.Library.App.Driver.Drivers.DhCamera
 
                     Marshal.Copy(pBuffer, personFaceInfo, 0, (int) dwBufSize);
                     using MemoryStream stream = new MemoryStream(personFaceInfo);
+
+
                     Image bitmap = Image.FromStream(stream);
+
+#if DEBUG
+                    try
+                    {
+                        bitmap?.Save(@$"imgs/face_event_{new DateTime().ToTimeStamp()}");
+                    }
+                    catch (Exception e)
+                    {
+                    }
+#endif
+
+
                     OnDhGetFaceImageBase64?.Invoke(new WebViewSendModel<string>()
                     {
                         success = true,
                         response = bitmap.ToBase64String(ImageFormat.Png),
-                        method = nameof(bitmap),
+                        method = nameof(OnDhGetFaceImageBase64),
                         msg = "获取成功"
                     });
                 }
                     break;
             }
 
+            getFaceBase64Count = 0;
             return 0;
         }
 
         #endregion
-
-
+        
         #region MyRegion
 
         /// <summary>
@@ -223,6 +292,25 @@ namespace Mijin.Library.App.Driver.Drivers.DhCamera
                     res.msg = "Cannot get channel info 获取不到通道号！\n Device unspport 设备不支持";
                     return res;
                 }
+
+                _SnapRevCallBack = new fSnapRevCallBack(SnapRevCallBack);
+                DhSdk.SetSnapRevCallBack(_SnapRevCallBack, IntPtr.Zero);
+                // if (m_PlayID == IntPtr.Zero)
+                // {
+                //     m_PlayID = DhSdk.RealPlay(m_LoginID, 0, hWnd);
+                //     if (IntPtr.Zero == m_PlayID)
+                //     {
+                //         res.msg = "开启监视失败";
+                //         return res;
+                //     }
+                //
+                //     // bool resData = DhSdk.RenderPrivateData(m_PlayID, true);
+                //     // if (!resData)
+                //     // {
+                //     //     res.msg = DhSdk.GetLastError();
+                //     //     return res;
+                //     // }
+                // }
             }
 
             res.msg = "登录成功";
@@ -247,6 +335,7 @@ namespace Mijin.Library.App.Driver.Drivers.DhCamera
                 res.msg = "初始化失败";
                 return res;
             }
+
 
             isInit = true;
 
@@ -275,7 +364,7 @@ namespace Mijin.Library.App.Driver.Drivers.DhCamera
             }
 
             //订阅人脸检测事件
-            IntPtr realLoadPictureHandle = DhSdk.RealLoadPicture(m_LoginID, 0,
+            realLoadPictureHandle = DhSdk.RealLoadPicture(m_LoginID, 0,
                 (uint) DhStruct.EM_EVENT_IVS_TYPE.FACEDETECT, true, m_AnalyzerDataCallBack, IntPtr.Zero, IntPtr.Zero);
             m_AnalyzerID = realLoadPictureHandle;
             if (IntPtr.Zero == realLoadPictureHandle)
@@ -335,6 +424,87 @@ namespace Mijin.Library.App.Driver.Drivers.DhCamera
             res.success = true;
             res.msg = "注册成功";
             return res;
+        }
+
+
+        private static object lockobj = new object();
+
+
+        public MessageModel<string> CutCameraBase64Image()
+        {
+            var res = new MessageModel<string>();
+
+            var fileName = @"C:\Users\zy\Desktop\temp\CutCameraImage.jpg";
+
+            lock (lockobj)
+            {
+                NET_SNAP_PARAMS asyncSnap = new NET_SNAP_PARAMS();
+                asyncSnap.Channel = 0;
+                asyncSnap.Quality = 1;
+                asyncSnap.ImageSize = 2;
+                asyncSnap.mode = 0;
+                asyncSnap.InterSnap = 0;
+                networkCutbase64 = "";
+
+                bool ret = default;
+                try
+                {
+                    ret = DhSdk.SnapPictureEx(m_LoginID, asyncSnap, IntPtr.Zero);
+                }
+                catch (Exception e)
+                {
+                    res.success = false;
+                    res.msg = "远程抓图请求异常";
+                    res.devMsg = @$"exception msg : {e.ToString()} " + "\r\n" + @$"StackTrace: {e.StackTrace}";
+
+                    e.Log(Log.GetLog());
+                    return res;
+                }
+
+
+                if (!ret)
+                {
+                    res.msg = "截取图片失败";
+                    return res;
+                }
+
+                while (networkCutbase64.IsEmpty())
+                {
+                    Task.Delay(10).GetAwaiter().GetResult();
+                }
+
+#if DEBUG
+                try
+                {
+                    ImageHelper.FromBase64String(networkCutbase64)?.Save(@$"imgs/cut_{new DateTime().ToTimeStamp()}");
+                }
+                catch (Exception e)
+                {
+                }
+#endif
+
+                res.response = networkCutbase64;
+                res.success = true;
+                res.msg = "获取成功";
+                return res;
+            }
+
+
+            // lock (lockobj)
+            // {
+            //     
+            //     var cutRes =  DhSdk.CapturePicture(m_PlayID, fileName, DhSdk.EM_NET_CAPTURE_FORMATS.JPEG_50);
+            //
+            //     if (File.Exists(fileName))
+            //     {
+            //         res.response = Bitmap.FromFile(fileName).ToBase64String(ImageFormat.Jpeg);
+            //     }
+            //
+            //     res.success = !res.response.IsEmpty();
+            //
+            //     res.msg = res.success ? "获取成功" : "获取失败";
+            //     return res;
+            // }
         }
 
         #endregion
