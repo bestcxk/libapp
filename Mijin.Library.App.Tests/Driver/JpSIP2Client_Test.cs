@@ -106,7 +106,10 @@ namespace Mijin.Library.App.Tests.Driver
             var readerRegister = new Sip2ReaderRegisterRequest()
             {
                 InstitutionId = AO,
-                ReaderIdentifier = "TEST016",
+                //借书证号
+                LendBookCode = "TEST105",
+                //读者条码号
+                ReaderIdentifier = "412000TEST105",
                 ReaderPassword = "",
                 ReaderName = "金盘测试12",
                 ReaderOpenAccountLibrary = AO,
