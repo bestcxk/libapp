@@ -2,13 +2,13 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net5.0-windows</TargetFramework>
+    <TargetFramework>net6.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <Platforms>AnyCPU;x64;X86</Platforms>
     <RootNamespace>Mijin.Library.App</RootNamespace>
     <ApplicationIcon>library.ico</ApplicationIcon>
     <SatelliteResourceLanguages>zh-Hans</SatelliteResourceLanguages>
-    <Version>3.2.4</Version>
+    <Version>6.0.1</Version>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
 	<LangVersion>10</LangVersion>
   </PropertyGroup>

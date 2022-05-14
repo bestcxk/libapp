@@ -426,7 +426,7 @@ namespace Mijin.Library.App.Views
             if (_doorViewWindow == null)
             {
                 _doorViewWindow = new WebViewWindow(_driverHandle, _systemFunc, _serviceProvider,_netWorkTranspondService);
-                var url = this._clientSettings.LibraryManageUrl + (this._clientSettings.LibraryManageUrl.Last() == '/' ? "door" : "/door");
+                var url = this._clientSettings.LibraryManageUrl + (this._clientSettings.LibraryManageUrl.Last() == '/' ? "doorInfo" : "/doorInfo");
                 //_doorViewWindow.openUrl = _netWorkTranspondService.GetVisitUrl(this._clientSettings.DoorControllerUrl.IsEmpty() ? url : this._clientSettings.DoorControllerUrl);
                 _doorViewWindow.OpenUrl = this._clientSettings.DoorControllerUrl.IsEmpty() ? url : this._clientSettings.DoorControllerUrl;
 
