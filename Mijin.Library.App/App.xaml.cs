@@ -171,15 +171,19 @@ namespace Mijin.Library.App
             }
 
             if (!settings.DisibleProxy)
-            {
                 Container.Resolve<INetWorkTranspondService>().StartOrUpdateListen(settings);
-                var settingWindow = Container.Resolve<SettingWindow>();
-                settingWindow.OnSettingsChange += () =>
-                {
-                    Container.Resolve<INetWorkTranspondService>()
+            var settingWindow = Container.Resolve<SettingWindow>();
+            settingWindow.OnSettingsChange += () =>
+            {
+                var network = Container.Resolve<INetWorkTranspondService>();
+                if (!settings.DisibleProxy)
+                    network
                         .StartOrUpdateListen(Container.Resolve<ISystemFunc>().ClientSettings);
-                };
-            }
+                else
+                {
+                    network.ClearAllListen();
+                }
+            };
         }
 
         /// <summary>

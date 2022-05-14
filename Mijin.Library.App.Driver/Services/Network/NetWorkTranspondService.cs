@@ -21,7 +21,6 @@ namespace Mijin.Library.App.Driver.Services.Network
         }
 
 
-
         public string GetVisitUrl(string url)
         {
             if (url.IsEmpty() || !url.Contains("http")) return url;
@@ -78,13 +77,23 @@ namespace Mijin.Library.App.Driver.Services.Network
             }
         }
 
+
+        public void ClearAllListen()
+        {
+            Transponds?.ForEach(t =>
+            {
+                t?.Stop();
+                t?.Dispose();
+            });
+        }
+
         private void AddTranspond(NetWorkTranspond transpond)
         {
             if (transpond.TargetHost == "localhost" || transpond.TargetHost == "127.0.0.1") return;
             transpond.localPort = !Transponds.IsEmpty() ? Transponds.Max(t => t.localPort) + 1 : startPort;
             var usingPorts = NetWorkHelper.GetUsingPorts().ToList();
 
-            if (Transponds.Any(p=> p.TargetHost == transpond.TargetHost && p.TargetPort == transpond.TargetPort))
+            if (Transponds.Any(p => p.TargetHost == transpond.TargetHost && p.TargetPort == transpond.TargetPort))
                 return;
 
             while (usingPorts.Contains(transpond.localPort))
@@ -101,7 +110,8 @@ namespace Mijin.Library.App.Driver.Services.Network
         {
             var transpond = Transponds.FirstOrDefault(t => t.localIp == localIp && t.localPort == localPort);
             Transponds.Remove(transpond);
-            transpond.Stop(); ;
+            transpond.Stop();
+            ;
         }
 
         private void ClearAndStop()

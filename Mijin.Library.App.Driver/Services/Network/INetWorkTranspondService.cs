@@ -9,4 +9,5 @@ public interface INetWorkTranspondService
     List<NetWorkTranspond> Transponds { get; set; }
     void StartOrUpdateListen(ClientSettings settings);
     string GetVisitUrl(string url);
+    void ClearAllListen();
 }
