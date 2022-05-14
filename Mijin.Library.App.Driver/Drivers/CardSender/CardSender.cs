@@ -519,12 +519,10 @@ namespace Mijin.Library.App.Driver
                 str = str.Insert(0, dt);
             }
 
-            str = Convert.ToInt64(str, 16).ToString();
-
             if (_systemFunc.ClientSettings.HFOriginalCard)
                 res.response = str.ToUpper();
             else
-                res.response = IcSettings.DataHandle(str,
+                res.response = IcSettings.DataHandle(Convert.ToInt64(str, 16).ToString(),
                     _systemFunc.LibrarySettings?.IcSettings);
 
             #endregion
