@@ -23,9 +23,15 @@ public class Sip2ReaderRegisterRequest : BaseSip2Request
     public string InstitutionId { get; set; }
 
     /// <summary>
-    /// 读者证号
+    /// 借书证号
     /// </summary>
     [Sip2Id("AA")]
+    public string LendBookCode { get; set; }
+
+    /// <summary>
+    /// 读者条码号
+    /// </summary>
+    [Sip2Id("AB")]
     public string ReaderIdentifier { get; set; }
 
     /// <summary>
