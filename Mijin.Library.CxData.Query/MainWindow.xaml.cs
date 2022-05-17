@@ -26,29 +26,28 @@ namespace Mijin.Library.CxData.Query;
 public partial class MainWindow : Window
 {
 #if DEBUG
-    private string connectSql = "Server=192.168.0.81;Database=mj;User=thirdlib;Password=Thirdlib@123;MultipleActiveResultSets=True;";
+    private string connectSql =
+        "Server=192.168.0.81;Database=mj;User=thirdlib;Password=Thirdlib@123;MultipleActiveResultSets=True;";
 #else
-    private string connectSql = "Server=11.176.26.71;Database=mj;User=thirdlib;Password=Thirdlib@123;MultipleActiveResultSets=True;";
+    private string connectSql =
+ "Server=11.176.26.71;Database=mj;User=thirdlib;Password=Thirdlib@123;MultipleActiveResultSets=True;";
 #endif
-    
+
     public class WindowData
     {
-        
     }
 
     public MainWindow()
     {
         InitializeComponent();
 
-        
 
-    this.ConnectSqlTextBox.Text = connectSql;
+        this.ConnectSqlTextBox.Text = connectSql;
 
-    setConnectedStr(this.ConnectSqlTextBox.Text);
-
+        setConnectedStr(this.ConnectSqlTextBox.Text);
 
 
-    //Insert();
+        //Insert();
     }
 
     public void setConnectedStr(string str)
@@ -121,14 +120,12 @@ public partial class MainWindow : Window
         var button = (sender as Button)!;
 
         setConnectedStr(this.ConnectSqlTextBox.Text);
-        
+
         button.Content = "查询中···";
         button.IsEnabled = false;
 
         if (Sum.Text.IsEmpty())
             Sum.Text = "50";
-
-        await Task.Delay(500);
 
         var data = Find(int.Parse(Sum.Text));
         Change_DataGrid_ColumnName_Ex(data);
@@ -138,8 +135,6 @@ public partial class MainWindow : Window
             SQLHelper.QueryDataTable("cx", "select count(user_id) from visit_data_log", null, CommandType.Text);
         var count = dataTable.Rows[0].ItemArray.First();
         CountLabel.Content = count?.ToString();
-
-        await Task.Delay(500);
 
         button.Content = "查询";
         button.IsEnabled = true;
