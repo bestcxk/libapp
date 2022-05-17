@@ -15,13 +15,19 @@ namespace Mijin.Library.App.Driver
     {
         private SerialPort _serialPort = new SerialPort();
         private readonly static object openLockObj = new object();
+
         private readonly static object sendLockObj = new object();
+
         // 锁孔数量
         private int controllerCount = 1;
+
         /// <summary>
         /// 串口是否打开
         /// </summary>
-        public bool IsOpen { get => _serialPort.IsOpen; }
+        public bool IsOpen
+        {
+            get => _serialPort.IsOpen;
+        }
 
         public event Action<WebViewSendModel<List<bool>>> OnLockEvent;
 
@@ -31,6 +37,7 @@ namespace Mijin.Library.App.Driver
         /// 数据接收缓存
         /// </summary>
         private byte[] buffer = new byte[100];
+
         /// <summary>
         /// 构造函数
         /// </summary>
@@ -38,6 +45,7 @@ namespace Mijin.Library.App.Driver
         {
             task = Task.Run(LockEvent);
         }
+
         /// <summary>
         /// 析构函数
         /// </summary>
@@ -49,15 +57,14 @@ namespace Mijin.Library.App.Driver
             }
             catch (Exception)
             {
-
             }
+
             try
             {
                 _serialPort.Dispose();
             }
             catch (Exception)
             {
-
             }
         }
 
@@ -73,8 +80,8 @@ namespace Mijin.Library.App.Driver
                         var dt = GetLockStatus();
                         if (dt.response.Any(s => s == true))
                         {
-
                         }
+
                         if (dt.success)
                         {
                             OnLockEvent?.Invoke(new()
@@ -87,7 +94,6 @@ namespace Mijin.Library.App.Driver
                     }
                     catch (Exception e)
                     {
-
                     }
                 }
             }
@@ -100,7 +106,7 @@ namespace Mijin.Library.App.Driver
         /// <returns></returns>
         public MessageModel<bool> SetControllerCount(Int64 Count)
         {
-            controllerCount = (int)Count;
+            controllerCount = (int) Count;
             return new MessageModel<bool>()
             {
                 success = true,
@@ -124,22 +130,23 @@ namespace Mijin.Library.App.Driver
                     ClosePort();
 
                 _serialPort.PortName = com;
-                _serialPort.BaudRate = (int)baud;
-                _serialPort.DataBits = 8;//数据位：8
-                _serialPort.StopBits = StopBits.One;//停止位：1
+                _serialPort.BaudRate = (int) baud;
+                _serialPort.DataBits = 8; //数据位：8
+                _serialPort.StopBits = StopBits.One; //停止位：1
                 _serialPort.Parity = Parity.None;
                 _serialPort.Encoding = Encoding.Default;
                 //_serialPort.ReadBufferSize = 5;  // 读取缓冲区大小设置5
                 //_serialPort.DataReceived += ReceivedData;
                 try
                 {
-                    _serialPort.Open();//打开串口
+                    _serialPort.Open(); //打开串口
                 }
                 catch (Exception e)
                 {
                     data.msg = e.ToString();
                     return data;
                 }
+
                 Task.Delay(1000).GetAwaiter().GetResult();
                 if (_serialPort.IsOpen)
                 {
@@ -159,19 +166,23 @@ namespace Mijin.Library.App.Driver
         /// <returns></returns>
         public MessageModel<string> OpenBox(Int64 boxIndex)
         {
-            var controller = (int)(boxIndex / 25) + 1; 
+            var controller = 1;
             var index = boxIndex;
 
             while (index > 24)
+            {
+                controller++;
                 index -= 24;
+            }
 
-            return OpenBox((byte)controller, index);
+
+            return OpenBox((byte) controller, index);
         }
 
         private MessageModel<string> OpenBox(byte controller, Int64 boxIndex)
         {
             var res = new MessageModel<string>();
-            byte[] bytes = new byte[] { 0x8a, controller, (byte)boxIndex, 0x11 };
+            byte[] bytes = new byte[] {0x8a, controller, (byte) boxIndex, 0x11};
 
             var data = Send(bytes);
             if (!data.success)
@@ -184,6 +195,7 @@ namespace Mijin.Library.App.Driver
                 res.msg = "开锁柜失败";
                 return res;
             }
+
             res.msg = @$"开锁柜{boxIndex}成功";
             res.success = true;
             return res;
@@ -195,7 +207,7 @@ namespace Mijin.Library.App.Driver
         /// <returns></returns>
         public MessageModel<List<bool>> GetLockStatus()
         {
-            var res = new MessageModel<List<bool>>() { response = new List<bool>() };
+            var res = new MessageModel<List<bool>>() {response = new List<bool>()};
 
             for (byte cont = 1; cont <= controllerCount; cont++)
             {
@@ -207,6 +219,7 @@ namespace Mijin.Library.App.Driver
                     res.response.AddRange(data.response);
                 }
             }
+
             res.msg = "获取成功";
             res.success = true;
             return res;
@@ -219,8 +232,8 @@ namespace Mijin.Library.App.Driver
         /// <returns>true 为开 false 为关</returns>
         private MessageModel<List<bool>> GetLockStatus(byte controller, byte lockAddr)
         {
-            var res = new MessageModel<List<bool>>() { response = new List<bool>() };
-            byte[] bytes = new byte[] { 0x81, controller, lockAddr, 0x33 };
+            var res = new MessageModel<List<bool>>() {response = new List<bool>()};
+            byte[] bytes = new byte[] {0x81, controller, lockAddr, 0x33};
 
             if (!IsOpen)
             {
@@ -249,7 +262,6 @@ namespace Mijin.Library.App.Driver
             }
             catch (Exception e)
             {
-
                 return new()
                 {
                     success = false,
@@ -261,7 +273,6 @@ namespace Mijin.Library.App.Driver
 
         private MessageModel<byte[]> Send(byte[] sendData)
         {
-
             var res = new MessageModel<byte[]>();
             if (!IsOpen)
             {
@@ -280,7 +291,6 @@ namespace Mijin.Library.App.Driver
                     try
                     {
                         _serialPort.Write(sendData, 0, sendData.Length);
-
                     }
                     catch (Exception)
                     {
@@ -288,6 +298,7 @@ namespace Mijin.Library.App.Driver
                         //res.msg = "端口可能被占用，通讯失败";
                         //return res;
                     }
+
                     Task.Delay(50).GetAwaiter().GetResult();
                     while (_serialPort.BytesToRead < 5)
                     {
@@ -300,6 +311,7 @@ namespace Mijin.Library.App.Driver
                             //return res;
                         }
                     }
+
                     if (_serialPort.BytesToRead < 5)
                     {
                         continue;
@@ -317,7 +329,6 @@ namespace Mijin.Library.App.Driver
                 res.success = true;
                 return res;
             }
-
         }
 
         /// <summary>
@@ -334,10 +345,8 @@ namespace Mijin.Library.App.Driver
                 }
                 catch (Exception)
                 {
-
                 }
             }
-
         }
 
         /// <summary>
@@ -356,6 +365,5 @@ namespace Mijin.Library.App.Driver
                 }
             }
         }
-
     }
 }
