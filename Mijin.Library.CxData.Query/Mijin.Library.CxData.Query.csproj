@@ -1,19 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0-windows</TargetFramework>
-    <Nullable>enable</Nullable>
-    <UseWPF>true</UseWPF>
-  </PropertyGroup>
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net6.0-windows</TargetFramework>
+        <Nullable>enable</Nullable>
+        <UseWPF>true</UseWPF>
+        <Platforms>AnyCPU;x64;x86</Platforms>
+        <ApplicationIcon>query.ico</ApplicationIcon>
+        <LangVersion>10</LangVersion>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="System.Data.SqlClient" Version="4.8.3" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="System.Data.SqlClient" Version="4.8.3" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Mijin.Library.App.Common\Mijin.Library.App.Common.csproj" />
-    <ProjectReference Include="..\Mijin.Library.App.Driver\Mijin.Library.App.Driver.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Mijin.Library.App.Common\Mijin.Library.App.Common.csproj" />
+        <ProjectReference Include="..\Mijin.Library.App.Driver\Mijin.Library.App.Driver.csproj" />
+    </ItemGroup>
 
 </Project>

@@ -19,25 +19,44 @@ using Mijin.Library.App.Driver;
 using Newtonsoft.Json;
 
 namespace Mijin.Library.CxData.Query;
+
 /// <summary>
 /// Interaction logic for MainWindow.xaml
 /// </summary>
 public partial class MainWindow : Window
 {
-
+#if DEBUG
+    private string connectSql = "Server=192.168.0.81;Database=mj;User=thirdlib;Password=Thirdlib@123;MultipleActiveResultSets=True;";
+#else
+    private string connectSql = "Server=11.176.26.71;Database=mj;User=thirdlib;Password=Thirdlib@123;MultipleActiveResultSets=True;";
+#endif
+    
     public class WindowData
     {
+        
     }
 
     public MainWindow()
     {
         InitializeComponent();
 
+        
+
+    this.ConnectSqlTextBox.Text = connectSql;
+
+    setConnectedStr(this.ConnectSqlTextBox.Text);
+
+
+
+    //Insert();
+    }
+
+    public void setConnectedStr(string str)
+    {
         // 配置连接字符串
         SQLHelper.ConnStrs.Remove("cx");
-        SQLHelper.ConnStrs.Add("cx", "Server=192.168.0.81;Database=mj;User=thirdlib;Password=Thirdlib@123;MultipleActiveResultSets=True;");
-        //Insert();
 
+        SQLHelper.ConnStrs.Add("cx", str);
     }
 
     //查询
@@ -47,12 +66,14 @@ public partial class MainWindow : Window
 
         try
         {
-            data = SQLHelper.QueryDataTable("cx", $"SELECT top {num} * FROM visit_data_log ORDER BY visit_date_time desc", null, CommandType.Text);
+            data = SQLHelper.QueryDataTable("cx",
+                $"SELECT top {num} * FROM visit_data_log ORDER BY visit_date_time desc", null, CommandType.Text);
         }
         catch (Exception e)
         {
-            MessageBox.Show( e.StackTrace,"查询数据失败");
+            MessageBox.Show(e.StackTrace, "查询数据失败");
         }
+
         return data;
     }
 
@@ -63,7 +84,7 @@ public partial class MainWindow : Window
     {
         for (int i = 0; i < 1000; i++)
         {
-            var date = DateTime.Now.AddMilliseconds( i * 100);
+            var date = DateTime.Now.AddMilliseconds(i * 100);
             CxEntity entity = new CxEntity()
             {
                 user_id = i.ToString(),
@@ -77,10 +98,7 @@ public partial class MainWindow : Window
                 visit_time = date.ToString("HH:mm:ss"),
             };
             entity.WriteToDb();
-
-
         }
-        
     }
 
 
@@ -100,9 +118,10 @@ public partial class MainWindow : Window
 
     private async void QueryBtn_Click(object sender, RoutedEventArgs e)
     {
+        var button = (sender as Button)!;
 
-        var button =  (sender as Button)!;
-
+        setConnectedStr(this.ConnectSqlTextBox.Text);
+        
         button.Content = "查询中···";
         button.IsEnabled = false;
 
@@ -115,7 +134,8 @@ public partial class MainWindow : Window
         Change_DataGrid_ColumnName_Ex(data);
         Show.ItemsSource = data.DefaultView;
 
-        var dataTable = SQLHelper.QueryDataTable("cx", "select count(user_id) from visit_data_log", null, CommandType.Text);
+        var dataTable =
+            SQLHelper.QueryDataTable("cx", "select count(user_id) from visit_data_log", null, CommandType.Text);
         var count = dataTable.Rows[0].ItemArray.First();
         CountLabel.Content = count?.ToString();
 
@@ -123,7 +143,5 @@ public partial class MainWindow : Window
 
         button.Content = "查询";
         button.IsEnabled = true;
-
-
     }
 }

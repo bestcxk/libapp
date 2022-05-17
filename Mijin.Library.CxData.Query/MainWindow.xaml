@@ -16,6 +16,10 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <StackPanel Grid.ColumnSpan="2">
+            <StackPanel Orientation="Horizontal">
+                <Label Content="连接字符串："></Label>
+                <TextBox Width="auto" Name="ConnectSqlTextBox"></TextBox>
+            </StackPanel>
             <StackPanel Margin="0,10,0,10" Orientation="Horizontal">
                 <Label>输入查询条数 ：</Label>
 
@@ -39,6 +43,7 @@
                 Name="Show"
                 Height="auto"
                 MaxHeight="400" />
+            
         </StackPanel>
     </Grid>
 
