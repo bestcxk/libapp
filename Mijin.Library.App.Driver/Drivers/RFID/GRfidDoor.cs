@@ -25,6 +25,8 @@ namespace Mijin.Library.App.Driver
         // 是否已经开启了人员进出判断
         protected bool isStartWatch = false;
 
+        public override event Action<WebViewSendModel<LabelInfo>> OnReadUHFLabel;
+
         public GRfidDoor() : base(null)
         {
             _gpiAction = GpiAction.WatchPeopleInOut;
@@ -32,6 +34,33 @@ namespace Mijin.Library.App.Driver
 
         // 人员进出事件(需要先设置 _gpiAction 为 InventoryGun 模式)
         public event Action<WebViewSendModel<PeopleInOut>> OnPeopleInOut;
+
+
+        protected override void OnEncapedTagEpcLog(EncapedLogBaseEpcInfo msg)
+        {
+            // 回调内部如有阻塞，会影响API正常使用
+            // 标签回调数量较多，请将标签数据先缓存起来再作业务处理
+            if (null != msg && 0 == msg.logBaseEpcInfo.Result)
+            {
+                // 只读一次的缓存label
+                if (_readOnce)
+                {
+                    _tempLabel = new LabelInfo(msg.logBaseEpcInfo);
+                    this.Stop(); // 达到次数后停止读标签
+                }
+                else
+                {
+                    OnReadUHFLabel.Invoke(new WebViewSendModel<LabelInfo>()
+                    {
+                        msg = "获取成功",
+                        success = true,
+                        response = new LabelInfo(msg.logBaseEpcInfo),
+                        method = nameof(OnReadUHFLabel),
+                        status = 1001,
+                    });
+                }
+            }
+        }
 
         #region GPI触发事件(OnEncapedGpiStart)
 
@@ -77,7 +106,8 @@ namespace Mijin.Library.App.Driver
                                     msg = "获取成功",
                                     success = true,
                                     response = new PeopleInOut(InOut.In, inCount, outCount),
-                                    method = "OnPeopleInOut"
+                                    method = "OnPeopleInOut",
+                                    status = 1001,
                                 });
                             }
                             else if (firstTrigger == gpiOutIndex)
@@ -88,7 +118,8 @@ namespace Mijin.Library.App.Driver
                                     msg = "获取成功",
                                     success = true,
                                     response = new PeopleInOut(InOut.Out, inCount, outCount),
-                                    method = "OnPeopleInOut"
+                                    method = "OnPeopleInOut",
+                                    status = 1001,
                                 });
                             }
 

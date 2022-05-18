@@ -31,7 +31,7 @@ namespace Mijin.Library.App.Driver
         protected GpiAction _gpiAction = GpiAction.Default;
 
         // 标签触发事件
-        public event Action<WebViewSendModel<LabelInfo>> OnReadUHFLabel;
+        public virtual event Action<WebViewSendModel<LabelInfo>> OnReadUHFLabel;
 
         private string eventName = nameof(OnReadUHFLabel);
 
@@ -59,7 +59,7 @@ namespace Mijin.Library.App.Driver
 
         #region 标签读取事件(OnEncapedTagEpcLog)
 
-        private void OnEncapedTagEpcLog(EncapedLogBaseEpcInfo msg)
+        protected virtual void OnEncapedTagEpcLog(EncapedLogBaseEpcInfo msg)
         {
             // 回调内部如有阻塞，会影响API正常使用
             // 标签回调数量较多，请将标签数据先缓存起来再作业务处理
