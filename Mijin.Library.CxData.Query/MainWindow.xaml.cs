@@ -43,6 +43,7 @@ public partial class MainWindow : Window
 
 
         this.ConnectSqlTextBox.Text = connectSql;
+        this.Sum.Text = "50";
 
         setConnectedStr(this.ConnectSqlTextBox.Text);
 
@@ -59,21 +60,19 @@ public partial class MainWindow : Window
     }
 
     //查询
-    public DataTable Find(int num)
+    public DataTable Find(int num, string sql = null)
     {
-        var data = new DataTable();
 
         try
         {
-            data = SQLHelper.QueryDataTable("cx",
-                $"SELECT top {num} * FROM visit_data_log ORDER BY visit_date_time desc", null, CommandType.Text);
+            return SQLHelper.QueryDataTable("cx",
+               sql ?? $"SELECT top {num} * FROM visit_data_log ORDER BY visit_date_time desc", null, CommandType.Text);
         }
         catch (Exception e)
         {
             MessageBox.Show(e.StackTrace, "查询数据失败");
+            return null;
         }
-
-        return data;
     }
 
     /// <summary>
@@ -115,7 +114,7 @@ public partial class MainWindow : Window
         dgv.Columns[8].ColumnName = "卡号（军官证号）";
     }
 
-    private async void QueryBtn_Click(object sender, RoutedEventArgs e)
+    private  void QueryBtn_Click(object sender, RoutedEventArgs e)
     {
         var button = (sender as Button)!;
 
@@ -128,13 +127,44 @@ public partial class MainWindow : Window
             Sum.Text = "50";
 
         var data = Find(int.Parse(Sum.Text));
-        Change_DataGrid_ColumnName_Ex(data);
-        Show.ItemsSource = data.DefaultView;
 
-        var dataTable =
-            SQLHelper.QueryDataTable("cx", "select count(user_id) from visit_data_log", null, CommandType.Text);
-        var count = dataTable.Rows[0].ItemArray.First();
-        CountLabel.Content = count?.ToString();
+        if(data != null)
+        {
+            Change_DataGrid_ColumnName_Ex(data);
+            Show.ItemsSource = data.DefaultView;
+
+            var dataTable =
+                SQLHelper.QueryDataTable("cx", "select count(user_id) from visit_data_log", null, CommandType.Text);
+            var count = dataTable.Rows[0].ItemArray.First();
+            CountLabel.Content = count?.ToString();
+        }
+        
+
+        button.Content = "查询";
+        button.IsEnabled = true;
+    }
+
+    private void QuerySqlBtn_Click(object sender, RoutedEventArgs e)
+    {
+        var button = (sender as Button)!;
+
+        setConnectedStr(this.ConnectSqlTextBox.Text);
+
+        button.Content = "查询中···";
+        button.IsEnabled = false;
+
+        var data = Find(int.Parse(Sum.Text), QuerySqlInput.Text);
+
+        if (data != null)
+        {
+            Change_DataGrid_ColumnName_Ex(data);
+            Show.ItemsSource = data.DefaultView;
+
+            var dataTable =
+                SQLHelper.QueryDataTable("cx", "select count(user_id) from visit_data_log", null, CommandType.Text);
+            var count = dataTable.Rows[0].ItemArray.First();
+            CountLabel.Content = count?.ToString();
+        }
 
         button.Content = "查询";
         button.IsEnabled = true;
