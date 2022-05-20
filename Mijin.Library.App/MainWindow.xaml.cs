@@ -6,6 +6,7 @@ using Mijin.Library.App.Setting;
 using Mijin.Library.App.Views;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -102,5 +103,9 @@ namespace Mijin.Library.App
         }
 
 
+        private void ShowCxQueryBtn(object sender, RoutedEventArgs e)
+        {
+            Process.Start("Mijin.Library.CxData.Query.exe");
+        }
     }
 }

@@ -35,6 +35,7 @@ namespace Mijin.Library.App.Driver
         // 人员进出事件(需要先设置 _gpiAction 为 InventoryGun 模式)
         public event Action<WebViewSendModel<PeopleInOut>> OnPeopleInOut;
 
+        
 
         protected override void OnEncapedTagEpcLog(EncapedLogBaseEpcInfo msg)
         {

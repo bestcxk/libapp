@@ -127,51 +127,49 @@ namespace Mijin.Library.App.Driver
             var result = new MessageModel<bool>();
             eConnectionAttemptEventStatusType status = eConnectionAttemptEventStatusType.NoResponse;
             _gClient.Close();
-            if ("tcp".Equals(mode))
-            {
-                try
-                {
-                    if (_gClient.OpenTcp(conStr, (int) timeOutMs, out status))
-                    {
-                        result.success = Stop().success;
-                        if (result.success)
-                            GetPower();
-                    }
-                }
-                catch (Exception)
-                {
-                }
-            }
-            else if ("usb".Equals(mode))
-            {
-                var devList = GClient.GetUsbHidList();
 
-                try
-                {
-                    if (_gClient.OpenUsbHid(devList[0], IntPtr.Zero, (int) timeOutMs, out status))
-                    {
-                        result.success = Stop().success;
-                        if (result.success)
-                            GetPower();
-                    }
-                }
-                catch (Exception)
-                {
-                }
-            }
-            else
+            int retry = 0;
+            while (++retry < 4)
             {
                 try
                 {
-                    if (_gClient.OpenSerial(conStr, (int) timeOutMs, out status))
+                    if ("tcp".Equals(mode))
                     {
-                        result.success = Stop().success;
+                        if (_gClient.OpenTcp(conStr, (int) timeOutMs, out status))
+                        {
+                            result.success = Stop().success;
+                            if (result.success)
+                                break;
+                        }
+                    }
+                    else if ("usb".Equals(mode))
+                    {
+                        var devList = GClient.GetUsbHidList();
+
+
+                        if (_gClient.OpenUsbHid(devList[0], IntPtr.Zero, (int) timeOutMs, out status))
+                        {
+                            result.success = Stop().success;
+                            if (result.success)
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        if (_gClient.OpenSerial(conStr, (int) timeOutMs, out status))
+                        {
+                            result.success = Stop().success;
+                            if (result.success)
+                                break;
+                        }
                     }
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
+                    Console.WriteLine(e);
                 }
             }
+
 
             if (result.success)
             {
