@@ -14,10 +14,20 @@ namespace Mijin.Library.App.Driver
     {
         public List<MultiGrfidProp> rfids = new List<MultiGrfidProp>();
         public event Action<WebViewSendModel<LabelInfo>> OnReadUHFLabel;
+
+        ~MultiGrfid()
+        {
+            rfids?.ForEach(r =>
+            {
+                r.Rfid.Dispose();
+            });
+        }
+
         public MessageModel<string> Connected()
         {
             return Stop();
         }
+
         public MessageModel<bool> ConnectRfids(List<MultiGrfidProp> props)
         {
             Close();
@@ -26,7 +36,8 @@ namespace Mijin.Library.App.Driver
             {
                 var item = props[i];
                 item.Rfid = new GRfid(null);
-                var res = item.Rfid.Connect(item.ConnectStr.ToLower().Contains("com") ? "232" : "tcp", item.ConnectStr, 1500);
+                var res = item.Rfid.Connect(item.ConnectStr.ToLower().Contains("com") ? "232" : "tcp", item.ConnectStr,
+                    1500);
                 if (!res.success)
                 {
                     Close();
@@ -35,11 +46,12 @@ namespace Mijin.Library.App.Driver
                         msg = @$"{item.ConnectStr} 连接失败，已断开所有成功连接"
                     };
                 }
+
                 item.AntCount = item.Rfid.GetPower().response.Count;
                 item.AntStartIndex = i == 0 ? 1 : props[i - 1].AntCount + props[i - 1].AntStartIndex;
                 item.Rfid.OnReadUHFLabel += (labelInfo) =>
                 {
-                    labelInfo.response.AntId += (byte)(item.AntStartIndex - 1);
+                    labelInfo.response.AntId += (byte) (item.AntStartIndex - 1);
                     OnReadUHFLabel.Invoke(labelInfo);
                 };
 
@@ -53,10 +65,12 @@ namespace Mijin.Library.App.Driver
                 msg = "连接成功"
             };
         }
+
         public MessageModel<bool> ConnectRfids(string propStr)
         {
             return ConnectRfids(Json.ToObject<List<MultiGrfidProp>>(propStr));
         }
+
         public MessageModel<bool> ReadByAntIdNoTid(List<string> antIdStrs)
         {
             var res = new MessageModel<bool>();
@@ -82,7 +96,8 @@ namespace Mijin.Library.App.Driver
 
                 if (!itemAntIds.IsEmpty())
                 {
-                    var itemAntIdStr = itemAntIds.Select(antId => ((antId - item.AntStartIndex) + 1).ToString()).ToList();
+                    var itemAntIdStr = itemAntIds.Select(antId => ((antId - item.AntStartIndex) + 1).ToString())
+                        .ToList();
                     var readRes = item.Rfid.ReadByAntIdNoTid(itemAntIdStr);
 
                     if (!readRes.success)
@@ -106,14 +121,12 @@ namespace Mijin.Library.App.Driver
                 //        }
                 //    }
                 //}
-
-
             }
+
             res.msg = "操作成功";
             res.success = true;
 
             return res;
-
         }
 
         public MessageModel<bool> ReadByAntIdNoTid(string antIdStrs)
@@ -140,7 +153,7 @@ namespace Mijin.Library.App.Driver
 
                 foreach (var di in dic)
                 {
-                    dic[di.Key] = (byte)power;
+                    dic[di.Key] = (byte) power;
                 }
 
                 var powerRes = item.Rfid.SetPower(dic);
@@ -154,6 +167,7 @@ namespace Mijin.Library.App.Driver
 
             return res;
         }
+
         public MessageModel<bool> ReadByNoTid()
         {
             var res = new MessageModel<bool>();
@@ -177,6 +191,7 @@ namespace Mijin.Library.App.Driver
             res.SetMsg();
             return res;
         }
+
         public MessageModel<string> Stop()
         {
             var res = new MessageModel<string>();
@@ -200,12 +215,14 @@ namespace Mijin.Library.App.Driver
             res.msg = "操作成功";
             return res;
         }
+
         public MessageModel<string> Close()
         {
             foreach (var rfid in rfids)
             {
                 rfid?.Rfid.Close();
             }
+
             rfids = new List<MultiGrfidProp>();
             return new MessageModel<string>()
             {
@@ -214,6 +231,7 @@ namespace Mijin.Library.App.Driver
             };
         }
     }
+
     public class MultiGrfidProp
     {
         public int AntCount { get; set; }

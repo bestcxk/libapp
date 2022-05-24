@@ -10,7 +10,7 @@ namespace Mijin.Library.App.Driver
     /// <summary>
     /// RFID接口
     /// </summary>
-    public interface IRfid
+    public interface IRfid : IDisposable
     {
         /// <summary>
         /// 读到标签事件
@@ -22,6 +22,7 @@ namespace Mijin.Library.App.Driver
         /// </summary>
         /// <returns></returns>
         MessageModel<bool> Auto232Connect();
+
         MessageModel<bool> Close();
 
         /// <summary>
@@ -31,27 +32,32 @@ namespace Mijin.Library.App.Driver
         /// <param name="conStr"></param>
         /// <returns></returns>
         MessageModel<bool> Connect(string mode, string conStr, Int64 timeOutMs = 1500);
+
         /// <summary>
         /// 获取当前读写器频段
         /// </summary>
         /// <returns></returns>
         MessageModel<FreqRange> GetFreqRange();
+
         /// <summary>
         /// 获取功率
         /// </summary>
         /// <returns></returns>
         MessageModel<Dictionary<byte, byte>> GetPower();
+
         /// <summary>
         /// 开启读
         /// </summary>
         /// <returns></returns>
         MessageModel<bool> Read();
+
         /// <summary>
         /// 开启指定天线读
         /// </summary>
         /// <param name="antIds"></param>
         /// <returns></returns>
         MessageModel<bool> ReadByAntId(List<string> antIdStrs);
+
         MessageModel<bool> ReadByAntIdNoTid(List<string> antIdStrs);
         MessageModel<bool> ReadNoTid();
 
@@ -60,18 +66,21 @@ namespace Mijin.Library.App.Driver
         /// </summary>
         /// <returns></returns>
         MessageModel<LabelInfo> ReadOnce();
+
         /// <summary>
         /// 开启指定天线，读到标签后返回
         /// </summary>
         /// <param name="antIds"></param>
         /// <returns></returns>
         MessageModel<LabelInfo> ReadOnceByAntId(List<string> antIdStrs);
+
         /// <summary>
         /// 设置频段
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
         MessageModel<bool> SetFreqRange(string index);
+
         /// <summary>
         /// 设置GPO
         /// </summary>
@@ -92,16 +101,19 @@ namespace Mijin.Library.App.Driver
         /// <param name="gpiAction"></param>
         /// <returns></returns>
         MessageModel<bool> StartInventory(GpiAction gpiAction = GpiAction.Default);
+
         /// <summary>
         /// 停止读
         /// </summary>
         /// <returns></returns>
         MessageModel<bool> Stop();
+
         /// <summary>
         /// 停止盘点
         /// </summary>
         /// <returns></returns>
         MessageModel<bool> StopInventory();
+
         /// <summary>
         /// 写标签
         /// </summary>
@@ -112,7 +124,8 @@ namespace Mijin.Library.App.Driver
         /// <param name="password">访问密码</param>
         /// <param name="timeOut">超时次数</param>
         /// <returns></returns>
-        MessageModel<bool> WriteLabel(Int64 area, Int64 startAddr, string data, string baseTid = null, string password = "00000000", Int64 timeOut = 3);
+        MessageModel<bool> WriteLabel(Int64 area, Int64 startAddr, string data, string baseTid = null,
+            string password = "00000000", Int64 timeOut = 3);
 
         /// <summary>
         /// 报警

@@ -11,11 +11,17 @@ using Mijin.Library.App.Model.Setting;
 
 namespace Mijin.Library.App.Driver
 {
-    public class GRfidDoorController : IGRfidDoorController
+    public class GRfidDoorController : IGRfidDoorController,IDisposable
     {
         private List<DoorControllerModel> doors { get; set; } = new List<DoorControllerModel>();
         public event Action<WebViewSendModel<LabelInfo>> OnDoorReadUHFLabel;
         public event Action<WebViewSendModel<PeopleInOut>> OnDoorPeopleInOut;
+
+
+        ~GRfidDoorController()
+        {
+            Dispose();
+        }
 
         #region 连接通道门(ConnectDoors)
         public MessageModel<string> ConnectDoors(Dictionary<int, DoorSetting> connectDic)
@@ -298,6 +304,10 @@ namespace Mijin.Library.App.Driver
 
         }
 
+        public void Dispose()
+        {
+            doors?.ForEach(d=> d.RfidDoor.Dispose());
+        }
     }
 
     public class DoorControllerModel

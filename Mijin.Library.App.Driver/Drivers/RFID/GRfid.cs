@@ -27,7 +27,7 @@ namespace Mijin.Library.App.Driver
         // ReadOnce 存储缓存标签
         protected LabelInfo _tempLabel = null;
 
-        // gpi触发Action ,默认不处理
+        // gp处i触发Action ,默认不理
         protected GpiAction _gpiAction = GpiAction.Default;
 
         // 标签触发事件
@@ -56,6 +56,13 @@ namespace Mijin.Library.App.Driver
         }
 
         #endregion
+
+
+        ~GRfid()
+        {
+            Dispose();
+        }
+
 
         #region 标签读取事件(OnEncapedTagEpcLog)
 
@@ -876,5 +883,18 @@ namespace Mijin.Library.App.Driver
         }
 
         #endregion
+
+        public void Dispose()
+        {
+            try
+            {
+                Stop();
+                _gClient.Close();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+        }
     }
 }

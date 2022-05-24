@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <Platforms>AnyCPU;x64;X86</Platforms>
 	  <LangVersion>10</LangVersion>
   </PropertyGroup>
@@ -64,5 +64,9 @@
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <!--<Exec Command="copy &quot;$(SolutionDir)DLL\*.*&quot; &quot;$(TargetDir)&quot;" />-->
   </Target>
+
+  <ItemGroup>
+    <PackageReference Update="Microsoft.SourceLink.GitHub" Version="1.1.1" />
+  </ItemGroup>
 
 </Project>

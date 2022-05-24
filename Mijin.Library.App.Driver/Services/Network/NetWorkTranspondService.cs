@@ -2,7 +2,6 @@
 using System.Linq;
 using Bing.Extensions;
 using Bing.Helpers;
-using ImTools;
 using Mijin.Library.App.Common.Domain;
 using Mijin.Library.App.Common.Helper;
 using Mijin.Library.App.Model;

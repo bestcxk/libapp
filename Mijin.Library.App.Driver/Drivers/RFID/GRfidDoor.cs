@@ -24,6 +24,11 @@ namespace Mijin.Library.App.Driver
 
         // 是否已经开启了人员进出判断
         protected bool isStartWatch = false;
+        
+        ~GRfidDoor()
+        {
+            Dispose();
+        }
 
         public override event Action<WebViewSendModel<LabelInfo>> OnReadUHFLabel;
 
@@ -165,6 +170,7 @@ namespace Mijin.Library.App.Driver
             result.success = true;
             result.msg = "开启出入馆进出判断" + (result.success ? "成功" : "失败");
             //result.devMsg = msg2.RtMsg;
+            
 
             isStartWatch = true;
 
