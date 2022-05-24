@@ -47,8 +47,6 @@ namespace Mijin.Library.App
     {
         public IServiceCollection _serviceCollection { get; } = new ServiceCollection();
 
-        public IConfiguration Configuration { get; }
-
         public EncryptApp app { get; set; } = new EncryptApp();
 
         public App()
@@ -80,6 +78,7 @@ namespace Mijin.Library.App
 
         protected override Window CreateShell()
         {
+
             // 非开发环境
 #if (!DEBUG)
             if (!app.IsAuth())
@@ -87,23 +86,30 @@ namespace Mijin.Library.App
             else
                 return Container.Resolve<MainWindow>();
 #else
-            return Container.Resolve<MainWindow>();
+            var res =  Container.Resolve<MainWindow>();
+            return res;
 #endif
         }
 
         protected override IContainerExtension CreateContainerExtension()
         {
+
             ConfigureServices(_serviceCollection);
-            return new DryIocContainerExtension(new Container(CreateContainerRules())
+            var res = new DryIocContainerExtension(new Container(CreateContainerRules())
                 .WithDependencyInjectionAdapter(_serviceCollection));
+
+            return res;
+
         }
 
         private void ConfigureServices(IServiceCollection services)
         {
-            // 注册主window
-            services.AddSingleton<MainWindow>();
-            services.AddSingleton<WebViewWindow>();
-            services.AddSingleton<SettingWindow>();
+
+            //services.AddSingleton<MainWindow>();
+            //services.AddSingleton<WebViewWindow>();
+            //services.AddSingleton<SettingWindow>();
+            //services.AddSingleton<AuthWindow>();
+
             // 注册Nlog
             services.AddNLog();
             // 注册MemoryCache
@@ -111,6 +117,7 @@ namespace Mijin.Library.App
 
             // 注册Driver
             services.AddDriver();
+
         }
 
         // 使用了ioc后，只能使用该方式进行启动,把app.xaml的StartupUrl 修改成 Startup = App_OnStartup

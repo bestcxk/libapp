@@ -24,7 +24,10 @@ using Mijin.Library.App.Driver.Services.Network;
 using Util.Helpers;
 using Bing.Text;
 using System.Windows.Automation;
+using DryIoc;
 using ClientSettings = Mijin.Library.App.Model.ClientSettings;
+using Microsoft.Extensions.DependencyInjection;
+using Mijin.Library.App.Model.Setting;
 
 namespace Mijin.Library.App
 {
@@ -38,17 +41,21 @@ namespace Mijin.Library.App
         public SettingWindow _settingsWindow { get; }
         public ISystemFunc _systemFunc { get; }
 
-        public MainWindow(WebViewWindow webView, SettingWindow settingsWindow, ISystemFunc systemFunc)
+
+        public MainWindow(IContainer serviceProvider) // WebViewWindow webView, SettingWindow settingsWindow, ISystemFunc systemFunc
         {
             //显示在显示器最中间
             this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
-
             InitializeComponent();
-            _webView = webView;
-            _clientSettings = systemFunc.ClientSettings;
-            _settingsWindow = settingsWindow;
-            _systemFunc = systemFunc;
+            _webView = serviceProvider.Resolve<WebViewWindow>();
+            _settingsWindow = serviceProvider.Resolve<SettingWindow>();
+            _systemFunc = serviceProvider.Resolve<ISystemFunc>();
+            _clientSettings = _systemFunc.ClientSettings;
+            //_webView = webView;
+            //_clientSettings = systemFunc.ClientSettings;
+            //_settingsWindow = settingsWindow;
+            //_systemFunc = systemFunc;
 
             if (!_clientSettings.ShowTitleBarBtns)
             {
@@ -60,6 +67,7 @@ namespace Mijin.Library.App
             Title = _clientSettings.Title?.App ?? "图书管理系统";
             manager.Title = _clientSettings.Title?.Manager ?? "后台管理";
             autoLend.Title = _clientSettings.Title?.Terminal ?? "自助借阅";
+
         }
         private void MetroWindow_Loaded(object sender, RoutedEventArgs e)
         {

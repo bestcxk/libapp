@@ -1,13 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <Platforms>AnyCPU;x64;X86</Platforms>
 	  <LangVersion>10</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Mijin.Library.App.Common\Mijin.Library.App.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="Microsoft.SourceLink.GitHub" Version="1.1.1" />
   </ItemGroup>
 
 </Project>

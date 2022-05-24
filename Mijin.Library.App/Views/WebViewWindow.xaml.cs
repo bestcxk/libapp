@@ -30,12 +30,12 @@ namespace Mijin.Library.App.Views
     public partial class WebViewWindow : MetroWindow
     {
         private readonly IDriverHandle _driverHandle;
+        private readonly IServiceProvider _serviceProvider;
         private readonly INetWorkTranspondService _netWorkTranspondService;
         private readonly ClientSettings _clientSettings;
         public static WebViewWindow _doorViewWindow { get; set; } = null;
         public static WebViewWindow _webViewWindow { get; set; } = null;
         public ISystemFunc _systemFunc { get; }
-        public IServiceProvider _serviceProvider { get; }
 
 
         private string openUrl;
@@ -55,7 +55,7 @@ namespace Mijin.Library.App.Views
         static private string logColor = "32"; // 32 或者 34
 
         #region 构造函数
-        public WebViewWindow(IDriverHandle driverHandle, ISystemFunc systemFunc, IServiceProvider serviceProvider,INetWorkTranspondService netWorkTranspondService)
+        public WebViewWindow(IDriverHandle driverHandle, ISystemFunc systemFunc, IServiceProvider serviceProvider, INetWorkTranspondService netWorkTranspondService)
         {
             _driverHandle = driverHandle;
             _netWorkTranspondService = netWorkTranspondService;
@@ -66,7 +66,6 @@ namespace Mijin.Library.App.Views
             InitializeAsync(); // 初始化
 
             Title = _clientSettings.Title?.App ?? "图书管理系统";
-
             DisableWPFTabletSupport();
         }
         #endregion
@@ -425,15 +424,15 @@ namespace Mijin.Library.App.Views
         {
             if (_doorViewWindow == null)
             {
-                _doorViewWindow = new WebViewWindow(_driverHandle, _systemFunc, _serviceProvider,_netWorkTranspondService);
+                _doorViewWindow = new WebViewWindow(_driverHandle, _systemFunc, _serviceProvider, _netWorkTranspondService);
                 var url = this._clientSettings.LibraryManageUrl + (this._clientSettings.LibraryManageUrl.Last() == '/' ? "doorInfo" : "/doorInfo");
                 //_doorViewWindow.openUrl = _netWorkTranspondService.GetVisitUrl(this._clientSettings.DoorControllerUrl.IsEmpty() ? url : this._clientSettings.DoorControllerUrl);
                 _doorViewWindow.OpenUrl = this._clientSettings.DoorControllerUrl.IsEmpty() ? url : this._clientSettings.DoorControllerUrl;
 
                 _doorViewWindow.Title = "通道门";
-                var mainWindow = _serviceProvider.GetService<MainWindow>();
                 var clseEvent = () =>
                 {
+                    var mainWindow = _serviceProvider.GetService<MainWindow>();
                     if (!mainWindow.IsVisible && !_webViewWindow.IsVisible && _doorViewWindow?.IsVisible != true)
                     {
                         // 退出整个应用

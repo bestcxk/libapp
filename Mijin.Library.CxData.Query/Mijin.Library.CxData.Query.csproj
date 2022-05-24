@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
-        <TargetFramework>net6.0-windows</TargetFramework>
+        <TargetFramework>net5.0-windows</TargetFramework>
         <Nullable>enable</Nullable>
         <UseWPF>true</UseWPF>
         <Platforms>AnyCPU;x64;x86</Platforms>
@@ -17,6 +17,10 @@
     <ItemGroup>
         <ProjectReference Include="..\Mijin.Library.App.Common\Mijin.Library.App.Common.csproj" />
         <ProjectReference Include="..\Mijin.Library.App.Driver\Mijin.Library.App.Driver.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Update="Microsoft.SourceLink.GitHub" Version="1.1.1" />
     </ItemGroup>
 
 </Project>
