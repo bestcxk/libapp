@@ -30,8 +30,7 @@ namespace Mijin.Library.App.Driver
 
         public MessageModel<bool> ConnectRfids(List<MultiGrfidProp> props)
         {
-            Close();
-
+            props = props?.Where(p => rfids.All(r => r.ConnectStr != p.ConnectStr)).ToList();
             for (int i = 0; i < props.Count; i++)
             {
                 var item = props[i];
@@ -40,10 +39,9 @@ namespace Mijin.Library.App.Driver
                     1500);
                 if (!res.success)
                 {
-                    Close();
                     return new MessageModel<bool>()
                     {
-                        msg = @$"{item.ConnectStr} 连接失败，已断开所有成功连接"
+                        msg = @$"{item.ConnectStr} 连接失败"
                     };
                 }
 

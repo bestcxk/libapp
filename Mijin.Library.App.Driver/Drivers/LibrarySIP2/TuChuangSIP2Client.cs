@@ -12,7 +12,11 @@ namespace Mijin.Library.App.Driver
 {
     public class TuChuangSIP2Client : baseTcpClient, ITuChuangSIP2Client
     {
-        private static string[] CirculationStatusStr = { "分编", "入藏", "在装订", "已合并", "修补", "丢失", "剔除", "普通借出", "预约", "阅览借出", "预借", "互借", "闭架借阅", "赠送", "交换出", "调拨", "转送", "临时借出", "未知状态" };
+        private static string[] CirculationStatusStr =
+        {
+            "分编", "入藏", "在装订", "已合并", "修补", "丢失", "剔除", "普通借出", "预约", "阅览借出", "预借", "互借", "闭架借阅", "赠送", "交换出", "调拨",
+            "转送", "临时借出", "未知状态"
+        };
 
         public TuChuangSIP2Client()
         {
@@ -22,13 +26,43 @@ namespace Mijin.Library.App.Driver
         {
         }
 
+        internal override Task<string> SendAsync(string message)
+        {
+
+            int retry = 0;
+
+            if (host.IsEmpty() || port.IsEmpty())
+                throw new ArgumentNullException(@$"{nameof(host)}_{nameof(port)}");
+
+            while (++retry < 3)
+            {
+                try
+                {
+                    var res = base.SendAsync(message);
+                    return res;
+                }
+                catch (Exception e)
+                {
+                    if (e.Message == "未连接到socket")
+                        throw;
+
+                    ReConnect();
+                }
+            }
+            throw new Exception(@$"超过最大重试次数{retry}");
+        }
+
+        public MessageModel<bool> ReConnect() => Connect(host, port);
+
+
         public MessageModel<object> LendBook(string bookserial, string readerNo, string libraryAccount)
         {
             var dic = new Dictionary<string, object>();
             var bookInfo = new SIP2BookInfo();
             var readerInfo = new SIP2ReaderInfo();
             var data = new MessageModel<object>();
-            var sendStr = $@"11YN{DateTime.Now.ToString("yyyyMMddHHmmss")}   {DateTime.Now.ToString("yyyyMMddHHmmss")}AO|AA{readerNo}|AB{bookserial}|CN{libraryAccount}|AC|AY3AZEDB7|";
+            var sendStr =
+                $@"11YN{DateTime.Now.ToString("yyyyMMddHHmmss")}   {DateTime.Now.ToString("yyyyMMddHHmmss")}AO|AA{readerNo}|AB{bookserial}|CN{libraryAccount}|AC|AY3AZEDB7|";
             string message = null;
             try
             {
@@ -79,7 +113,8 @@ namespace Mijin.Library.App.Driver
             var readerInfo = new SIP2ReaderInfo();
             var data = new MessageModel<object>();
             //var sendStr = $@"09N{DateTime.Now.ToString("yyyyMMddHHmmss")} AP|AOzhepl|AB{bookserial}|AC|AY1AZEFAE";
-            var sendStr = $@"09N{DateTime.Now.ToString("yyyyMMdd")}    08005920150303    080059AP|AO|AB{bookserial}|AC|CN{libraryAccount}|BIN|AY1AZF0CC|";
+            var sendStr =
+                $@"09N{DateTime.Now.ToString("yyyyMMdd")}    08005920150303    080059AP|AO|AB{bookserial}|AC|CN{libraryAccount}|BIN|AY1AZF0CC|";
             string message = null;
             try
             {
@@ -139,23 +174,23 @@ namespace Mijin.Library.App.Driver
                 data.success = false;
                 return data;
             }
-            
-            if(message == null)
+
+            if (message == null)
             {
                 data.msg = "获取数据失败，返回信息为空";
                 data.success = false;
                 return data;
             }
+
             data.success = message.Search("AC", "|") == "0";
             if (!data.success)
             {
                 data.msg = "该身份证已被注册";
                 return data;
             }
+
             data.msg = "查重成功";
             return data;
-
-
         }
 
         /// <summary>
@@ -177,29 +212,34 @@ namespace Mijin.Library.App.Driver
             string message = null;
             if (objReg.IsMatch(readerNo))
             {
-                sendStr = $@"85{DateTime.Now.ToString("yyyyMMdd")}    081303Y         AO|XO{readerNo}|AD|AY1AZF4A6|XK13|";
+                sendStr =
+                    $@"85{DateTime.Now.ToString("yyyyMMdd")}    081303Y         AO|XO{readerNo}|AD|AY1AZF4A6|XK13|";
                 try
                 {
                     message = SendAsync(sendStr).Result;
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     data.msg = e.ToString();
                     return data;
                 }
+
                 if (message == null)
                 {
                     data.msg = "获取数据失败，返回信息为空";
                     return data;
                 }
+
                 getCardNoByIdCard = message.Search("OX", "]]"); //获取返回的第一个读者证号
-                sendStr = $@"63001{DateTime.Now.ToString("yyyyMMdd")}    081303Y         AO|AA{getCardNoByIdCard}|AD{readerPw}|AY1AZF4A6|";
+                sendStr =
+                    $@"63001{DateTime.Now.ToString("yyyyMMdd")}    081303Y         AO|AA{getCardNoByIdCard}|AD{readerPw}|AY1AZF4A6|";
             }
             else
             {
-                sendStr = $@"63001{DateTime.Now.ToString("yyyyMMdd")}    081303Y         AO|AA{readerNo}|AD{readerPw}|AY1AZF4A6|";
+                sendStr =
+                    $@"63001{DateTime.Now.ToString("yyyyMMdd")}    081303Y         AO|AA{readerNo}|AD{readerPw}|AY1AZF4A6|";
             }
-            
+
             try
             {
                 message = SendAsync(sendStr).Result;
@@ -260,11 +300,12 @@ namespace Mijin.Library.App.Driver
                         addBooks.Add(book);
                 }
             }
-            readerInfo.HoldItems = string.Join(",", addBooks);  // ,分割多本
+
+            readerInfo.HoldItems = string.Join(",", addBooks); // ,分割多本
 
 
-            readerInfo.OverdueItems = message.Search("AT", "|");// ,分割多本
-            readerInfo.AllItems = message.Search("AU", "|");// ,割多本
+            readerInfo.OverdueItems = message.Search("AT", "|"); // ,分割多本
+            readerInfo.AllItems = message.Search("AU", "|"); // ,割多本
             readerInfo.ReaderCodeForChs = message.Search("AI", "|");
 
             bookInfo.ScreenMsg = message.Search("AF", "|");
@@ -275,7 +316,6 @@ namespace Mijin.Library.App.Driver
             data.response = dic;
 
             return data;
-
         }
 
         /// <summary>
@@ -364,6 +404,7 @@ namespace Mijin.Library.App.Driver
                 data.msg = e.ToString();
                 return data;
             }
+
             if (message == null)
             {
                 data.msg = "获取数据失败，返回信息为空";
@@ -404,7 +445,8 @@ namespace Mijin.Library.App.Driver
                 data.msg = "readerInfo实体不可为空";
                 return data;
             }
-            if(readerInfo.Identity != "")
+
+            if (readerInfo.Identity != "")
             {
                 data = CheckIdentity(readerInfo.Identity);
                 if (!data.success)
@@ -412,8 +454,9 @@ namespace Mijin.Library.App.Driver
                     return data;
                 }
             }
-            
-            var sendStr = @$"81YN{DateTime.Now.ToString("yyyyMMddHHmmss")}    144920AOYB|AA{readerInfo.CardNo}|AD{readerInfo.Pw}|AE{readerInfo.Name}|AM{readerInfo.CreateReaderLibrary}|BP{readerInfo.Phone}|BD{readerInfo.Addr}|XO{readerInfo.Identity}|XT{readerInfo.Type}|BV{readerInfo.Moeny}|XM{(readerInfo.Sex ? "1" : "0")}|XK01|AY1AZB92E";
+
+            var sendStr =
+                @$"81YN{DateTime.Now.ToString("yyyyMMddHHmmss")}    144920AOYB|AA{readerInfo.CardNo}|AD{readerInfo.Pw}|AE{readerInfo.Name}|AM{readerInfo.CreateReaderLibrary}|BP{readerInfo.Phone}|BD{readerInfo.Addr}|XO{readerInfo.Identity}|XT{readerInfo.Type}|BV{readerInfo.Moeny}|XM{(readerInfo.Sex ? "1" : "0")}|XK01|AY1AZB92E";
 
             string message = null;
             try
@@ -425,11 +468,13 @@ namespace Mijin.Library.App.Driver
                 data.msg = e.ToString();
                 return data;
             }
+
             if (message == null)
             {
                 data.msg = "获取数据失败，返回信息为空";
                 return data;
             }
+
             try
             {
                 data.msg = message.Search("AF", "|");
@@ -438,6 +483,7 @@ namespace Mijin.Library.App.Driver
             {
                 data.msg = message.Substring(message.IndexOf("AF"), message.Length - 1);
             }
+
             if (string.IsNullOrEmpty(data.msg))
             {
                 data.msg = message.Substring(message.IndexOf("AF"), message.Length - message.IndexOf("AF"));
@@ -457,6 +503,5 @@ namespace Mijin.Library.App.Driver
         {
             return RegiesterReader(readerInfo.JsonMapTo<RegiesterInfo>());
         }
-
     }
 }

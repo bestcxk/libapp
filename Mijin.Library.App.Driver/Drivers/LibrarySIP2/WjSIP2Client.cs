@@ -18,28 +18,33 @@ namespace Mijin.Library.App.Driver
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
         }
+
         public WjSIP2Client()
         {
         }
 
         public WjSIP2Client(string host, string port) : base(host, port)
         {
-
         }
 
-        private static string[] CirculationStatusStr = { "分编", "入藏", "在装订", "已合并", "修补", "丢失", "剔除", "普通借出", "预约", "阅览借出", "预借", "互借", "闭架借阅", "赠送", "交换出", "调拨", "转送", "临时借出", "未知状态" };
+        private static string[] CirculationStatusStr =
+        {
+            "分编", "入藏", "在装订", "已合并", "修补", "丢失", "剔除", "普通借出", "预约", "阅览借出", "预借", "互借", "闭架借阅", "赠送", "交换出", "调拨",
+            "转送", "临时借出", "未知状态"
+        };
+
+        public string account { get; set; }
+
+        public string pw { get; set; }
+        public Int64 cp { get; set; }
+
 
         /// <summary>
-        /// 连接socket
+        /// 登录文化socket
         /// </summary>
-        /// <param name="host"></param>
-        /// <param name="port"></param>
+        /// <param name="account"></param>
+        /// <param name="pw"></param>
         /// <returns></returns>
-        public override MessageModel<bool> Connect(string host, string port)
-        {
-            return base.Connect(host, port);
-        }
-
         /// <summary>
         /// 登录文化socket
         /// </summary>
@@ -57,7 +62,7 @@ namespace Mijin.Library.App.Driver
 
             try
             {
-                message = SendAsync(sendStr).Result;
+                message = SendAsync(sendStr,true).Result;
             }
             catch (Exception e)
             {
@@ -76,26 +81,62 @@ namespace Mijin.Library.App.Driver
             data.devMsg = message;
             return data;
         }
-        internal async override Task<string> SendAsync(string message)
+
+        internal async Task<string> SendAsync(string message, bool isLogin)
         {
-            if (!Connected)
+            int retry = 0;
+
+            if (host.IsEmpty() || port.IsEmpty())
+                throw new ArgumentNullException(@$"{nameof(host)}_{nameof(port)}");
+
+            // 登陆接口只执行一次
+            if (isLogin) retry = 2;
+
+            while (++retry < 3)
             {
-                throw new Exception("未连接到socket");
+                try
+                {
+                    if (!Connected)
+                    {
+                        throw new Exception("未连接到socket");
+                    }
+
+                    var tcpClient = base.GetTcpClient();
+                    var stream = tcpClient.GetStream();
+
+                    // 需要在字符串后面加\r\n
+                    var sendBytes = Encoding.GetEncoding("GBK").GetBytes(message + "\r");
+
+                    stream.Write(sendBytes, 0, sendBytes.Length);
+                    stream.Flush();
+
+                    var data = new byte[1024 * 1024];
+                    int len = await stream.ReadAsync(data, 0, data.Length);
+                    return Encoding.GetEncoding("GBK").GetString(data.Take(len).ToArray());
+                }
+                catch (Exception e)
+                {
+                    if (e.Message == "未连接到socket")
+                        throw;
+
+                    ReConnect();
+                }
             }
 
-            var tcpClient = base.GetTcpClient();
-            var stream = tcpClient.GetStream();
-
-            // 需要在字符串后面加\r\n
-            var sendBytes = Encoding.GetEncoding("GBK").GetBytes(message + "\r");
-
-            stream.Write(sendBytes, 0, sendBytes.Length);
-            stream.Flush();
-
-            var data = new byte[1024 * 1024];
-            int len = await stream.ReadAsync(data, 0, data.Length);
-            return Encoding.GetEncoding("GBK").GetString(data.Take(len).ToArray());
+            throw new Exception(@$"超过最大重试次数{retry}");
         }
+
+        internal override Task<string> SendAsync(string message) => SendAsync(message, false);
+
+        public void ReConnect()
+        {
+            var connectRes = Connect(host, port);
+
+            if (!connectRes.success) return;
+
+            Login(account, pw,cp);
+        }
+        
 
         /// <summary>
         /// 借阅书籍
@@ -109,7 +150,8 @@ namespace Mijin.Library.App.Driver
             var bookInfo = new SIP2BookInfo();
             var readerInfo = new SIP2ReaderInfo();
             var data = new MessageModel<object>();
-            var sendStr = $@"11YN19960212    10051419960212    100514|AO{libCode}|AA{readerNo}|AB{bookserial}|AY3AZEDB7";
+            var sendStr =
+                $@"11YN19960212    10051419960212    100514|AO{libCode}|AA{readerNo}|AB{bookserial}|AY3AZEDB7";
             string message = null;
             try
             {
@@ -157,7 +199,8 @@ namespace Mijin.Library.App.Driver
             var readerInfo = new SIP2ReaderInfo();
             var data = new MessageModel<object>();
             //var sendStr = $@"09N{DateTime.Now.ToString("yyyyMMddHHmmss")} AP|AOzhepl|AB{bookserial}|AC|AY1AZEFAE";
-            var sendStr = $@"09N{DateTime.Now.ToString("yyyyMMdd")}    08005920150303    080059AP|AO{libCode}|AB{bookserial}|AC|AY1AZEFAE";
+            var sendStr =
+                $@"09N{DateTime.Now.ToString("yyyyMMdd")}    08005920150303    080059AP|AO{libCode}|AB{bookserial}|AC|AY1AZEFAE";
             string message = null;
             try
             {
@@ -174,7 +217,6 @@ namespace Mijin.Library.App.Driver
                 data.msg = "获取数据失败，返回信息为空";
                 return data;
             }
-
 
 
             readerInfo.CardNo = message.Search("AA", "|");
@@ -210,7 +252,8 @@ namespace Mijin.Library.App.Driver
         /// <param name="readerNo"></param>
         /// <param name="readerPw">可为空，可做校验读者密码是否正确，读者登录使用</param>
         /// <returns></returns>
-        public MessageModel<object> GetReaderInfo(string readerNo = "", string identity = "", string libCode = "", string readerPw = "")
+        public MessageModel<object> GetReaderInfo(string readerNo = "", string identity = "", string libCode = "",
+            string readerPw = "")
         {
             var dic = new Dictionary<string, object>();
             var bookInfo = new SIP2BookInfo();
@@ -219,7 +262,8 @@ namespace Mijin.Library.App.Driver
             //var sendStr = $@"63001{DateTime.Now.ToString("yyyyMMddHHmmss")} 1234567890 AOzhepl|AA{readerNo}|BAAA|AD{readerPw}|AY3AZF1FA"; //HHmmss
             var sendStr = "";
             if (!readerNo.IsEmpty())
-                sendStr = $@"63019{DateTime.Now.ToString("yyyyMMdd")} 102456 Y|AA{readerNo}|AO{identity}|AD{readerPw}|AY1AZEEDA";
+                sendStr =
+                    $@"63019{DateTime.Now.ToString("yyyyMMdd")} 102456 Y|AA{readerNo}|AO{identity}|AD{readerPw}|AY1AZEEDA";
             else
                 sendStr = @$"8520190614    163548|AO{libCode}|XO{identity}|XK13|AY9AZEDE4";
 
@@ -267,9 +311,9 @@ namespace Mijin.Library.App.Driver
             readerInfo.HoldItemsLimit = message.Search("BZ", "|");
             readerInfo.ReaderType = message.Search("XT", "|");
             readerInfo.Enddate = message.Search("XD", "|");
-            readerInfo.HoldItems = message.Search("AS", "|");  // ,分割多本
-            readerInfo.OverdueItems = message.Search("AT", "|");// ,分割多本
-            readerInfo.AllItems = message.Search("AU", "|");// ,割多本
+            readerInfo.HoldItems = message.Search("AS", "|"); // ,分割多本
+            readerInfo.OverdueItems = message.Search("AT", "|"); // ,分割多本
+            readerInfo.AllItems = message.Search("AU", "|"); // ,割多本
             readerInfo.ReaderCodeForChs = message.Search("AI", "|");
 
             bookInfo.ScreenMsg = message.Search("AF", "|");
@@ -280,7 +324,6 @@ namespace Mijin.Library.App.Driver
             data.response = dic;
 
             return data;
-
         }
 
         /// <summary>
@@ -360,7 +403,8 @@ namespace Mijin.Library.App.Driver
             var data = new MessageModel<object>();
             //var sendStr = $@"29|AO{libCode}|AA{readerNo}|AD|AB{bookserial}|AJ";
 
-            var sendStr = $@"29YN{DateTime.Now.ToString("yyyyMMdd")}    100514{DateTime.Now.ToString("yyyyMMdd")}    100514|AO{libCode}|AA{readerNo}|AB{bookserial}|AY3AZEDB7";
+            var sendStr =
+                $@"29YN{DateTime.Now.ToString("yyyyMMdd")}    100514{DateTime.Now.ToString("yyyyMMdd")}    100514|AO{libCode}|AA{readerNo}|AB{bookserial}|AY3AZEDB7";
             string message = null;
             try
             {
@@ -371,6 +415,7 @@ namespace Mijin.Library.App.Driver
                 data.msg = e.ToString();
                 return data;
             }
+
             if (message == null)
             {
                 data.msg = "获取数据失败，返回信息为空";
@@ -412,7 +457,8 @@ namespace Mijin.Library.App.Driver
                 return data;
             }
 
-            var sendStr = @$"91{DateTime.Now.ToString("yyyyMMddHHmmss")}    163548|AA{readerInfo.CardNo}|XO{readerInfo.Identity}|AO{readerInfo.CreateReaderLibrary}|XK{(!readerInfo.CardNo.IsEmpty() ? 0 : 1)}|AY9AZEDE4";
+            var sendStr =
+                @$"91{DateTime.Now.ToString("yyyyMMddHHmmss")}    163548|AA{readerInfo.CardNo}|XO{readerInfo.Identity}|AO{readerInfo.CreateReaderLibrary}|XK{(!readerInfo.CardNo.IsEmpty() ? 0 : 1)}|AY9AZEDE4";
 
             string message = null;
             try
@@ -424,11 +470,13 @@ namespace Mijin.Library.App.Driver
                 data.msg = e.ToString();
                 return data;
             }
+
             if (message == null)
             {
                 data.msg = "获取数据失败，返回信息为空";
                 return data;
             }
+
             try
             {
                 data.msg = message.Search("AF", "|");
@@ -437,6 +485,7 @@ namespace Mijin.Library.App.Driver
             {
                 data.msg = message.Substring(message.IndexOf("AF"), message.Length - 1);
             }
+
             if (string.IsNullOrEmpty(data.msg))
             {
                 data.msg = message.Substring(message.IndexOf("AF"), message.Length - message.IndexOf("AF"));
@@ -463,15 +512,16 @@ namespace Mijin.Library.App.Driver
                 data.msg = "readerInfo实体不可为空";
                 return data;
             }
+
             var checkRes = GetReaderInfo(readerInfo);
             if (!checkRes.success)
             {
                 checkRes.msg = "已存在重复用户";
                 return checkRes;
-
             }
 
-            var sendStr = @$"81{DateTime.Now.ToString("yyyyMMddHHmmss")}    100514|AA{readerInfo.CardNo}|AD{readerInfo.Pw}|AE{readerInfo.Name}|AO{readerInfo.CreateReaderLibrary}|AM{readerInfo.CreateReaderLibrary}|BP{readerInfo.Phone}|BD{readerInfo.Addr}|XO{readerInfo.Identity}|XH{readerInfo.Birth}|XT02|BV{readerInfo.Moeny}|XM{(readerInfo.Sex ? "1" : "0")}|XK{readerInfo.Type}|AY3AZEDB7";
+            var sendStr =
+                @$"81{DateTime.Now.ToString("yyyyMMddHHmmss")}    100514|AA{readerInfo.CardNo}|AD{readerInfo.Pw}|AE{readerInfo.Name}|AO{readerInfo.CreateReaderLibrary}|AM{readerInfo.CreateReaderLibrary}|BP{readerInfo.Phone}|BD{readerInfo.Addr}|XO{readerInfo.Identity}|XH{readerInfo.Birth}|XT02|BV{readerInfo.Moeny}|XM{(readerInfo.Sex ? "1" : "0")}|XK{readerInfo.Type}|AY3AZEDB7";
 
             //var testStr = "8120190522    100514|AO800021250301|AA182102|AD654321|AE533813|AM800021250301|BP18262605389|MP18262608976|BE27488522@qq.com|BD美国白宫|XO320682199504145512|XT2|BV100|XB|XH19950414|XN汉|XP|XF|XD|XE20190621|XM1|XA|XK01|AY3AZEDB7";
 
@@ -485,11 +535,13 @@ namespace Mijin.Library.App.Driver
                 data.msg = e.ToString();
                 return data;
             }
+
             if (message == null)
             {
                 data.msg = "获取数据失败，返回信息为空";
                 return data;
             }
+
             try
             {
                 data.msg = message.Search("AF", "|");
@@ -498,6 +550,7 @@ namespace Mijin.Library.App.Driver
             {
                 data.msg = message.Substring(message.IndexOf("AF"), message.Length - 1);
             }
+
             if (string.IsNullOrEmpty(data.msg))
             {
                 data.msg = message.Substring(message.IndexOf("AF"), message.Length - message.IndexOf("AF"));
