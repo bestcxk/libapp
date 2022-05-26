@@ -169,7 +169,11 @@ namespace Mijin.Library.App.Driver.Drivers.LibrarySIP2
                 dic["readerInfo"] = readerInfo;
                 data.response = dic;
             }
-
+            else
+            {
+                data.msg = result?.Info?.ScreenMessage;//失败赋值sip2失败原因
+            }
+            
             return data;
         }
 
@@ -202,16 +206,18 @@ namespace Mijin.Library.App.Driver.Drivers.LibrarySIP2
                 bookInfo.Title = result.Info.TitleIdentifier;
                 bookInfo.PermanentLocation = result.Info.PermanentLocation;
                 bookInfo.MediaType = result.Info.MediaType;
-
                 bookInfo.ScreenMsg = result.Info.ScreenMessage;
                 bookInfo.PrintLine = result.Info.PrintLine;
-                data.msg = result.MessageCode;
+                //data.msg = result.MessageCode;
                 data.success = result.MessageCode.Contains("成功");
                 dic["bookInfo"] = bookInfo;
                 dic["readerInfo"] = readerInfo;
                 data.response = dic;
             }
-
+            else
+            {
+                data.msg = result?.Info?.ScreenMessage;//失败赋值sip2失败原因
+            }
             return data;
         }
 
@@ -254,6 +260,10 @@ namespace Mijin.Library.App.Driver.Drivers.LibrarySIP2
                 dic["readerInfo"] = readerInfo;
                 data.response = dic;
             }
+            else
+            {
+                data.msg = result?.Info?.ScreenMessage;//失败赋值sip2失败原因
+            }
 
             return data;
         }
@@ -276,6 +286,10 @@ namespace Mijin.Library.App.Driver.Drivers.LibrarySIP2
             {
                 data.msg = result.MessageCode;
                 data.success = result.MessageCode.Contains("成功");
+            }
+            else
+            {
+                data.msg = result?.Info?.ScreenMessage;//失败赋值sip2失败原因
             }
 
             return data;
