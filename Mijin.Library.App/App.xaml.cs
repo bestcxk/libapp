@@ -78,7 +78,6 @@ namespace Mijin.Library.App
 
         protected override Window CreateShell()
         {
-
             // 非开发环境
 #if (!DEBUG)
             if (!app.IsAuth())
@@ -137,6 +136,7 @@ namespace Mijin.Library.App
                 if (!mainWindow.IsVisible && !webviewWindow.IsVisible &&
                     WebViewWindow._doorViewWindow?.IsVisible != true)
                 {
+                    AppStatic.CloseRfid();
                     // 退出整个应用
                     Environment.Exit(0);
                 }

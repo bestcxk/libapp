@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using IsUtil;
 using IsUtil.Maps;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Mijin.Library.App.Driver
 {
@@ -60,6 +61,7 @@ namespace Mijin.Library.App.Driver
 
         public void Exit()
         {
+            AppStatic.CloseRfid();
             Process.GetProcessesByName("Mijin.Library.App.Daemon").FirstOrDefault()?.Kill();
             Environment.Exit(0);
         }

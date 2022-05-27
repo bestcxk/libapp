@@ -4,7 +4,7 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net5.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
-	  <Platforms>AnyCPU;x64</Platforms>
+	  <Platforms>AnyCPU;x64;x86</Platforms>
     <UseWPF>true</UseWPF>
     <SignAssembly>False</SignAssembly>
     <AssemblyName>米进授权应用</AssemblyName>

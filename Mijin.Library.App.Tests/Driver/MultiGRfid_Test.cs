@@ -19,7 +19,20 @@ namespace Mijin.Library.App.Tests.Driver
         [Fact]
         public void Connected_Test()
         {
-            _multiGrfid.Connected();
+            var res = _multiGrfid.ConnectRfids(new List<MultiGrfidProp>()
+            {
+                new MultiGrfidProp()
+                {
+                    ConnectStr = "192.168.0.168:8160",
+                },
+                new MultiGrfidProp()
+                {
+                    ConnectStr = "192.168.1.168:8160",
+                }
+            });
+
+            var readRes = _multiGrfid.ReadByNoTid();
+
         }
     }
 }

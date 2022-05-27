@@ -65,6 +65,8 @@ namespace Mijin.Library.App.Views
             InitializeComponent();
             InitializeAsync(); // 初始化
 
+            AppStatic.Services = serviceProvider;
+
             Title = _clientSettings.Title?.App ?? "图书管理系统";
             DisableWPFTabletSupport();
         }
@@ -84,6 +86,7 @@ namespace Mijin.Library.App.Views
             // 窗口关闭时
             this.Closed += async (s, e) =>
             {
+                AppStatic.CloseRfid();
                 #region 退出时清空浏览器缓存
                 try
                 {

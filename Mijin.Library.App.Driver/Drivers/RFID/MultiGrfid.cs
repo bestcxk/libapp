@@ -45,16 +45,19 @@ namespace Mijin.Library.App.Driver
                     };
                 }
 
-                item.AntCount = item.Rfid.GetPower().response.Count;
-                item.AntStartIndex = i == 0 ? 1 : props[i - 1].AntCount + props[i - 1].AntStartIndex;
+                item.AntCount = item.Rfid.GetPower().response.Count; // 1: 8 ,2:8
+                item.AntStartIndex = rfids.IsEmpty() ? 1 : rfids.Last().AntCount + rfids.Last().AntStartIndex; // 1: 1,2:9
                 item.Rfid.OnReadUHFLabel += (labelInfo) =>
                 {
                     labelInfo.response.AntId += (byte) (item.AntStartIndex - 1);
-                    OnReadUHFLabel.Invoke(labelInfo);
+                    OnReadUHFLabel?.Invoke(labelInfo);
                 };
 
 
                 rfids.Add(item);
+                
+                Task.Delay(2000).GetAwaiter().GetResult();
+                
             }
 
             return new MessageModel<bool>()
