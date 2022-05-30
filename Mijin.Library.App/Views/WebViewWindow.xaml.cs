@@ -19,6 +19,7 @@ using System.Reflection;
 using System.Windows.Input;
 using System.Windows.Navigation;
 using AspectCore.DependencyInjection;
+using Bing.Threading.Asyncs;
 using Microsoft.Extensions.DependencyInjection;
 using Mijin.Library.App.Driver.Services.Network;
 
@@ -55,7 +56,9 @@ namespace Mijin.Library.App.Views
         static private string logColor = "32"; // 32 或者 34
 
         #region 构造函数
-        public WebViewWindow(IDriverHandle driverHandle, ISystemFunc systemFunc, IServiceProvider serviceProvider, INetWorkTranspondService netWorkTranspondService)
+
+        public WebViewWindow(IDriverHandle driverHandle, ISystemFunc systemFunc, IServiceProvider serviceProvider,
+            INetWorkTranspondService netWorkTranspondService)
         {
             _driverHandle = driverHandle;
             _netWorkTranspondService = netWorkTranspondService;
@@ -70,14 +73,15 @@ namespace Mijin.Library.App.Views
             Title = _clientSettings.Title?.App ?? "图书管理系统";
             DisableWPFTabletSupport();
         }
+
         #endregion
 
         ~WebViewWindow()
         {
-
         }
 
         #region 初始化
+
         /// <summary>
         /// 初始化
         /// </summary>
@@ -87,17 +91,20 @@ namespace Mijin.Library.App.Views
             this.Closed += async (s, e) =>
             {
                 AppStatic.CloseRfid();
+
                 #region 退出时清空浏览器缓存
+
                 try
                 {
                     if ((!_doorViewWindow.IsNull() && _doorViewWindow.IsVisible) || _webViewWindow.IsVisible)
                     {
                         return;
                     }
+
                     // 获取webview 进程id 并杀掉，否则无法删除文件
                     if (_clientSettings.OnExitClearWebCache != ClearWebViewCacheModeEnum.Default)
                     {
-                        var process = Process.GetProcessById((int)this.webView.CoreWebView2.BrowserProcessId);
+                        var process = Process.GetProcessById((int) this.webView.CoreWebView2.BrowserProcessId);
                         process.Kill();
                         process.WaitForExit();
                     }
@@ -112,34 +119,34 @@ namespace Mijin.Library.App.Views
                                 this.webView.CoreWebView2.CookieManager.DeleteAllCookies();
                                 break;
                             case ClearWebViewCacheModeEnum.LocalState: // 清空LocalState
-                                {
-                                    var dirPath = @"./Mijin.Library.App.exe.WebView2/EBWebView/Default/Local Storage";
-                                    var FilePath = @"./Mijin.Library.App.exe.WebView2/EBWebView/Local Storage";
+                            {
+                                var dirPath = @"./Mijin.Library.App.exe.WebView2/EBWebView/Default/Local Storage";
+                                var FilePath = @"./Mijin.Library.App.exe.WebView2/EBWebView/Local Storage";
 
-                                    if (Directory.Exists(dirPath))
-                                    {
-                                        FileHelper.DeleteFolder(dirPath);
-                                        FileHelper.FileDel(FilePath);
-                                    }
+                                if (Directory.Exists(dirPath))
+                                {
+                                    FileHelper.DeleteFolder(dirPath);
+                                    FileHelper.FileDel(FilePath);
                                 }
+                            }
                                 break;
                             case ClearWebViewCacheModeEnum.DefaultCache: // 删除webview 下的Default文件
+                            {
+                                var dirPath = @"./Mijin.Library.App.exe.WebView2/EBWebView/Default";
+                                if (Directory.Exists(dirPath))
                                 {
-                                    var dirPath = @"./Mijin.Library.App.exe.WebView2/EBWebView/Default";
-                                    if (Directory.Exists(dirPath))
-                                    {
-                                        FileHelper.DeleteFolder(dirPath);
-                                    }
+                                    FileHelper.DeleteFolder(dirPath);
                                 }
+                            }
                                 break;
                             case ClearWebViewCacheModeEnum.AllCache: // 删除整个webview 的Cache文件
+                            {
+                                var dirPath = @"Mijin.Library.App.exe.WebView2";
+                                if (Directory.Exists(dirPath))
                                 {
-                                    var dirPath = @"Mijin.Library.App.exe.WebView2";
-                                    if (Directory.Exists(dirPath))
-                                    {
-                                        FileHelper.DeleteFolder(dirPath);
-                                    }
+                                    FileHelper.DeleteFolder(dirPath);
                                 }
+                            }
                                 break;
                             default:
                                 break;
@@ -152,7 +159,9 @@ namespace Mijin.Library.App.Views
                 }
 
                 //ReStartApp();
+
                 #endregion
+
                 // 退出整个应用
                 // Environment.Exit(0);
             };
@@ -174,7 +183,6 @@ namespace Mijin.Library.App.Views
                 webView.CoreWebView2.Settings.AreDevToolsEnabled = false;
                 // 取消右键菜单
                 webView.CoreWebView2.Settings.AreDefaultContextMenusEnabled = false;
-
             }
 
             #region 窗口设置
@@ -195,7 +203,7 @@ namespace Mijin.Library.App.Views
             else
             {
                 // 不显示标题栏
-                this.WindowState = System.Windows.WindowState.Normal;//还原窗口（非最小化和最大化）
+                this.WindowState = System.Windows.WindowState.Normal; //还原窗口（非最小化和最大化）
                 this.WindowStyle = System.Windows.WindowStyle.ThreeDBorderWindow; //仅工作区可见，不显示标题栏和边框
             }
 
@@ -212,14 +220,14 @@ namespace Mijin.Library.App.Views
                 if (_clientSettings.ShowWindowTitleBar)
                 {
                     this.WindowState = WindowState.Maximized;
-                    this.ShowTitleBar = true;  // 不显示标题栏
+                    this.ShowTitleBar = true; // 不显示标题栏
                 }
-                else  // 不显示标题栏
+                else // 不显示标题栏
                 {
-                    this.WindowState = System.Windows.WindowState.Normal;//还原窗口（非最小化和最大化）
+                    this.WindowState = System.Windows.WindowState.Normal; //还原窗口（非最小化和最大化）
                     this.WindowStyle = System.Windows.WindowStyle.None; //仅工作区可见，不显示标题栏和边框
-                    this.ResizeMode = System.Windows.ResizeMode.NoResize;//不显示最大化和最小化按钮
-                    this.ShowTitleBar = false;  // 不显示标题栏
+                    this.ResizeMode = System.Windows.ResizeMode.NoResize; //不显示最大化和最小化按钮
+                    this.ShowTitleBar = false; // 不显示标题栏
 
                     this.Left = 0.0;
                     this.Top = 0.0;
@@ -240,6 +248,7 @@ namespace Mijin.Library.App.Views
 
             // 显示到最前端
             //this.Topmost = true;
+
             #endregion
 
             // 直达webView模式
@@ -249,11 +258,15 @@ namespace Mijin.Library.App.Views
             }
 
             #region 当前路由处理
+
             if (!string.IsNullOrWhiteSpace(OpenUrl) && OpenUrl.Substring(0, 2) == @$".\")
             {
-                this.OpenUrl = @$"{Path.Combine(Environment.CurrentDirectory, OpenUrl.Substring(2)).Replace(@$"\", @$"/")}";
+                this.OpenUrl =
+                    @$"{Path.Combine(Environment.CurrentDirectory, OpenUrl.Substring(2)).Replace(@$"\", @$"/")}";
             }
+
             this.webView.Source = new Uri(this.OpenUrl);
+
             #endregion
 
 
@@ -261,39 +274,44 @@ namespace Mijin.Library.App.Views
             {
                 this.doorBtn.Visibility = Visibility.Hidden;
             }
+
             this.Show();
         }
-
-
 
         #endregion
 
         #region Driver 模块事件 发送
+
         public void OnDriverEvent(object obj)
         {
             Send(obj, true);
         }
+
         #endregion
 
+
+        private object lockObj = new object();
+
         #region webview 接收事件
+
         /// <summary>
         /// 接收前端信息
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void WebMessageReceived(object sender, CoreWebView2WebMessageReceivedEventArgs receivedEvent)
+        private async void WebMessageReceived(object sender, CoreWebView2WebMessageReceivedEventArgs receivedEvent)
         {
             var result = new WebViewSendModel<object>();
             // 获取请求字符串
             string reqStr = receivedEvent.WebMessageAsJson;
             object[] parameters = null;
 
-
-            Task.Run(() =>
+            lock (lockObj)
             {
+                // Task.Run(() =>
+                // {
                 try
                 {
-
                     // 检查请求字符串
                     if (string.IsNullOrEmpty(reqStr))
                     {
@@ -310,9 +328,9 @@ namespace Mijin.Library.App.Views
                     result.guid = req.guid;
 
                     string interfaceName = req.method.Split('.')[0]; // 执行的接口名
-                    string methodName = req.method.Split('.')[1];    // 执行的方法
-                    parameters = req.@params;            // 执行参数处理
-                                                         // 把请求参数中的 JArray 转换为 List<List<string> ,否则会匹配不到方法
+                    string methodName = req.method.Split('.')[1]; // 执行的方法
+                    parameters = req.@params; // 执行参数处理
+                    // 把请求参数中的 JArray 转换为 List<List<string> ,否则会匹配不到方法
 
 
                     for (int i = 0; i < parameters?.Length; i++)
@@ -321,7 +339,6 @@ namespace Mijin.Library.App.Views
                         if (!item.IsNull() && item.GetType().Name == "JArray")
                             item = item.JsonMapTo<List<string>>();
                     }
-
 
 
                     // 反射执行指定方法并赋值
@@ -333,7 +350,6 @@ namespace Mijin.Library.App.Views
                     result.status = resultObj?.status ?? 0;
                     result.success = resultObj?.success ?? false;
                     result.response = resultObj?.response;
-
                 }
                 catch (Exception ex)
                 {
@@ -352,14 +368,16 @@ namespace Mijin.Library.App.Views
                 }
 
 
-
                 // 发送信息给前端页面
                 Send(result, false, reqStr, Json.ToJson(parameters));
-            });
+                // });
+            }
         }
+
         #endregion
 
         #region 发送信息给前端页面(Send)
+
         /// <summary>
         /// 发送信息给前端页面
         /// </summary>
@@ -373,17 +391,20 @@ namespace Mijin.Library.App.Views
             if (isEvent)
             {
                 if (obj.status == 1001)
-                    this.Dispatcher.Invoke(new Action(() => _doorViewWindow.webView.CoreWebView2.PostWebMessageAsString(Json.ToJson(obj))));
+                    this.Dispatcher.Invoke(new Action(() =>
+                        _doorViewWindow.webView.CoreWebView2.PostWebMessageAsString(Json.ToJson(obj))));
                 else
-                    this.Dispatcher.Invoke(new Action(() => _webViewWindow.webView.CoreWebView2.PostWebMessageAsString(Json.ToJson(obj))));
+                    this.Dispatcher.Invoke(new Action(() =>
+                        _webViewWindow.webView.CoreWebView2.PostWebMessageAsString(Json.ToJson(obj))));
             }
             else
-                this.Dispatcher.Invoke(new Action(() => this.webView.CoreWebView2.PostWebMessageAsString(Json.ToJson(obj))));
-
+                this.Dispatcher.Invoke(new Action(() =>
+                    this.webView.CoreWebView2.PostWebMessageAsString(Json.ToJson(obj))));
 
 
             // 屏蔽黑名单进info日志
-            if (!string.IsNullOrWhiteSpace(obj.method) && _driverHandle.BlackListLogMethod.Contains((string)obj.method))
+            if (!string.IsNullOrWhiteSpace(obj.method) &&
+                _driverHandle.BlackListLogMethod.Contains((string) obj.method))
                 return;
 
             // 日志信息记录
@@ -410,27 +431,34 @@ namespace Mijin.Library.App.Views
                 loginfo.rtData = Json.ToJson(obj.response);
                 webLog = loginfo.WriteActionLog();
             }
+
             webLog = @$"console.debug('\x1B[" + logColor + @$"m%s\x1B[0m', '{webLog}')".Replace("\r\n", "\\n");
 
             if (logColor == "32") logColor = "34";
             else logColor = "32";
 
             if (obj.status == 1001)
-                this.Dispatcher.Invoke(new Action(() => _doorViewWindow.webView.CoreWebView2.ExecuteScriptAsync(webLog)));
+                this.Dispatcher.Invoke(
+                    new Action(() => _doorViewWindow.webView.CoreWebView2.ExecuteScriptAsync(webLog)));
             else
-                this.Dispatcher.Invoke(new Action(() => _webViewWindow?.webView?.CoreWebView2?.ExecuteScriptAsync(webLog)));
-
+                this.Dispatcher.Invoke(new Action(() =>
+                    _webViewWindow?.webView?.CoreWebView2?.ExecuteScriptAsync(webLog)));
         }
+
         #endregion
 
         public void ShowDoorViewBtn(object sender, RoutedEventArgs e)
         {
             if (_doorViewWindow == null)
             {
-                _doorViewWindow = new WebViewWindow(_driverHandle, _systemFunc, _serviceProvider, _netWorkTranspondService);
-                var url = this._clientSettings.LibraryManageUrl + (this._clientSettings.LibraryManageUrl.Last() == '/' ? "doorInfo" : "/doorInfo");
+                _doorViewWindow =
+                    new WebViewWindow(_driverHandle, _systemFunc, _serviceProvider, _netWorkTranspondService);
+                var url = this._clientSettings.LibraryManageUrl +
+                          (this._clientSettings.LibraryManageUrl.Last() == '/' ? "doorInfo" : "/doorInfo");
                 //_doorViewWindow.openUrl = _netWorkTranspondService.GetVisitUrl(this._clientSettings.DoorControllerUrl.IsEmpty() ? url : this._clientSettings.DoorControllerUrl);
-                _doorViewWindow.OpenUrl = this._clientSettings.DoorControllerUrl.IsEmpty() ? url : this._clientSettings.DoorControllerUrl;
+                _doorViewWindow.OpenUrl = this._clientSettings.DoorControllerUrl.IsEmpty()
+                    ? url
+                    : this._clientSettings.DoorControllerUrl;
 
                 _doorViewWindow.Title = "通道门";
                 var clseEvent = () =>
@@ -444,11 +472,7 @@ namespace Mijin.Library.App.Views
                 };
 
 
-
-                _doorViewWindow.Closed += (s, e) =>
-                {
-                    clseEvent?.Invoke();
-                };
+                _doorViewWindow.Closed += (s, e) => { clseEvent?.Invoke(); };
             }
 
             try
@@ -460,7 +484,6 @@ namespace Mijin.Library.App.Views
                 _doorViewWindow = null;
                 ShowDoorViewBtn(null, null);
             }
-
         }
 
         // 修复 win7 触屏 
@@ -476,8 +499,8 @@ namespace Mijin.Library.App.Views
 
                 // Call the StylusLogic method on the InputManager.Current instance.
                 object stylusLogic = inputManagerType.InvokeMember("StylusLogic",
-                            BindingFlags.GetProperty | BindingFlags.Instance | BindingFlags.NonPublic,
-                            null, InputManager.Current, null);
+                    BindingFlags.GetProperty | BindingFlags.Instance | BindingFlags.NonPublic,
+                    null, InputManager.Current, null);
 
                 if (stylusLogic != null)
                 {
@@ -489,11 +512,10 @@ namespace Mijin.Library.App.Views
                     {
                         // Remove the first tablet device in the devices collection.
                         stylusLogicType.InvokeMember("OnTabletRemoved",
-                                BindingFlags.InvokeMethod | BindingFlags.Instance | BindingFlags.NonPublic,
-                                null, stylusLogic, new object[] { (uint)0 });
+                            BindingFlags.InvokeMethod | BindingFlags.Instance | BindingFlags.NonPublic,
+                            null, stylusLogic, new object[] {(uint) 0});
                     }
                 }
-
             }
         }
 
@@ -520,29 +542,36 @@ namespace Mijin.Library.App.Views
                 log.Info();
             }
 
-            public virtual string WriteActionLog(string reqStr, string title, string method, string para, string rtData, bool rtSuccess, string rtMsg)
+            public virtual string WriteActionLog(string reqStr, string title, string method, string para, string rtData,
+                bool rtSuccess, string rtMsg)
             {
-                string text = $" 请求字符串　：{reqStr} \r\n 标题　　　　：{title} \r\n 请求方法　　：{method} \r\n 请求参数　　：{para} \r\n 返回数据　　：{rtData} \r\n 返回成功状态：{rtSuccess} \r\n 返回信息　　：{rtMsg} \r\n ";
+                string text =
+                    $" 请求字符串　：{reqStr} \r\n 标题　　　　：{title} \r\n 请求方法　　：{method} \r\n 请求参数　　：{para} \r\n 返回数据　　：{rtData} \r\n 返回成功状态：{rtSuccess} \r\n 返回信息　　：{rtMsg} \r\n ";
                 Write(text);
                 return text;
-
             }
+
             public virtual string WriteActionLog()
             {
-                string text = $" 请求字符串　：{reqStr} \r\n 标题　　　　：{title} \r\n 请求方法　　：{method} \r\n 请求参数　　：{para} \r\n 返回数据　　：{rtData} \r\n 返回成功状态：{rtSuccess} \r\n 返回信息　　：{rtMsg} \r\n ";
+                string text =
+                    $" 请求字符串　：{reqStr} \r\n 标题　　　　：{title} \r\n 请求方法　　：{method} \r\n 请求参数　　：{para} \r\n 返回数据　　：{rtData} \r\n 返回成功状态：{rtSuccess} \r\n 返回信息　　：{rtMsg} \r\n ";
                 Write(text);
                 return text;
             }
 
-            public virtual string WriteEvent(string title, string eventName, string rtData, bool rtSuccess, string rtMsg)
+            public virtual string WriteEvent(string title, string eventName, string rtData, bool rtSuccess,
+                string rtMsg)
             {
-                string text = $" 标题　　　　：{title} \r\n 事件名称　　：{eventName} \r\n 返回数据　　：{rtData} \r\n 返回成功状态：{rtSuccess} \r\n 返回信息　　：{rtMsg} \r\n ";
+                string text =
+                    $" 标题　　　　：{title} \r\n 事件名称　　：{eventName} \r\n 返回数据　　：{rtData} \r\n 返回成功状态：{rtSuccess} \r\n 返回信息　　：{rtMsg} \r\n ";
                 Write(text);
                 return text;
             }
+
             public virtual string WriteEvent()
             {
-                string text = $" 标题　　　　：{title} \r\n 事件名称　　：{eventName} \r\n 返回数据　　：{rtData} \r\n 返回成功状态：{rtSuccess} \r\n 返回信息　　：{rtMsg} \r\n ";
+                string text =
+                    $" 标题　　　　：{title} \r\n 事件名称　　：{eventName} \r\n 返回数据　　：{rtData} \r\n 返回成功状态：{rtSuccess} \r\n 返回信息　　：{rtMsg} \r\n ";
                 Write(text);
                 return text;
             }

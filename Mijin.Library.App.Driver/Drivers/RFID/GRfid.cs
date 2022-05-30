@@ -133,10 +133,14 @@ namespace Mijin.Library.App.Driver
         {
             var result = new MessageModel<bool>();
             eConnectionAttemptEventStatusType status = eConnectionAttemptEventStatusType.NoResponse;
-            _gClient.Close();
+
+            Stop();
+            
+            _gClient?.Close();
 
             int retry = 0;
-            while (++retry < 4)
+            timeOutMs = 2500;
+            while (++retry < 3)
             {
                 try
                 {
@@ -152,6 +156,12 @@ namespace Mijin.Library.App.Driver
                     else if ("usb".Equals(mode))
                     {
                         var devList = GClient.GetUsbHidList();
+
+                        if (devList.IsEmpty())
+                        {
+                            result.msg = "未找到UsbHid";
+                            break;
+                        }
 
 
                         if (_gClient.OpenUsbHid(devList[0], IntPtr.Zero, (int) timeOutMs, out status))
@@ -190,8 +200,8 @@ namespace Mijin.Library.App.Driver
                 _gClient.Close();
             }
 
-            result.msg = "连接" + (result.success ? "成功" : "失败");
-            result.devMsg = status.ToString();
+            result.msg ??= "连接" + (result.success ? "成功" : "失败");
+            result.devMsg += status.ToString();
             return result;
         }
 
@@ -291,6 +301,12 @@ namespace Mijin.Library.App.Driver
         {
             var result = new MessageModel<bool>();
 
+            if (_gClient == null)
+            {
+                result.msg = "停止" + (result.success ? "成功" : "失败");
+                return result;
+            }
+            
             try
             {
                 // 停止指令，空闲态
