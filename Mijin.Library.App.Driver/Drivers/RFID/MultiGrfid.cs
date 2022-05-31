@@ -55,9 +55,6 @@ namespace Mijin.Library.App.Driver
 
 
                 rfids.Add(item);
-                
-                Task.Delay(2000).GetAwaiter().GetResult();
-                
             }
 
             return new MessageModel<bool>()
@@ -107,21 +104,6 @@ namespace Mijin.Library.App.Driver
                         return readRes;
                     }
                 }
-
-                //foreach (var antId in antIds)
-                //{
-                //    if (antId >= maxId && antId <= maxId)
-                //    {
-                //        var index = antId - (item.AntStartIndex - 1);
-                //        var readRes = item.Rfid.ReadByAntIdNoTid(new List<string>() { index.ToString() });
-
-                //        if (!readRes.success)
-                //        {
-                //            Stop();
-                //            return readRes;
-                //        }
-                //    }
-                //}
             }
 
             res.msg = "操作成功";

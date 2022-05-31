@@ -35,6 +35,9 @@ namespace Mijin.Library.App.Driver
 
         private string eventName = nameof(OnReadUHFLabel);
 
+        private object _lockObj = new object();
+
+
         #region 构造函数
 
         /// <summary>
@@ -131,78 +134,95 @@ namespace Mijin.Library.App.Driver
         /// <returns></returns>
         public MessageModel<bool> Connect(string mode, string conStr, Int64 timeOutMs = 1500)
         {
-            var result = new MessageModel<bool>();
-            eConnectionAttemptEventStatusType status = eConnectionAttemptEventStatusType.NoResponse;
-
-            Stop();
-            
-            _gClient?.Close();
-
-            int retry = 0;
-            timeOutMs = 2500;
-            while (++retry < 3)
+            lock (_lockObj)
             {
-                try
+                var result = new MessageModel<bool>();
+                eConnectionAttemptEventStatusType status = eConnectionAttemptEventStatusType.NoResponse;
+
+                Stop();
+
+                _gClient?.Close();
+
+                int retry = 0;
+                timeOutMs = 2500;
+                while (++retry < 3)
                 {
-                    if ("tcp".Equals(mode))
+                    try
                     {
-                        if (_gClient.OpenTcp(conStr, (int) timeOutMs, out status))
+                        if ("tcp".Equals(mode))
                         {
-                            result.success = Stop().success;
-                            if (result.success)
+                            if (_gClient.OpenTcp(conStr, (int) timeOutMs, out status))
+                            {
+                                // result.success = Stop().success;
+                                // if (result.success)
+                                //     break;
+                                
+                                result.success = true;
                                 break;
+                            }
+                        }
+                        else if ("usb".Equals(mode))
+                        {
+                            var devList = GClient.GetUsbHidList();
+
+                            result.devMsg = @$"usbHid Count: [{devList.Count}] ";
+                            
+                            if (devList.IsEmpty())
+                            {
+                                result.msg = "未找到UsbHid";
+                                break;
+                            }
+                            
+                            
+
+
+                            if (_gClient.OpenUsbHid(devList[0], IntPtr.Zero, (int) timeOutMs, out status))
+                            {
+                                // result.success = Stop().success;
+                                // if (result.success)
+                                //     break;
+                                
+                                result.success = true;
+                                break;
+
+                            }
+                        }
+                        else
+                        {
+                            if (_gClient.OpenSerial(conStr, (int) timeOutMs, out status))
+                            {
+                                // result.success = Stop().success;
+                                // if (result.success)
+                                //     break;
+                                
+                                result.success = true;
+                                break;
+                            }
                         }
                     }
-                    else if ("usb".Equals(mode))
+                    catch (Exception e)
                     {
-                        var devList = GClient.GetUsbHidList();
-
-                        if (devList.IsEmpty())
-                        {
-                            result.msg = "未找到UsbHid";
-                            break;
-                        }
-
-
-                        if (_gClient.OpenUsbHid(devList[0], IntPtr.Zero, (int) timeOutMs, out status))
-                        {
-                            result.success = Stop().success;
-                            if (result.success)
-                                break;
-                        }
-                    }
-                    else
-                    {
-                        if (_gClient.OpenSerial(conStr, (int) timeOutMs, out status))
-                        {
-                            result.success = Stop().success;
-                            if (result.success)
-                                break;
-                        }
+                        Console.WriteLine(e);
                     }
                 }
-                catch (Exception e)
+
+
+                if (result.success)
                 {
-                    Console.WriteLine(e);
+                    // 清除绑定的委托
+                    ClearEvent("all");
+                    _gClient.OnEncapedTagEpcLog += OnEncapedTagEpcLog; //标签读取时间
+                    _gClient.OnEncapedGpiStart += new delegateEncapedGpiStart(OnEncapedGpiStart);
                 }
-            }
+                else
+                {
+                    _gClient.Close();
+                }
 
-
-            if (result.success)
-            {
-                // 清除绑定的委托
-                ClearEvent("all");
-                _gClient.OnEncapedTagEpcLog += OnEncapedTagEpcLog; //标签读取时间
-                _gClient.OnEncapedGpiStart += new delegateEncapedGpiStart(OnEncapedGpiStart);
+                result.msg = "连接" + (result.success ? "成功" : "失败");
+                result.devMsg += status.ToString();
+                return result;
             }
-            else
-            {
-                _gClient.Close();
-            }
-
-            result.msg ??= "连接" + (result.success ? "成功" : "失败");
-            result.devMsg += status.ToString();
-            return result;
         }
 
         #endregion
@@ -231,27 +251,30 @@ namespace Mijin.Library.App.Driver
         /// <returns></returns>
         public MessageModel<bool> Auto232Connect()
         {
-            var result = new MessageModel<bool>();
-
-
-            var coms = System.IO.Ports.SerialPort.GetPortNames().OrderBy(c => int.Parse(c.Split('M')[1]))
-                .ToArray(); // rfid串口最好修改到com1
-            for (int i = 0; i < coms.Length; i++)
+            lock (_lockObj)
             {
-                try
+                var result = new MessageModel<bool>();
+
+
+                var coms = System.IO.Ports.SerialPort.GetPortNames().OrderBy(c => int.Parse(c.Split('M')[1]))
+                    .ToArray(); // rfid串口最好修改到com1
+                for (int i = 0; i < coms.Length; i++)
                 {
-                    result = Connect("232", $"{coms[i]}:115200");
-                    if (result.success)
+                    try
                     {
-                        break;
+                        result = Connect("232", $"{coms[i]}:115200");
+                        if (result.success)
+                        {
+                            break;
+                        }
+                    }
+                    catch (Exception e)
+                    {
                     }
                 }
-                catch (Exception e)
-                {
-                }
-            }
 
-            return result;
+                return result;
+            }
         }
 
         #endregion
@@ -299,29 +322,32 @@ namespace Mijin.Library.App.Driver
         /// <returns></returns>
         public MessageModel<bool> Stop()
         {
-            var result = new MessageModel<bool>();
-
-            if (_gClient == null)
+            lock (_lockObj)
             {
+                var result = new MessageModel<bool>();
+
+                if (_gClient == null)
+                {
+                    result.msg = "停止" + (result.success ? "成功" : "失败");
+                    return result;
+                }
+
+                try
+                {
+                    // 停止指令，空闲态
+                    MsgBaseStop msgBaseStop = new MsgBaseStop();
+                    _gClient.SendSynMsg(msgBaseStop, 500);
+                    result.success = msgBaseStop.RtCode == 0;
+                    result.devMsg = msgBaseStop.RtMsg;
+                }
+                catch (Exception e)
+                {
+                    result.success = false;
+                }
+
                 result.msg = "停止" + (result.success ? "成功" : "失败");
                 return result;
             }
-            
-            try
-            {
-                // 停止指令，空闲态
-                MsgBaseStop msgBaseStop = new MsgBaseStop();
-                _gClient.SendSynMsg(msgBaseStop, 500);
-                result.success = msgBaseStop.RtCode == 0;
-                result.devMsg = msgBaseStop.RtMsg;
-            }
-            catch (Exception e)
-            {
-                result.success = false;
-            }
-
-            result.msg = "停止" + (result.success ? "成功" : "失败");
-            return result;
         }
 
         #endregion
@@ -334,27 +360,30 @@ namespace Mijin.Library.App.Driver
         /// <returns></returns>
         public MessageModel<Dictionary<byte, byte>> GetPower()
         {
-            var result = new MessageModel<Dictionary<byte, byte>>();
-            MsgBaseGetPower msgBaseSetPower = new MsgBaseGetPower();
-
-            // 因Auto232连接判定是该方法，故加 try/catch 
-            try
+            lock (_lockObj)
             {
-                _gClient.SendSynMsg(msgBaseSetPower);
-                result.success = msgBaseSetPower.RtCode == 0;
-                if (result.success)
+                var result = new MessageModel<Dictionary<byte, byte>>();
+                MsgBaseGetPower msgBaseSetPower = new MsgBaseGetPower();
+
+                // 因Auto232连接判定是该方法，故加 try/catch 
+                try
                 {
-                    result.response = msgBaseSetPower.DicPower;
-                    _powerDic = msgBaseSetPower.DicPower;
+                    _gClient.SendSynMsg(msgBaseSetPower);
+                    result.success = msgBaseSetPower.RtCode == 0;
+                    if (result.success)
+                    {
+                        result.response = msgBaseSetPower.DicPower;
+                        _powerDic = msgBaseSetPower.DicPower;
+                    }
                 }
-            }
-            catch (Exception)
-            {
-            }
+                catch (Exception)
+                {
+                }
 
-            result.msg = "获取" + (result.success ? "成功" : "失败");
-            result.devMsg = msgBaseSetPower.RtMsg;
-            return result;
+                result.msg = "获取" + (result.success ? "成功" : "失败");
+                result.devMsg = msgBaseSetPower.RtMsg;
+                return result;
+            }
         }
 
         #endregion
@@ -368,20 +397,23 @@ namespace Mijin.Library.App.Driver
         /// <returns></returns>
         public MessageModel<Dictionary<byte, byte>> SetPower(Dictionary<byte, byte> dt)
         {
-            var result = new MessageModel<Dictionary<byte, byte>>();
-            MsgBaseSetPower msgBaseSetPower = new MsgBaseSetPower();
-            msgBaseSetPower.DicPower = dt;
-            _gClient.SendSynMsg(msgBaseSetPower);
-            result.success = msgBaseSetPower.RtCode == 0;
-            if (result.success)
+            lock (_lockObj)
             {
-                result.response = msgBaseSetPower.DicPower;
-                _powerDic = msgBaseSetPower.DicPower;
-            }
+                var result = new MessageModel<Dictionary<byte, byte>>();
+                MsgBaseSetPower msgBaseSetPower = new MsgBaseSetPower();
+                msgBaseSetPower.DicPower = dt;
+                _gClient.SendSynMsg(msgBaseSetPower);
+                result.success = msgBaseSetPower.RtCode == 0;
+                if (result.success)
+                {
+                    result.response = msgBaseSetPower.DicPower;
+                    _powerDic = msgBaseSetPower.DicPower;
+                }
 
-            result.msg = "设置" + (result.success ? "成功" : "失败");
-            result.devMsg = msgBaseSetPower.RtMsg;
-            return result;
+                result.msg = "设置" + (result.success ? "成功" : "失败");
+                result.devMsg = msgBaseSetPower.RtMsg;
+                return result;
+            }
         }
 
         #endregion
@@ -435,34 +467,37 @@ namespace Mijin.Library.App.Driver
         /// <returns></returns>
         public MessageModel<bool> ReadByAntId(List<string> antIdStrs)
         {
-            var result = new MessageModel<bool>();
-            MsgBaseInventoryEpc msgBaseInventoryEpc = new MsgBaseInventoryEpc();
-
-            List<uint> antIds = antIdStrs.JsonMapToList<uint>();
-
-
-            //天线排序
-            antIds = antIds.OrderBy(p => p).ToList();
-
-            //设置天线
-            for (int i = 0; i < antIds.Count; i++)
+            lock (_lockObj)
             {
-                double doub = Math.Pow(2.0, Convert.ToDouble(antIds[i] - 1));
-                antIds[i] = (uint) doub;
-                msgBaseInventoryEpc.AntennaEnable |= antIds[i];
+                var result = new MessageModel<bool>();
+                MsgBaseInventoryEpc msgBaseInventoryEpc = new MsgBaseInventoryEpc();
+
+                List<uint> antIds = antIdStrs.JsonMapToList<uint>();
+
+
+                //天线排序
+                antIds = antIds.OrderBy(p => p).ToList();
+
+                //设置天线
+                for (int i = 0; i < antIds.Count; i++)
+                {
+                    double doub = Math.Pow(2.0, Convert.ToDouble(antIds[i] - 1));
+                    antIds[i] = (uint) doub;
+                    msgBaseInventoryEpc.AntennaEnable |= antIds[i];
+                }
+
+                msgBaseInventoryEpc.InventoryMode = (byte) eInventoryMode.Inventory;
+                msgBaseInventoryEpc.ReadTid = new ParamEpcReadTid(); // TID和EPC
+                msgBaseInventoryEpc.ReadTid.Mode = (byte) eParamTidMode.Auto;
+                msgBaseInventoryEpc.ReadTid.Len = 6;
+
+                _gClient.SendSynMsg(msgBaseInventoryEpc);
+
+                result.success = msgBaseInventoryEpc.RtCode == 0;
+                result.msg = "设置" + (result.success ? "成功" : "失败");
+                result.devMsg = msgBaseInventoryEpc.RtMsg;
+                return result;
             }
-
-            msgBaseInventoryEpc.InventoryMode = (byte) eInventoryMode.Inventory;
-            msgBaseInventoryEpc.ReadTid = new ParamEpcReadTid(); // TID和EPC
-            msgBaseInventoryEpc.ReadTid.Mode = (byte) eParamTidMode.Auto;
-            msgBaseInventoryEpc.ReadTid.Len = 6;
-
-            _gClient.SendSynMsg(msgBaseInventoryEpc);
-
-            result.success = msgBaseInventoryEpc.RtCode == 0;
-            result.msg = "设置" + (result.success ? "成功" : "失败");
-            result.devMsg = msgBaseInventoryEpc.RtMsg;
-            return result;
         }
 
         /// <summary>
@@ -483,29 +518,32 @@ namespace Mijin.Library.App.Driver
         /// <returns></returns>
         public MessageModel<bool> ReadByAntIdNoTid(List<string> antIdStrs)
         {
-            var result = new MessageModel<bool>();
-            MsgBaseInventoryEpc msgBaseInventoryEpc = new MsgBaseInventoryEpc();
-
-            List<uint> antIds = antIdStrs.JsonMapToList<uint>();
-
-
-            //天线排序
-            antIds = antIds.OrderBy(p => p).ToList();
-
-            //设置天线
-            for (int i = 0; i < antIds.Count; i++)
+            lock (_lockObj)
             {
-                double doub = Math.Pow(2.0, Convert.ToDouble(antIds[i] - 1));
-                antIds[i] = (uint) doub;
-                msgBaseInventoryEpc.AntennaEnable |= antIds[i];
-            }
+                var result = new MessageModel<bool>();
+                MsgBaseInventoryEpc msgBaseInventoryEpc = new MsgBaseInventoryEpc();
 
-            msgBaseInventoryEpc.InventoryMode = (byte) eInventoryMode.Inventory;
-            _gClient.SendSynMsg(msgBaseInventoryEpc);
-            result.success = msgBaseInventoryEpc.RtCode == 0;
-            result.msg = "设置" + (result.success ? "成功" : "失败");
-            result.devMsg = msgBaseInventoryEpc.RtMsg;
-            return result;
+                List<uint> antIds = antIdStrs.JsonMapToList<uint>();
+
+
+                //天线排序
+                antIds = antIds.OrderBy(p => p).ToList();
+
+                //设置天线
+                for (int i = 0; i < antIds.Count; i++)
+                {
+                    double doub = Math.Pow(2.0, Convert.ToDouble(antIds[i] - 1));
+                    antIds[i] = (uint) doub;
+                    msgBaseInventoryEpc.AntennaEnable |= antIds[i];
+                }
+
+                msgBaseInventoryEpc.InventoryMode = (byte) eInventoryMode.Inventory;
+                _gClient.SendSynMsg(msgBaseInventoryEpc);
+                result.success = msgBaseInventoryEpc.RtCode == 0;
+                result.msg = "设置" + (result.success ? "成功" : "失败");
+                result.devMsg = msgBaseInventoryEpc.RtMsg;
+                return result;
+            }
         }
 
         /// <summary>
@@ -552,40 +590,43 @@ namespace Mijin.Library.App.Driver
         /// <returns></returns>
         public MessageModel<LabelInfo> ReadOnceByAntId(List<string> antIdStrs)
         {
-            var result = new MessageModel<LabelInfo>();
-            _tempLabel = null;
-            _readOnce = true; // 为true时且读到标签时，_tempLabel 才获取值
-            var res = ReadByAntId(antIdStrs);
-            if (!res.success)
+            lock (_lockObj)
             {
+                var result = new MessageModel<LabelInfo>();
+                _tempLabel = null;
+                _readOnce = true; // 为true时且读到标签时，_tempLabel 才获取值
+                var res = ReadByAntId(antIdStrs);
+                if (!res.success)
+                {
+                    _readOnce = false;
+                    return new MessageModel<LabelInfo>(res);
+                }
+
+                DateTime beforeDate = DateTime.Now;
+
+                while (true)
+                {
+                    if (_tempLabel != null)
+                    {
+                        break;
+                    }
+
+                    Task.Delay(5).GetAwaiter().GetResult(); // 没有读到，则延时 5 ms后继续查看
+
+                    // 超过 1500 毫秒，直接退出循环 并 返回
+                    if ((DateTime.Now - beforeDate).TotalMilliseconds >= 1500)
+                    {
+                        break;
+                    }
+                }
+
                 _readOnce = false;
-                return new MessageModel<LabelInfo>(res);
+                result.response = _tempLabel;
+                result.success = result.response != null;
+                result.msg = "获取标签" + (result.success ? "成功" : "失败");
+
+                return result;
             }
-
-            DateTime beforeDate = DateTime.Now;
-
-            while (true)
-            {
-                if (_tempLabel != null)
-                {
-                    break;
-                }
-
-                Task.Delay(5).GetAwaiter().GetResult(); // 没有读到，则延时 5 ms后继续查看
-
-                // 超过 1500 毫秒，直接退出循环 并 返回
-                if ((DateTime.Now - beforeDate).TotalMilliseconds >= 1500)
-                {
-                    break;
-                }
-            }
-
-            _readOnce = false;
-            result.response = _tempLabel;
-            result.success = result.response != null;
-            result.msg = "获取标签" + (result.success ? "成功" : "失败");
-
-            return result;
         }
 
         #endregion
@@ -632,58 +673,62 @@ namespace Mijin.Library.App.Driver
         /// <returns></returns>
         public MessageModel<string> Alert(string ms)
         {
-            var result = new MessageModel<string>();
-
-            if (alerting)
+            lock (_lockObj)
             {
-                result.msg = "正在报警中";
-                result.success = true;
+                var result = new MessageModel<string>();
+
+                if (alerting)
+                {
+                    result.msg = "正在报警中";
+                    result.success = true;
+                    return result;
+                }
+
+                alerting = true;
+
+                try
+                {
+                    result = SetGpo(new Dictionary<string, byte>()
+                    {
+                        {"Gpo1", 1}
+                    }).JsonMapTo<MessageModel<string>>();
+
+                    if (result.success)
+                    {
+                        Task.Run(() =>
+                        {
+                            try
+                            {
+                                Task.Delay(ms.ToInt()).GetAwaiter().GetResult();
+                            }
+                            catch (Exception e)
+                            {
+                            }
+
+                            int count = 0;
+                            while (count <= 3)
+                            {
+                                count++;
+                                var gpoResult = SetGpo(new Dictionary<string, byte>())
+                                    .JsonMapTo<MessageModel<string>>();
+
+                                if (gpoResult.success)
+                                {
+                                    alerting = false;
+                                    break;
+                                }
+                            }
+                        });
+                    }
+                    else alerting = false;
+                }
+                catch (Exception e)
+                {
+                    alerting = false;
+                }
+
                 return result;
             }
-
-            alerting = true;
-
-            try
-            {
-                result = SetGpo(new Dictionary<string, byte>()
-                {
-                    {"Gpo1", 1}
-                }).JsonMapTo<MessageModel<string>>();
-
-                if (result.success)
-                {
-                    Task.Run(() =>
-                    {
-                        try
-                        {
-                            Task.Delay(ms.ToInt()).GetAwaiter().GetResult();
-                        }
-                        catch (Exception e)
-                        {
-                        }
-
-                        int count = 0;
-                        while (count <= 3)
-                        {
-                            count++;
-                            var gpoResult = SetGpo(new Dictionary<string, byte>()).JsonMapTo<MessageModel<string>>();
-
-                            if (gpoResult.success)
-                            {
-                                alerting = false;
-                                break;
-                            }
-                        }
-                    });
-                }
-                else alerting = false;
-            }
-            catch (Exception e)
-            {
-                alerting = false;
-            }
-
-            return result;
         }
 
         #endregion
@@ -788,28 +833,31 @@ namespace Mijin.Library.App.Driver
         /// <returns></returns>
         public MessageModel<bool> StartInventory(GpiAction gpiAction = GpiAction.Default)
         {
-            MessageModel<bool> result = new MessageModel<bool>();
-            MsgAppSetGpiTrigger msg = new MsgAppSetGpiTrigger()
+            lock (_lockObj)
             {
-                GpiPort = 0,
-                TriggerStart = 5,
-            };
-            _gClient.SendSynMsg(msg);
-            _gpiAction = gpiAction;
+                MessageModel<bool> result = new MessageModel<bool>();
+                MsgAppSetGpiTrigger msg = new MsgAppSetGpiTrigger()
+                {
+                    GpiPort = 0,
+                    TriggerStart = 5,
+                };
+                _gClient.SendSynMsg(msg);
+                _gpiAction = gpiAction;
 
-            // 不是 扫码枪，则直接开启读标签
-            if (_gpiAction != GpiAction.InventoryGun)
-            {
-                result = this.Read();
-            }
-            else
-            {
-                result.success = msg.RtCode == 0;
-                result.devMsg = msg.RtMsg;
-            }
+                // 不是 扫码枪，则直接开启读标签
+                if (_gpiAction != GpiAction.InventoryGun)
+                {
+                    result = this.Read();
+                }
+                else
+                {
+                    result.success = msg.RtCode == 0;
+                    result.devMsg = msg.RtMsg;
+                }
 
-            result.msg = "开启盘点" + (result.success ? "成功" : "失败");
-            return result;
+                result.msg = "开启盘点" + (result.success ? "成功" : "失败");
+                return result;
+            }
         }
 
         /// <summary>

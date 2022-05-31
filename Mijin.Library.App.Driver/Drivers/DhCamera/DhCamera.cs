@@ -134,7 +134,8 @@ namespace Mijin.Library.App.Driver.Drivers.DhCamera
                 success = true,
                 method = nameof(OnDhPeopleInOut),
                 response = (info.stuEnteredSubtotal.nTotal, info.stuExitedSubtotal.nTotal),
-                msg = "获取成功"
+                msg = "获取成功",
+                status = 1001
             });
         }
 
@@ -230,7 +231,8 @@ namespace Mijin.Library.App.Driver.Drivers.DhCamera
                         success = true,
                         response = bitmap.ToBase64String(ImageFormat.Png),
                         method = nameof(OnDhGetFaceImageBase64),
-                        msg = "获取成功"
+                        msg = "获取成功",
+                        status = 1001
                     });
                 }
                     break;

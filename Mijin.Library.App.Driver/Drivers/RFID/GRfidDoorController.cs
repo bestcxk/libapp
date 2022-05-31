@@ -5,13 +5,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Bing.Extensions;
 using IsUtil;
 using IsUtil.Maps;
 using Mijin.Library.App.Model.Setting;
+using Extensions = IsUtil.Extensions;
 
 namespace Mijin.Library.App.Driver
 {
-    public class GRfidDoorController : IGRfidDoorController,IDisposable
+    public class GRfidDoorController : IGRfidDoorController, IDisposable
     {
         private List<DoorControllerModel> doors { get; set; } = new List<DoorControllerModel>();
         public event Action<WebViewSendModel<LabelInfo>> OnDoorReadUHFLabel;
@@ -24,11 +26,12 @@ namespace Mijin.Library.App.Driver
         }
 
         #region 连接通道门(ConnectDoors)
+
         public MessageModel<string> ConnectDoors(Dictionary<int, DoorSetting> connectDic)
         {
             var res = new MessageModel<string>();
             var failActionKey = new List<int>();
-            if (connectDic.IsEmpty())
+            if (Extensions.IsEmpty(connectDic))
             {
                 res.msg = "连接数据不可为空";
                 return res;
@@ -36,10 +39,7 @@ namespace Mijin.Library.App.Driver
 
             // 移除已连接成功的模块
             var connectedKeys = doors.Select(c => c.DoorKey).ToList();
-            connectedKeys.ForEach(key =>
-            {
-                connectDic.Remove(key);
-            });
+            connectedKeys.ForEach(key => { connectDic.Remove(key); });
 
             // 遍历连接通道门
             foreach (var item in connectDic)
@@ -84,7 +84,7 @@ namespace Mijin.Library.App.Driver
                 }
             }
 
-            if (failActionKey.IsEmpty())
+            if (Extensions.IsEmpty(failActionKey))
             {
                 res.msg = @$"连接所有门禁成功，已连接 {doors.Count} 个门禁";
                 res.success = true;
@@ -101,36 +101,41 @@ namespace Mijin.Library.App.Driver
         {
             return ConnectDoors(Json.ToObject<Dictionary<int, DoorSetting>>(connectDicStr));
         }
+
         #endregion
 
         #region 获取通道门信息(GetConnectDoorInfos)
+
         public MessageModel<List<object>> GetConnectDoorInfos()
         {
             var res = new MessageModel<List<object>>();
-            if (doors.IsEmpty())
+            if (Extensions.IsEmpty(doors))
             {
                 res.msg = "连接通道门数量为0";
                 return res;
             }
-            res.response = doors.Select(d => new { DoorKey = d.DoorKey, ConnectStr = d.ConnectStr }).ToList<object>();
+
+            res.response = doors.Select(d => new {DoorKey = d.DoorKey, ConnectStr = d.ConnectStr}).ToList<object>();
             res.msg = @$"获取成功，已连接上{doors.Count}个通道门";
             res.success = true;
             return res;
-
         }
+
         #endregion
 
         #region 设置通道门功率(SetDoorsPower)
+
         public MessageModel<string> SetDoorsPower(Dictionary<int, Dictionary<byte, byte>> powers)
         {
             var res = new MessageModel<string>();
             var failActionKey = new List<int>();
-            if (powers.IsEmpty())
+            if (Extensions.IsEmpty(powers))
             {
                 res.msg = "参数不可为空";
                 return res;
             }
-            if (doors.IsEmpty())
+
+            if (Extensions.IsEmpty(doors))
             {
                 res.msg = "通道门连接数为空";
                 return res;
@@ -139,17 +144,19 @@ namespace Mijin.Library.App.Driver
             foreach (var item in powers)
             {
                 var doorController = doors.Where(d => d.DoorKey == item.Key).FirstOrDefault();
-                if (doorController.IsNull())
+                if (Extensions.IsNull(doorController))
                 {
                     continue;
                 }
+
                 var powerRes = doorController.RfidDoor.SetPower(item.Value);
                 if (!powerRes.success)
                 {
                     failActionKey.Add(item.Key);
                 }
             }
-            if (failActionKey.IsEmpty())
+
+            if (Extensions.IsEmpty(failActionKey))
             {
                 res.msg = @$"设置所有门禁功率，已连接 {doors.Count} 个门禁功率";
                 res.success = true;
@@ -160,12 +167,32 @@ namespace Mijin.Library.App.Driver
             }
 
             return res;
-
         }
+
         public MessageModel<string> SetDoorsPower(string powersStr)
         {
             return SetDoorsPower(Json.ToObject<Dictionary<int, Dictionary<byte, byte>>>(powersStr));
         }
+
+        public MessageModel<string> SetAllDoorPower(Int64 power)
+        {
+            var powerRes = GetDoorsPower();
+
+            if (!powerRes.success)
+                return new MessageModel<string>()
+                {
+                    msg = "获取功率失败"
+                };
+
+
+            powerRes?.response?.ForEach(p=> p.Value.Values.ForEach(v =>
+            {
+                v = (byte) power;
+            }));
+
+            return SetDoorsPower(powerRes?.response);
+        }
+
         #endregion
 
         #region 获取通道门功率(GetDoorsPower)
@@ -175,7 +202,7 @@ namespace Mijin.Library.App.Driver
             var res = new MessageModel<Dictionary<int, Dictionary<byte, byte>>>();
             var powers = new Dictionary<int, Dictionary<byte, byte>>();
             var failActionKey = new List<int>();
-            if (doors.IsEmpty())
+            if (Extensions.IsEmpty(doors))
             {
                 res.msg = "通道门连接数为空";
                 return res;
@@ -194,7 +221,7 @@ namespace Mijin.Library.App.Driver
                 }
             }
 
-            if (failActionKey.IsEmpty())
+            if (Extensions.IsEmpty(failActionKey))
             {
                 res.msg = @$"获取所有门禁功率成功";
                 res.success = true;
@@ -203,9 +230,11 @@ namespace Mijin.Library.App.Driver
             {
                 res.msg = @$"获取部分门禁功率失败，失败门禁包含：{string.Join(",", failActionKey)}";
             }
+
             res.response = powers;
             return res;
         }
+
         #endregion
 
         #region 开始监听所有通道门进出(StartAllDoorWatch)
@@ -215,7 +244,7 @@ namespace Mijin.Library.App.Driver
             var res = new MessageModel<string>();
             var powers = new Dictionary<int, Dictionary<byte, byte>>();
             var errorDoorKey = -1;
-            if (doors.IsEmpty())
+            if (Extensions.IsEmpty(doors))
             {
                 res.msg = "通道门连接数为空";
                 return res;
@@ -230,12 +259,14 @@ namespace Mijin.Library.App.Driver
                     break;
                 }
             }
+
             if (errorDoorKey > -1)
             {
                 foreach (var door in doors)
                 {
                     door.RfidDoor.StopWatchPeopleInOut();
                 }
+
                 res.msg = @$"启动到{errorDoorKey}通道门时失败，已停止所有通道门，请重试开启";
             }
             else
@@ -243,8 +274,10 @@ namespace Mijin.Library.App.Driver
                 res.msg = "启动所有通道门成功";
                 res.success = true;
             }
+
             return res;
         }
+
         #endregion
 
         #region 停止监听所有通道门进出(StopAllDoorWatch)
@@ -254,7 +287,7 @@ namespace Mijin.Library.App.Driver
             var res = new MessageModel<string>();
             var powers = new Dictionary<int, Dictionary<byte, byte>>();
             var failActionKey = new List<int>();
-            if (doors.IsEmpty())
+            if (Extensions.IsEmpty(doors))
             {
                 res.msg = "通道门连接数为空";
                 return res;
@@ -268,7 +301,8 @@ namespace Mijin.Library.App.Driver
                     failActionKey.Add(door.DoorKey);
                 }
             }
-            if (failActionKey.IsEmpty())
+
+            if (Extensions.IsEmpty(failActionKey))
             {
                 res.msg = @$"停止所有门禁成功";
                 res.success = true;
@@ -277,15 +311,17 @@ namespace Mijin.Library.App.Driver
             {
                 res.msg = @$"停止部分门禁功率失败，失败门禁包含：{string.Join(",", failActionKey)}";
             }
+
             return res;
         }
+
         #endregion
 
         public MessageModel<string> CloseAll()
         {
             var res = new MessageModel<string>();
 
-            if(doors.IsEmpty())
+            if (Extensions.IsEmpty(doors))
             {
                 res.msg = "未连接上任何通道门";
                 return res;
@@ -301,12 +337,27 @@ namespace Mijin.Library.App.Driver
             res.success = true;
             res.msg = "关闭所有通道门连接成功";
             return res;
-
         }
+
+        public MessageModel<string> Alert(Int64 doorKey, string ms = "1500")
+        {
+            var alert = doors?.FirstOrDefault(d => d.DoorKey == doorKey)?.RfidDoor.Alert(ms);
+
+            if (alert == null)
+            {
+                return new MessageModel<string>()
+                {
+                    msg = "不存在该DoorKey门禁",
+                };
+            }
+
+            return alert;
+        }
+
 
         public void Dispose()
         {
-            doors?.ForEach(d=> d.RfidDoor.Dispose());
+            doors?.ForEach(d => d.RfidDoor.Dispose());
         }
     }
 

@@ -306,10 +306,10 @@ namespace Mijin.Library.App.Views
             string reqStr = receivedEvent.WebMessageAsJson;
             object[] parameters = null;
 
-            lock (lockObj)
-            {
-                // Task.Run(() =>
-                // {
+            // lock (lockObj)
+            // {
+                Task.Run(() =>
+                {
                 try
                 {
                     // 检查请求字符串
@@ -370,8 +370,8 @@ namespace Mijin.Library.App.Views
 
                 // 发送信息给前端页面
                 Send(result, false, reqStr, Json.ToJson(parameters));
-                // });
-            }
+                });
+            // }
         }
 
         #endregion
@@ -392,14 +392,14 @@ namespace Mijin.Library.App.Views
             {
                 if (obj.status == 1001)
                     this.Dispatcher.Invoke(new Action(() =>
-                        _doorViewWindow.webView.CoreWebView2.PostWebMessageAsString(Json.ToJson(obj))));
+                        _doorViewWindow?.webView?.CoreWebView2?.PostWebMessageAsString(Json.ToJson(obj))));
                 else
                     this.Dispatcher.Invoke(new Action(() =>
-                        _webViewWindow.webView.CoreWebView2.PostWebMessageAsString(Json.ToJson(obj))));
+                        _webViewWindow?.webView?.CoreWebView2?.PostWebMessageAsString(Json.ToJson(obj))));
             }
             else
                 this.Dispatcher.Invoke(new Action(() =>
-                    this.webView.CoreWebView2.PostWebMessageAsString(Json.ToJson(obj))));
+                    this.webView?.CoreWebView2?.PostWebMessageAsString(Json.ToJson(obj))));
 
 
             // 屏蔽黑名单进info日志
@@ -413,6 +413,7 @@ namespace Mijin.Library.App.Views
             loginfo.para = para;
             loginfo.rtSuccess = obj.success;
             loginfo.rtMsg = obj.msg;
+            loginfo.devMsg = obj.devMsg;
 
             string webLog = "";
             if (isEvent)
@@ -531,6 +532,8 @@ namespace Mijin.Library.App.Views
             public string rtMsg { get; set; }
             public bool rtSuccess { get; set; }
 
+            public string devMsg { get; set; }
+
             public RequestLogInfo()
             {
                 log = Log.GetLog();
@@ -543,7 +546,7 @@ namespace Mijin.Library.App.Views
             }
 
             public virtual string WriteActionLog(string reqStr, string title, string method, string para, string rtData,
-                bool rtSuccess, string rtMsg)
+                bool rtSuccess, string rtMsg,string devMsg)
             {
                 string text =
                     $" 请求字符串　：{reqStr} \r\n 标题　　　　：{title} \r\n 请求方法　　：{method} \r\n 请求参数　　：{para} \r\n 返回数据　　：{rtData} \r\n 返回成功状态：{rtSuccess} \r\n 返回信息　　：{rtMsg} \r\n ";
@@ -554,7 +557,7 @@ namespace Mijin.Library.App.Views
             public virtual string WriteActionLog()
             {
                 string text =
-                    $" 请求字符串　：{reqStr} \r\n 标题　　　　：{title} \r\n 请求方法　　：{method} \r\n 请求参数　　：{para} \r\n 返回数据　　：{rtData} \r\n 返回成功状态：{rtSuccess} \r\n 返回信息　　：{rtMsg} \r\n ";
+                    $" 请求字符串　：{reqStr} \r\n 标题　　　　：{title} \r\n 请求方法　　：{method} \r\n 请求参数　　：{para} \r\n 返回数据　　：{rtData} \r\n 返回成功状态：{rtSuccess} \r\n 返回信息　　：{rtMsg} \r\n 调试信息　　：{devMsg} \r\n ";
                 Write(text);
                 return text;
             }

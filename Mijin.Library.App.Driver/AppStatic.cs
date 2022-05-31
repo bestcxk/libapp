@@ -21,6 +21,10 @@ public class AppStatic
         var rfidDoor = AppStatic.Services?.GetService<IRfidDoor>();
         rfidDoor?.Stop();
         rfidDoor?.Close();
+        
+        var rfidDoorController = AppStatic.Services?.GetService<IGRfidDoorController>();
+        rfidDoorController?.StopAllDoorWatch();
+        rfidDoorController?.CloseAll();
     }
     
 }
