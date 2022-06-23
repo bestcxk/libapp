@@ -8,7 +8,7 @@
     <RootNamespace>Mijin.Library.App</RootNamespace>
     <ApplicationIcon>library.ico</ApplicationIcon>
     <SatelliteResourceLanguages>zh-Hans</SatelliteResourceLanguages>
-    <Version>5.0.6</Version>
+    <Version>5.0.8</Version>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
 	<LangVersion>10</LangVersion>
   </PropertyGroup>

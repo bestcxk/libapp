@@ -366,8 +366,6 @@ namespace Mijin.Library.App.Views
                     result.msg = "操作异常";
                     result.success = false;
                 }
-
-
                 // 发送信息给前端页面
                 Send(result, false, reqStr, Json.ToJson(parameters));
                 });

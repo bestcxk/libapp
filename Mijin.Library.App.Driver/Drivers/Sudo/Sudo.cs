@@ -8,8 +8,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Bing.Extensions;
+using Bing.Text;
 using Mijin.Library.App.Driver.Drivers.Sudo;
 using Mijin.Library.App.Model;
+using Newtonsoft.Json;
 using Util.Logs;
 using Util.Logs.Extensions;
 
@@ -18,6 +20,7 @@ namespace Mijin.Library.App.Driver
     public class Sudo : ISudo
     {
         private bool isInit = false;
+
         public MessageModel<string> Connect(Int64 port, Int64 baud)
         {
             var res = new MessageModel<string>();
@@ -28,12 +31,13 @@ namespace Mijin.Library.App.Driver
                 res.success = true;
                 return res;
             }
+
             try
             {
-                SodoWinSDKHandle.Sodo_InitSerialPort((int)port, (int)baud);
+                SodoWinSDKHandle.Sodo_InitSerialPort((int) port, (int) baud);
                 SodoWinSDKHandle.Sodo_Stop();
                 int ret = SodoWinSDKHandle.Sodo_Start();
-                if (ret == (int)STATUS_CODE.BASE_SUCCESS)
+                if (ret == (int) STATUS_CODE.BASE_SUCCESS)
                 {
                     res.success = true;
                     res.msg = "操作成功";
@@ -63,7 +67,7 @@ namespace Mijin.Library.App.Driver
 
                 int ret = SodoWinSDKHandle.Sodo_Sfz_Process(ref ptrTradeRecord);
 
-                if (ret == (int)STATUS_CODE.BASE_SUCCESS)
+                if (ret == (int) STATUS_CODE.BASE_SUCCESS)
                 {
                     //  showMsg("支付成功！")
                     try
@@ -116,6 +120,7 @@ namespace Mijin.Library.App.Driver
 
             return res;
         }
+
         public MessageModel<string> Read_SSC()
         {
             var res = new MessageModel<string>();
@@ -151,6 +156,49 @@ namespace Mijin.Library.App.Driver
             else
             {
                 res.msg = "初始化参数失败";
+            }
+
+            return res;
+        }
+
+
+        class QrcodeType
+        {
+            public string cardType { get; set; }
+            public string Id { get; set; }
+        }
+
+        public MessageModel<string> ReadQrcode()
+        {
+            var res = new MessageModel<string>();
+
+            STR_TRANS_OP_PARAM ptrTradeRecord = new STR_TRANS_OP_PARAM();
+            ptrTradeRecord.transType = 0x60;
+            ptrTradeRecord.transTime = new byte[] {0x012, 0x12, 0x12};
+            ptrTradeRecord.transDate = new byte[] {0x20, 0x12, 0x12};
+            ptrTradeRecord.transNo = new byte[] {0x11, 0x22, 0x33, 0x44};
+            ptrTradeRecord.transAmt = 1;
+            int ret = SodoWinSDKHandle.Sodo_RequestCardAndQrcode(ref ptrTradeRecord);
+            if (ret == (int) STATUS_CODE.BASE_SUCCESS)
+            {
+                var qrcode = JsonConvert.DeserializeObject<QrcodeType>(Encoding.ASCII.GetString(
+                    ptrTradeRecord.transOutBuf,
+                    0, ptrTradeRecord.lenTransOutbuf));
+
+                if (qrcode.Id.IsEmpty())
+                {
+                    res.msg = "获取失败";
+                    return res;
+                }
+
+                res.response = qrcode.Id.DecodeBase64();
+                res.success = true;
+                res.msg = "获取成功";
+                return res;
+            }
+            else
+            {
+                res.msg = "获取失败";
             }
 
             return res;

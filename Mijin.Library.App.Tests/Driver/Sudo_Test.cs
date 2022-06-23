@@ -31,6 +31,17 @@ namespace Mijin.Library.App.Tests.Driver
                 var res = sudo.ReadIdentity();
             }
         }
+        
+        [Fact]
+        public void Qrcode_Test()
+        {
+            {
+                var res = sudo.Connect(3, 115200);
+            }
+            {
+                var res = sudo.ReadQrcode();
+            }
+        }
 
         [Fact]
         public void Read_SSC_Test()

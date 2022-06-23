@@ -42,7 +42,6 @@ namespace Mijin.Library.App.Driver
         private IRRfid _rRfid { get; }
         private IQrCode _qrCode { get; }
 
-
         public static string[] BlackListLogMethod = {"ISystemFunc.SetLibrarySettings", "OnLockEvent"};
 
         string[] IDriverHandle.BlackListLogMethod

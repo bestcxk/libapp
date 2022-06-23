@@ -262,7 +262,8 @@ namespace Mijin.Library.App.Driver
                 {
                     try
                     {
-                        result = Connect("232", $"{coms[i]}:115200");
+                        Connect("232", $"{coms[i]}:115200");
+                        result = Stop();
                         if (result.success)
                         {
                             break;
