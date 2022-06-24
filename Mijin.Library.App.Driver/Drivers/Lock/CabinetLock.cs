@@ -17,6 +17,9 @@ namespace Mijin.Library.App.Driver
         private readonly static object openLockObj = new object();
 
         private readonly static object sendLockObj = new object();
+        
+        public event Action<WebViewSendModel<List<bool>>> OnLockEvent;
+
 
         // 锁孔数量
         private int controllerCount = 1;
@@ -29,7 +32,6 @@ namespace Mijin.Library.App.Driver
             get => _serialPort.IsOpen;
         }
 
-        public event Action<WebViewSendModel<List<bool>>> OnLockEvent;
 
         public Task task;
 

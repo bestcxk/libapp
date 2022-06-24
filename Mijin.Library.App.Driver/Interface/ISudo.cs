@@ -8,5 +8,6 @@ namespace Mijin.Library.App.Driver
         MessageModel<IdentityInfo> ReadIdentity();
         MessageModel<string> Read_SSC();
         MessageModel<string> ReadQrcode();
+        void Close();
     }
 }

@@ -22,7 +22,6 @@ namespace Mijin.Library.App.Driver
             Tid = logBaseEpcInfo.Tid.IsEmpty() ? logBaseEpcInfo.Epc : logBaseEpcInfo.Tid;
             AntId = logBaseEpcInfo.AntId;
             Rssi = logBaseEpcInfo.Rssi;
-
         }
 
         public string Epc { get; set; }

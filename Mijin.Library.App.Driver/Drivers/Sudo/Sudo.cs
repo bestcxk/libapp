@@ -203,5 +203,10 @@ namespace Mijin.Library.App.Driver
 
             return res;
         }
+
+        public void Close()
+        {
+            SodoWinSDKHandle.Sodo_Stop();
+        }
     }
 }
