@@ -19,6 +19,18 @@ namespace Mijin.Library.App.Driver
 {
     public class Sudo : ISudo
     {
+        private readonly ISystemFunc _systemFunc;
+
+        public Sudo(ISystemFunc systemFunc)
+        {
+            _systemFunc = systemFunc;
+        }
+
+        static Sudo()
+        {
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+        }
+
         private bool isInit = false;
 
         public MessageModel<string> Connect(Int64 port, Int64 baud)
@@ -31,6 +43,7 @@ namespace Mijin.Library.App.Driver
                 res.success = true;
                 return res;
             }
+
 
             try
             {
@@ -51,6 +64,7 @@ namespace Mijin.Library.App.Driver
                 res.success = false;
                 res.msg = "操作失败";
             }
+
 
             return res;
         }
@@ -118,49 +132,92 @@ namespace Mijin.Library.App.Driver
                 res.msg = "身份证解析失败";
             }
 
+            if (res.success) return res;
+
+            try
+            {
+                var identityRes = Read_SSC();
+                if (identityRes.success)
+                {
+                    res.response = new IdentityInfo()
+                    {
+                        Identity = identityRes.response,
+                        Birth = new DateTime(1900, 1, 1).ToString("yyyy-M-d dddd")
+                    };
+
+                    res.success = identityRes.success;
+                    res.msg = "读取身份证成功";
+                }
+            }
+            catch (Exception e)
+            {
+            }
+
+
             return res;
         }
 
         public MessageModel<string> Read_SSC()
         {
             var res = new MessageModel<string>();
-            SodoWinSDKHandle.Sodo_Stop();
-            var bytes = new byte[1024];
-            var code = TSCardDriver.iInitParms(0, null, null, bytes);
 
-            if (code == 0)
+            if (_systemFunc.ClientSettings.SudoPSAMMode)
             {
-                bytes = new byte[1024 * 1024];
-                try
+                SodoWinSDKHandle.Sodo_Start();
+                STR_SB_INFO ptrTradeRecord = new STR_SB_INFO();
+                int ret = SodoWinSDKHandle.Sodo_SB_Process(ref ptrTradeRecord);
+                if (ret == (int) STATUS_CODE.BASE_SUCCESS)
                 {
-                    code = TSCardDriver.iReadCardBasExt(3, bytes);
-                }
-                catch (Exception e)
-                {
-                    res.msg = e.ToString();
-                    return res;
-                }
-
-                if (code == 0)
-                {
-                    var data = Encoding.Default.GetString(bytes)?.Split("|")[1];
-                    res.response = data;
                     res.success = true;
+                    res.response = Encoding.GetEncoding("GB18030")
+                        .GetString(ptrTradeRecord.recvBuf, 0, ptrTradeRecord.lenrecv).Split("|").First();
                     res.msg = "获取成功";
                 }
                 else
                 {
-                    res.msg = "读社保卡失败";
+                    res.msg = "读取失败";
                 }
             }
             else
             {
-                res.msg = "初始化参数失败";
+                SodoWinSDKHandle.Sodo_Stop();
+                var bytes = new byte[1024];
+                var code = TSCardDriver.iInitParms(0, null, null, bytes);
+
+                if (code == 0)
+                {
+                    bytes = new byte[1024 * 1024];
+                    try
+                    {
+                        code = TSCardDriver.iReadCardBasExt(3, bytes);
+                    }
+                    catch (Exception e)
+                    {
+                        res.msg = e.ToString();
+                        return res;
+                    }
+
+                    if (code == 0)
+                    {
+                        var data = Encoding.Default.GetString(bytes)?.Split("|")[1];
+                        res.response = data;
+                        res.success = true;
+                        res.msg = "获取成功";
+                    }
+                    else
+                    {
+                        res.msg = "读社保卡失败";
+                    }
+                }
+                else
+                {
+                    res.msg = "初始化参数失败";
+                }
             }
+
 
             return res;
         }
-
 
         class QrcodeType
         {

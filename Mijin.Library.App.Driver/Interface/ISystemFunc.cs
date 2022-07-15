@@ -33,5 +33,6 @@ namespace Mijin.Library.App.Driver
         /// <returns></returns>
         MessageModel<int> SetLibrarySettings(LibrarySettings librarySettings);
 
+        MessageModel<string> GetClientVersion();
     }
 }

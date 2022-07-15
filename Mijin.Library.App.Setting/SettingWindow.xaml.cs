@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -26,13 +27,13 @@ namespace Mijin.Library.App.Setting
     /// </summary>
     public partial class SettingWindow : MetroWindow
     {
-
         public event Action OnSettingsChange;
 
         public ClientSettings _clientSettings { get; set; }
 
         private static readonly string startFilePath =
-            System.IO.Path.Combine(@$"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp", "Mijin.Library.App.lnk");
+            System.IO.Path.Combine(@$"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp",
+                "Mijin.Library.App.lnk");
 
         public SettingWindow()
         {
@@ -56,10 +57,12 @@ namespace Mijin.Library.App.Setting
                 idComSources.Add(i + 1);
                 cameraSources.Add(i);
             }
+
             this.idCom.ItemsSource = idComSources;
             this.cameraIndex.ItemsSource = cameraSources;
         }
-        public SettingWindow(ISystemFunc systemFunc):this()
+
+        public SettingWindow(ISystemFunc systemFunc) : this()
         {
             _clientSettings = systemFunc.ClientSettings;
             this.DataContext = _clientSettings;
@@ -76,7 +79,6 @@ namespace Mijin.Library.App.Setting
                 this.Hide();
                 e.Cancel = true;
             }
-
         }
 
 
@@ -97,9 +99,9 @@ namespace Mijin.Library.App.Setting
                     catch (Exception e)
                     {
                     }
+
                     //_systemFunc.ClientSettings.SetPropValue(_clientSettings, true);
                     _clientSettings.Write();
-
                 }));
             });
             OnSettingsChange?.Invoke();
@@ -117,8 +119,17 @@ namespace Mijin.Library.App.Setting
         {
             if (!string.IsNullOrWhiteSpace(this.LibraryManageUrlText.Text))
             {
-                this.ReaderActionUrlText.Text = this.LibraryManageUrlText.Text + @$"{(this.LibraryManageUrlText.Text.Last() == '/' ? "" : "/")}terminal";
+                this.ReaderActionUrlText.Text = this.LibraryManageUrlText.Text +
+                                                @$"{(this.LibraryManageUrlText.Text.Last() == '/' ? "" : "/")}terminal";
                 this._clientSettings.ReaderActionUrl = this.ReaderActionUrlText.Text;
+            }
+        }
+
+        private void CheckDomain_Click(object sender, RoutedEventArgs e)
+        {
+            if (!IsDomain(this.LibraryManageUrlText.Text))
+            {
+                MessageBox.Show("Url不是正确的http 或 https 格式", "错误");
             }
         }
 
@@ -128,6 +139,7 @@ namespace Mijin.Library.App.Setting
         private void FollowSystemStart(bool onoff)
         {
             #region 注册表注册 （测试无效，保留代码）
+
             //if (onoff)
             //{
             //    #region 设置开机自启
@@ -154,12 +166,16 @@ namespace Mijin.Library.App.Setting
             //    registry.DeleteValue(strnewName, false);//删除指定“键名称”的键/值对
             //    #endregion
             //}
+
             #endregion
+
             if (onoff)
             {
                 ProcessStartInfo startInfo = new ProcessStartInfo();
                 startInfo.FileName = "wscript.exe";
-                startInfo.Arguments = System.IO.Path.Combine(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase, "FollowSystemRunScript.vbs");
+                startInfo.Arguments =
+                    System.IO.Path.Combine(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase,
+                        "FollowSystemRunScript.vbs");
                 var p = Process.Start(startInfo);
                 p.WaitForExit();
             }
@@ -168,7 +184,6 @@ namespace Mijin.Library.App.Setting
                 if (System.IO.File.Exists(startFilePath))
                     FileHelper.FileDel(startFilePath);
             }
-
         }
 
         /// <summary>
@@ -181,6 +196,20 @@ namespace Mijin.Library.App.Setting
             Process.GetProcessesByName("Mijin.Library.App.Daemon").FirstOrDefault()?.Kill();
             Process.GetProcessesByName("Mijin.Library.App").FirstOrDefault()?.Kill();
             Environment.Exit(0);
+        }
+
+
+        public static bool IsDomain(string str)
+        {
+            if (Regex.IsMatch(str,
+                    @"((http|ftp|https)://)(([a-zA-Z0-9\._-]+\.[a-zA-Z]{2,6})|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,4})*(/[a-zA-Z0-9\&%_\./-~-]*)?"))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }

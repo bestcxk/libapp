@@ -156,7 +156,7 @@ namespace Mijin.Library.App.Driver
                                 // result.success = Stop().success;
                                 // if (result.success)
                                 //     break;
-                                
+
                                 result.success = true;
                                 break;
                             }
@@ -166,26 +166,28 @@ namespace Mijin.Library.App.Driver
                             var devList = GClient.GetUsbHidList();
 
                             result.devMsg = @$"usbHid Count: [{devList.Count}] ";
-                            
+
                             if (devList.IsEmpty())
                             {
                                 result.msg = "未找到UsbHid";
                                 break;
                             }
-                            
-                            
 
-
-                            if (_gClient.OpenUsbHid(devList[0], IntPtr.Zero, (int) timeOutMs, out status))
+                            foreach (var s in devList)
                             {
-                                // result.success = Stop().success;
-                                // if (result.success)
-                                //     break;
-                                
-                                result.success = true;
-                                break;
+                                if (_gClient.OpenUsbHid(devList[0], IntPtr.Zero, (int) timeOutMs, out status))
+                                {
+                                    // result.success = Stop().success;
+                                    // if (result.success)
+                                    //     break;
 
+                                    result.success = true;
+                                    break;
+                                }
                             }
+
+                            if (result.success)
+                                break;
                         }
                         else
                         {
@@ -194,7 +196,7 @@ namespace Mijin.Library.App.Driver
                                 // result.success = Stop().success;
                                 // if (result.success)
                                 //     break;
-                                
+
                                 result.success = true;
                                 break;
                             }
@@ -219,7 +221,7 @@ namespace Mijin.Library.App.Driver
                     _gClient.Close();
                 }
 
-                result.msg = "连接" + (result.success ? "成功" : "失败");
+                result.msg = @$"连接  {mode}  " + (result.success ? "成功" : "失败");
                 result.devMsg += status.ToString();
                 return result;
             }
@@ -254,8 +256,6 @@ namespace Mijin.Library.App.Driver
             lock (_lockObj)
             {
                 var result = new MessageModel<bool>();
-
-
                 var coms = System.IO.Ports.SerialPort.GetPortNames().OrderBy(c => int.Parse(c.Split('M')[1]))
                     .ToArray(); // rfid串口最好修改到com1
                 for (int i = 0; i < coms.Length; i++)
@@ -272,6 +272,15 @@ namespace Mijin.Library.App.Driver
                     catch (Exception e)
                     {
                     }
+                }
+
+                if (!result.success)
+                {
+                    var connectRes = Connect("usb", $"");
+                    result = Stop();
+
+                    if (!result.success)
+                        result.msg = connectRes.msg;
                 }
 
                 return result;

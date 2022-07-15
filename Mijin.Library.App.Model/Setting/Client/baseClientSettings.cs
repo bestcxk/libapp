@@ -18,6 +18,7 @@ namespace Mijin.Library.App.Model
         /// 后台管理打开的URL 
         /// </summary>
         public string LibraryManageUrl { get; set; }
+
         /// <summary>
         /// 自助借阅打开的URL
         /// </summary>
@@ -107,6 +108,7 @@ namespace Mijin.Library.App.Model
         public string LabelConvertUrl { get; set; }
 
         public string DoorControllerUrl { get; set; }
+
         /// <summary>
         /// 门禁随系统直接启动
         /// </summary>
@@ -122,6 +124,10 @@ namespace Mijin.Library.App.Model
         /// </summary>
         public bool DisibleProxy { get; set; }
 
+        /// <summary>
+        /// 社保卡加密版本
+        /// </summary>
+        public bool SudoPSAMMode { get; set; }
     }
 
     /// <summary>
@@ -132,36 +138,33 @@ namespace Mijin.Library.App.Model
         /// <summary>
         /// 不清空
         /// </summary>
-        [Description("保留")]
-        Default = 0,
+        [Description("保留")] Default = 0,
+
         /// <summary>
         /// 清空cookie
         /// </summary>
-        [Description("清空cookie")]
-        Cookie = 1,
+        [Description("清空cookie")] Cookie = 1,
+
         /// <summary>
         /// 清空LocalState
         /// </summary>
-        [Description("清空LocalState")]
-        LocalState = 2,
+        [Description("清空LocalState")] LocalState = 2,
+
         /// <summary>
         /// 删除webview 下的Default文件
         /// </summary>
-        [Description("删除Default文件")]
-        DefaultCache = 3,
+        [Description("删除Default文件")] DefaultCache = 3,
+
         /// <summary>
         /// 删除整个webview 的Cache文件
         /// </summary>
-        [Description("删除整个Cache文件")]
-        AllCache = 4,
+        [Description("删除整个Cache文件")] AllCache = 4,
     }
 
     public enum HFReaderEnum
     {
-        [Description("黑色读卡器")]
-        BlackReader = 0,
-        [Description("荣睿高频读卡器")]
-        RRHFReader = 1
+        [Description("黑色读卡器")] BlackReader = 0,
+        [Description("荣睿高频读卡器")] RRHFReader = 1
     }
 
     public class Title
@@ -170,10 +173,10 @@ namespace Mijin.Library.App.Model
         public string Manager { get; set; } = "后台管理系统";
         public string Terminal { get; set; } = "自助借阅";
     }
+
     public enum QrcodeDriver
     {
         qrcode,
         vbarQrcode
     }
-
 }

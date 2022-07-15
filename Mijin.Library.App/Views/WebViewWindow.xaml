@@ -1,24 +1,27 @@
 ﻿<mah:MetroWindow x:Class="Mijin.Library.App.Views.WebViewWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
-        xmlns:mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
-        xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls" 
-        xmlns:local="clr-namespace:Mijin.Library.App.Views"
-        mc:Ignorable="d"
-        Title="图书馆管理系统" MinHeight="100" MinWidth="200" Height="100" Width="100" Visibility="Collapsed" WindowStartupLocation="CenterScreen">
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                 xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+                 xmlns:mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+                 xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+                 xmlns:local="clr-namespace:Mijin.Library.App.Views"
+                 mc:Ignorable="d"
+                 Title="图书馆管理系统" MinHeight="100" MinWidth="200" Height="100" Width="100" Visibility="Collapsed"
+                 WindowStartupLocation="CenterScreen">
     <mah:MetroWindow.RightWindowCommands>
         <Controls:WindowCommands>
             <Button Click="ShowDoorViewBtn" Name="doorBtn">
-                <Label x:Name="versionLabel" Content="通道门"></Label>
+                <Label Content="通道门"></Label>
+            </Button>
+            <Button>
+                <Label x:Name="versionLabel" Content="版本信息" />
             </Button>
         </Controls:WindowCommands>
     </mah:MetroWindow.RightWindowCommands>
     <DockPanel>
         <wv2:WebView2 Name="webView"
-                 Source=""
-    />
+                      Source="" />
     </DockPanel>
 </mah:MetroWindow>

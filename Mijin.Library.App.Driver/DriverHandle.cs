@@ -87,7 +87,7 @@ namespace Mijin.Library.App.Driver
             IGRfidDoorController gRfidDoorController, ITuChuangSIP2Client tuChuangSIP2Client, IRRfid rRfid,
             IQrCode qrCode, ICkDoorController ckDoorController, ITrack track, IMultiGrfid multiGrfid, ISudo sudo,
             IWjSIP2Client wjSIP2Client, IDataConvert dataConvert, IWriteCxDb writeCxDb, IJpSip2Client jpSip2Client,
-            IDhCamera dhCamera, IRfidDoor rfidDoor,IDhPeopleInoutCamera dhPeopleInoutCamera)
+            IDhCamera dhCamera, IRfidDoor rfidDoor, IDhPeopleInoutCamera dhPeopleInoutCamera)
         {
             _dhCamera = dhCamera;
             _rfidDoor = rfidDoor;
@@ -212,7 +212,14 @@ namespace Mijin.Library.App.Driver
                 // 设置所有模块的事件传向 OnDriverEvent
                 foreach (var eventInfo in instance.GetType().GetEvents())
                 {
-                    eventInfo.AddEventHandler(instance, OnAllDriverEvent);
+                    try
+                    {
+                        eventInfo.AddEventHandler(instance, OnAllDriverEvent);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e);
+                    }
                 }
             }
         }

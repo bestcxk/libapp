@@ -70,6 +70,8 @@ namespace Mijin.Library.App.Views
 
             AppStatic.Services = serviceProvider;
 
+            this.versionLabel.Content = @$"版本号：{Assembly.GetExecutingAssembly().GetName().Version}";
+
             Title = _clientSettings.Title?.App ?? "图书管理系统";
             DisableWPFTabletSupport();
         }
@@ -308,8 +310,8 @@ namespace Mijin.Library.App.Views
 
             // lock (lockObj)
             // {
-                Task.Run(() =>
-                {
+            Task.Run(() =>
+            {
                 try
                 {
                     // 检查请求字符串
@@ -366,9 +368,10 @@ namespace Mijin.Library.App.Views
                     result.msg = "操作异常";
                     result.success = false;
                 }
+
                 // 发送信息给前端页面
                 Send(result, false, reqStr, Json.ToJson(parameters));
-                });
+            });
             // }
         }
 
@@ -544,7 +547,7 @@ namespace Mijin.Library.App.Views
             }
 
             public virtual string WriteActionLog(string reqStr, string title, string method, string para, string rtData,
-                bool rtSuccess, string rtMsg,string devMsg)
+                bool rtSuccess, string rtMsg, string devMsg)
             {
                 string text =
                     $" 请求字符串　：{reqStr} \r\n 标题　　　　：{title} \r\n 请求方法　　：{method} \r\n 请求参数　　：{para} \r\n 返回数据　　：{rtData} \r\n 返回成功状态：{rtSuccess} \r\n 返回信息　　：{rtMsg} \r\n ";
