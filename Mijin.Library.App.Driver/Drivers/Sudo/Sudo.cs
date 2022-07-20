@@ -21,6 +21,11 @@ namespace Mijin.Library.App.Driver
     {
         private readonly ISystemFunc _systemFunc;
 
+        static bool isFirst = true;
+
+        int reTry = 3;
+
+
         public Sudo(ISystemFunc systemFunc)
         {
             _systemFunc = systemFunc;
@@ -47,10 +52,10 @@ namespace Mijin.Library.App.Driver
 
             try
             {
-                SodoWinSDKHandle.Sodo_InitSerialPort((int) port, (int) baud);
+                SodoWinSDKHandle.Sodo_InitSerialPort((int)port, (int)baud);
                 SodoWinSDKHandle.Sodo_Stop();
                 int ret = SodoWinSDKHandle.Sodo_Start();
-                if (ret == (int) STATUS_CODE.BASE_SUCCESS)
+                if (ret == (int)STATUS_CODE.BASE_SUCCESS)
                 {
                     res.success = true;
                     res.msg = "操作成功";
@@ -72,146 +77,173 @@ namespace Mijin.Library.App.Driver
         public MessageModel<IdentityInfo> ReadIdentity()
         {
             var res = new MessageModel<IdentityInfo>();
-            SodoWinSDKHandle.Sodo_Start();
-            try
+
+            int i = 0;
+            while (i++ <= 3 && !res.success)
             {
-                TRADE_SFZ_OP_PARAM ptrTradeRecord = new TRADE_SFZ_OP_PARAM();
-                ptrTradeRecord.cmdop1 = 0x03;
-                ptrTradeRecord.cmdop2 = 0x00;
-
-                int ret = SodoWinSDKHandle.Sodo_Sfz_Process(ref ptrTradeRecord);
-
-                if (ret == (int) STATUS_CODE.BASE_SUCCESS)
+                SodoWinSDKHandle.Sodo_Start();
+                try
                 {
-                    //  showMsg("支付成功！")
-                    try
+                    TRADE_SFZ_OP_PARAM ptrTradeRecord = new TRADE_SFZ_OP_PARAM();
+                    ptrTradeRecord.cmdop1 = 0x03;
+                    ptrTradeRecord.cmdop2 = 0x00;
+
+                    int ret = SodoWinSDKHandle.Sodo_Sfz_Process(ref ptrTradeRecord);
+
+                    if (ret == (int)STATUS_CODE.BASE_SUCCESS)
                     {
-                        var reader = new IdentityInfo();
-
-                        ID2Parser parser = new ID2Parser(ptrTradeRecord.recvBuf, 3);
-                        ID2Txt idText = parser.ParseText();
-
+                        //  showMsg("支付成功！")
                         try
                         {
-                            var bytes = parser.ParsePic();
-                            using var stream = new MemoryStream(bytes);
-                            var bitmap = new Bitmap(stream);
+                            var reader = new IdentityInfo();
 
-                            reader.FacePicBase64 = bitmap.ToBase64String(ImageFormat.Jpeg);
+                            ID2Parser parser = new ID2Parser(ptrTradeRecord.recvBuf, 3);
+                            ID2Txt idText = parser.ParseText();
+
+                            try
+                            {
+                                var bytes = parser.ParsePic();
+                                using var stream = new MemoryStream(bytes);
+                                var bitmap = new Bitmap(stream);
+
+                                reader.FacePicBase64 = bitmap.ToBase64String(ImageFormat.Jpeg);
+                            }
+                            catch (Exception e)
+                            {
+                                e.Log(Log.GetLog());
+                            }
+
+                            reader.Country = idText.mNational;
+                            reader.Name = idText.mName;
+                            reader.Identity = idText.mID2Num;
+                            reader.Birth = @$"{idText.mBirthYear}-{idText.mBirthMonth}-{idText.mBirthDay}";
+                            reader.Addr = idText.mAddress;
+                            reader.Sex = idText.mGender;
+
+                            res.success = true;
+                            res.response = reader;
+                            res.msg = "获取成功";
                         }
                         catch (Exception e)
                         {
                             e.Log(Log.GetLog());
+                            res.msg = "身份证解析失败";
                         }
-
-                        reader.Country = idText.mNational;
-                        reader.Name = idText.mName;
-                        reader.Identity = idText.mID2Num;
-                        reader.Birth = @$"{idText.mBirthYear}-{idText.mBirthMonth}-{idText.mBirthDay}";
-                        reader.Addr = idText.mAddress;
-                        reader.Sex = idText.mGender;
-
-                        res.success = true;
-                        res.response = reader;
-                        res.msg = "获取成功";
                     }
-                    catch (Exception e)
+                    else
                     {
-                        e.Log(Log.GetLog());
-                        res.msg = "身份证解析失败";
+                        res.msg = "身份证读取失败";
                     }
                 }
-                else
+                catch (Exception e)
                 {
-                    res.msg = "身份证读取失败";
+                    e.Log(Log.GetLog());
+                    res.msg = "身份证解析失败";
                 }
-            }
-            catch (Exception e)
-            {
-                e.Log(Log.GetLog());
-                res.msg = "身份证解析失败";
-            }
 
-            if (res.success) return res;
+                if (res.success)
+                    return res;
 
-            try
-            {
-                var identityRes = Read_SSC();
-                if (identityRes.success)
+                try
                 {
-                    res.response = new IdentityInfo()
+                    var identityRes = Read_SSC(true);
+                    if (identityRes.success)
                     {
-                        Identity = identityRes.response,
-                        Birth = new DateTime(1900, 1, 1).ToString("yyyy-M-d dddd")
-                    };
+                        res.response = new IdentityInfo()
+                        {
+                            Identity = identityRes?.response?.Split("|")[0],
+                            Name = identityRes?.response?.Split("|")[1],
+                            Birth = new DateTime(1900, 1, 1).ToString("yyyy-M-d dddd")
+                        };
 
-                    res.success = identityRes.success;
-                    res.msg = "读取身份证成功";
+                        res.success = identityRes.success;
+                        res.msg = "读取身份证成功";
+                    }
+                }
+                catch (Exception e)
+                {
                 }
             }
-            catch (Exception e)
-            {
-            }
-
 
             return res;
         }
 
-        public MessageModel<string> Read_SSC()
+        public MessageModel<string> Read_SSC(bool getAllStr = false)
         {
             var res = new MessageModel<string>();
 
-            if (_systemFunc.ClientSettings.SudoPSAMMode)
+            int i = 0;
+            while (i++ <= 3 && !res.success)
             {
-                SodoWinSDKHandle.Sodo_Start();
-                STR_SB_INFO ptrTradeRecord = new STR_SB_INFO();
-                int ret = SodoWinSDKHandle.Sodo_SB_Process(ref ptrTradeRecord);
-                if (ret == (int) STATUS_CODE.BASE_SUCCESS)
+                if (_systemFunc.ClientSettings.SudoPSAMMode)
                 {
-                    res.success = true;
-                    res.response = Encoding.GetEncoding("GB18030")
-                        .GetString(ptrTradeRecord.recvBuf, 0, ptrTradeRecord.lenrecv).Split("|").First();
-                    res.msg = "获取成功";
-                }
-                else
-                {
-                    res.msg = "读取失败";
-                }
-            }
-            else
-            {
-                SodoWinSDKHandle.Sodo_Stop();
-                var bytes = new byte[1024];
-                var code = TSCardDriver.iInitParms(0, null, null, bytes);
 
-                if (code == 0)
-                {
-                    bytes = new byte[1024 * 1024];
-                    try
+                    if (isFirst)
                     {
-                        code = TSCardDriver.iReadCardBasExt(3, bytes);
-                    }
-                    catch (Exception e)
-                    {
-                        res.msg = e.ToString();
-                        return res;
+                        isFirst = false;
+                        var identityRes = ReadIdentity();
+                        if (identityRes.success)
+                        {
+                            res.success = identityRes.success;
+                            res.msg = identityRes.msg;
+                            res.response = identityRes?.response?.Identity;
+                            return res;
+                        }
                     }
 
-                    if (code == 0)
+                    SodoWinSDKHandle.Sodo_Start();
+                    STR_SB_INFO ptrTradeRecord = new STR_SB_INFO();
+                    int ret = SodoWinSDKHandle.Sodo_SB_Process(ref ptrTradeRecord);
+                    if (ret == (int)STATUS_CODE.BASE_SUCCESS)
                     {
-                        var data = Encoding.Default.GetString(bytes)?.Split("|")[1];
-                        res.response = data;
                         res.success = true;
+
+                        var str = Encoding.GetEncoding("GB18030")
+                            .GetString(ptrTradeRecord.recvBuf, 0, ptrTradeRecord.lenrecv);
+
+                        res.response = getAllStr ? str : str.Split("|").First();
                         res.msg = "获取成功";
                     }
                     else
                     {
-                        res.msg = "读社保卡失败";
+                        res.msg = "读取失败";
                     }
                 }
                 else
                 {
-                    res.msg = "初始化参数失败";
+                    SodoWinSDKHandle.Sodo_Stop();
+                    var bytes = new byte[1024];
+                    var code = TSCardDriver.iInitParms(0, null, null, bytes);
+
+                    if (code == 0)
+                    {
+                        bytes = new byte[1024 * 1024];
+                        try
+                        {
+                            code = TSCardDriver.iReadCardBasExt(3, bytes);
+                        }
+                        catch (Exception e)
+                        {
+                            res.msg = e.ToString();
+                            return res;
+                        }
+
+                        if (code == 0)
+                        {
+                            var data = Encoding.Default.GetString(bytes)?.Split("|")[1];
+                            res.response = data;
+                            res.success = true;
+                            res.msg = "获取成功";
+                        }
+                        else
+                        {
+                            res.msg = "读社保卡失败";
+                        }
+                    }
+                    else
+                    {
+                        res.msg = "初始化参数失败";
+                    }
                 }
             }
 
@@ -231,12 +263,12 @@ namespace Mijin.Library.App.Driver
 
             STR_TRANS_OP_PARAM ptrTradeRecord = new STR_TRANS_OP_PARAM();
             ptrTradeRecord.transType = 0x60;
-            ptrTradeRecord.transTime = new byte[] {0x012, 0x12, 0x12};
-            ptrTradeRecord.transDate = new byte[] {0x20, 0x12, 0x12};
-            ptrTradeRecord.transNo = new byte[] {0x11, 0x22, 0x33, 0x44};
+            ptrTradeRecord.transTime = new byte[] { 0x012, 0x12, 0x12 };
+            ptrTradeRecord.transDate = new byte[] { 0x20, 0x12, 0x12 };
+            ptrTradeRecord.transNo = new byte[] { 0x11, 0x22, 0x33, 0x44 };
             ptrTradeRecord.transAmt = 1;
             int ret = SodoWinSDKHandle.Sodo_RequestCardAndQrcode(ref ptrTradeRecord);
-            if (ret == (int) STATUS_CODE.BASE_SUCCESS)
+            if (ret == (int)STATUS_CODE.BASE_SUCCESS)
             {
                 var qrcode = JsonConvert.DeserializeObject<QrcodeType>(Encoding.ASCII.GetString(
                     ptrTradeRecord.transOutBuf,

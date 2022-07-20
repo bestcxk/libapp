@@ -6,7 +6,7 @@ namespace Mijin.Library.App.Driver
     {
         MessageModel<string> Connect(long port, long baud);
         MessageModel<IdentityInfo> ReadIdentity();
-        MessageModel<string> Read_SSC();
+        MessageModel<string> Read_SSC(bool getAllStr = false);
         MessageModel<string> ReadQrcode();
         void Close();
     }

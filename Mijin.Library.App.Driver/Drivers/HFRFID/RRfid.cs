@@ -53,6 +53,9 @@ namespace Mijin.Library.App.Driver
         /// com口号
         /// </summary>
         public int portIndex = 0;
+
+        bool isAscii { get; set; } = false;
+
         /// <summary>
         /// RFID读写器地址
         /// </summary>
@@ -66,10 +69,12 @@ namespace Mijin.Library.App.Driver
         /// 读标签起始块
         /// </summary>
         private int startReadBlock = 0;
+
         /// <summary>
         /// 读标签块数量
         /// </summary>
         private int readBlockCount = 0;
+
         /// <summary>
         /// 读/写 标签时操作块大小
         /// </summary>
@@ -92,7 +97,6 @@ namespace Mijin.Library.App.Driver
 
         public RRfid()
         {
-
         }
 
         ~RRfid()
@@ -181,7 +185,8 @@ namespace Mijin.Library.App.Driver
 
         private string GetReturnCodeAndErrorCodeDesc(int cmdRet = 0x99, byte errorCode = 0x99)
         {
-            return @$"ReturnDesc：{GetReturnCodeDesc(cmdRet)}" + "\r\n" + @$"ErrorCodeDesc：{GetErrorCodeDesc(errorCode)}";
+            return @$"ReturnDesc：{GetReturnCodeDesc(cmdRet)}" + "\r\n" +
+                   @$"ErrorCodeDesc：{GetErrorCodeDesc(errorCode)}";
         }
 
         /// <summary>
@@ -199,13 +204,16 @@ namespace Mijin.Library.App.Driver
             // 获取byte[] uid
             var uid = SerialPortHelper.HexStringToByteArray(uidHex);
 
-            var fCmdRet = StaticClassReaderA.WriteAFI(ref readerAddr, ref state, uid, (byte)afi, ref errorCode, portIndex);
+            var fCmdRet =
+                StaticClassReaderA.WriteAFI(ref readerAddr, ref state, uid, (byte) afi, ref errorCode, portIndex);
 
             if (fCmdRet != OK)
             {
                 state = 8;
-                fCmdRet = StaticClassReaderA.WriteAFI(ref readerAddr, ref state, uid, (byte)afi, ref errorCode, portIndex);
+                fCmdRet = StaticClassReaderA.WriteAFI(ref readerAddr, ref state, uid, (byte) afi, ref errorCode,
+                    portIndex);
             }
+
             res.msg = fCmdRet != OK ? "设置失败" : "设置成功";
             res.success = fCmdRet == OK;
             return res;
@@ -224,6 +232,7 @@ namespace Mijin.Library.App.Driver
                 res.success = true;
                 return res;
             }
+
             int portNum = -1;
             int fCmdRet = 0x30;
             byte fbaud = 0;
@@ -234,6 +243,7 @@ namespace Mijin.Library.App.Driver
                 res.devMsg = @$"错误码{fCmdRet}";
                 return res;
             }
+
             if (readTask.IsNull())
                 readTask = Task.Run(ReadLabelHandle);
 
@@ -241,7 +251,6 @@ namespace Mijin.Library.App.Driver
             res.devMsg = @$"设备位于 COM{portIndex}";
             res.success = true;
             return res;
-
         }
 
         /// <summary>
@@ -252,16 +261,17 @@ namespace Mijin.Library.App.Driver
         /// <param name="actionBlockSize"></param>
         /// <param name="writeState"></param>
         /// <returns></returns>
-        public MessageModel<string> SetActionLabelPara(Int64 startReadBlock = 0, Int64 ReadBlockCount = 0, Int64 actionBlockSize = 0, Int64 writeState = 0)
+        public MessageModel<string> SetActionLabelPara(Int64 startReadBlock = 0, Int64 ReadBlockCount = 0,
+            Int64 actionBlockSize = 0, Int64 writeState = 0)
         {
             if (!startReadBlock.IsZeroOrMinus())
-                this.startReadBlock = (int)startReadBlock;
+                this.startReadBlock = (int) startReadBlock;
             if (!ReadBlockCount.IsZeroOrMinus())
-                this.readBlockCount = (int)ReadBlockCount;
+                this.readBlockCount = (int) ReadBlockCount;
             if (!actionBlockSize.IsZeroOrMinus())
-                this.actionBlockSize = (int)actionBlockSize;
+                this.actionBlockSize = (int) actionBlockSize;
             if (!writeState.IsZeroOrMinus())
-                this.writeState = (int)writeState;
+                this.writeState = (int) writeState;
 
             return new()
             {
@@ -280,7 +290,7 @@ namespace Mijin.Library.App.Driver
         /// <returns></returns>
         public MessageModel<List<ScanDataModel>> NewScan(Int64 startBlockNum = -1, Int64 readBlockCount = -1)
         {
-            var res = new MessageModel<List<ScanDataModel>>() { response = new List<ScanDataModel>() };
+            var res = new MessageModel<List<ScanDataModel>>() {response = new List<ScanDataModel>()};
             int fCmdRet = 0x30;
             byte state = 6, AFI = 0, cardNumber = 0;
             byte[] DSFIDAndUID = new byte[2300];
@@ -298,7 +308,8 @@ namespace Mijin.Library.App.Driver
                 readBlockCount = this.readBlockCount;
 
             // 开始扫描
-            fCmdRet = StaticClassReaderA.Inventory(ref readerAddr, ref state, ref AFI, DSFIDAndUID, ref cardNumber, portIndex);
+            fCmdRet = StaticClassReaderA.Inventory(ref readerAddr, ref state, ref AFI, DSFIDAndUID, ref cardNumber,
+                portIndex);
             // 获取错误数据
             //res.devMsg = GetReturnCodeAndErrorCodeDesc(fCmdRet);
 
@@ -308,25 +319,28 @@ namespace Mijin.Library.App.Driver
             {
                 uids.Add(DSFIDAndUID.Skip(i * 9 + 1).Take(8).ToArray());
             }
+
             foreach (var uid in uids)
             {
                 byte[] data = new byte[actionBlockSize * readBlockCount];
                 byte[] blockSecStatus = new byte[readBlockCount];
                 byte errorCode = 0;
                 state = 0;
-                fCmdRet = StaticClassReaderA.ReadMultipleBlock(ref readerAddr, ref state, uid, (byte)startBlockNum, (byte)readBlockCount,
-                                                       blockSecStatus, data, ref errorCode, portIndex);
+                fCmdRet = StaticClassReaderA.ReadMultipleBlock(ref readerAddr, ref state, uid, (byte) startBlockNum,
+                    (byte) readBlockCount,
+                    blockSecStatus, data, ref errorCode, portIndex);
                 if (fCmdRet == 0)
                 {
                     ScanDataModel scanData = new ScanDataModel();
                     //scanData.Uid = uid;
-                    scanData.UidHexStr = SerialPortHelper.ByteArrayToHexString(uid).Replace(" ", "");
+                    scanData.UidHexStr =   SerialPortHelper.ByteArrayToHexString(uid).Replace(" ", "");
                     scanData.BlockHexData = SerialPortHelper.ByteArrayToHexString(data).Replace(" ", "");
                     //scanData.BlockAsciiData = Encoding.ASCII.GetString(data);
                     //scanData.BlockData = data;
                     res.response.Add(scanData);
                 }
             }
+
             if (res.response.IsEmpty())
                 res.msg = "未扫描到标签";
             else
@@ -334,6 +348,27 @@ namespace Mijin.Library.App.Driver
                 res.msg = "扫描完成";
                 res.success = true;
             }
+
+            return res;
+        }
+
+        /// <summary>
+        /// 开始读
+        /// </summary>
+        /// <returns></returns>
+        public MessageModel<string> Read(bool isAscii = false)
+        {
+            this.isAscii = isAscii;
+            var res = new MessageModel<string>();
+            if (portIndex.IsZeroOrMinus())
+            {
+                res.msg = "未连接设备";
+                return res;
+            }
+
+            startRead = true;
+            res.success = true;
+            res.msg = "开始读取高频标签";
             return res;
         }
 
@@ -343,16 +378,7 @@ namespace Mijin.Library.App.Driver
         /// <returns></returns>
         public MessageModel<string> Read()
         {
-            var res = new MessageModel<string>();
-            if (portIndex.IsZeroOrMinus())
-            {
-                res.msg = "未连接设备";
-                return res;
-            }
-            startRead = true;
-            res.success = true;
-            res.msg = "开始读取高频标签";
-            return res;
+            return Read(false);
         }
 
         /// <summary>
@@ -367,6 +393,7 @@ namespace Mijin.Library.App.Driver
                 res.msg = "未连接设备";
                 return res;
             }
+
             startRead = false;
             res.success = true;
             res.msg = "停止读高频标签";
@@ -387,6 +414,7 @@ namespace Mijin.Library.App.Driver
                     msg = "未连接设备"
                 };
             }
+
             var data = NewScan(startBlockNum, readBlockCount);
             return new()
             {
@@ -405,7 +433,8 @@ namespace Mijin.Library.App.Driver
         /// <param name="actionBlockSize">标签单个块大小，4 or 8</param>
         /// <param name="writeState">写入类型，参考 writeState 注释</param>
         /// <returns></returns>
-        public MessageModel<string> WriteLabel(string uidHex, byte[] data, Int64 actionBlockSize = -1, Int64 writeState = -1)
+        public MessageModel<string> WriteLabel(string uidHex, byte[] data, Int64 actionBlockSize = -1,
+            Int64 writeState = -1)
         {
             var res = new MessageModel<string>();
 
@@ -415,7 +444,7 @@ namespace Mijin.Library.App.Driver
             if (writeState.IsZeroOrMinus())
                 writeState = this.writeState;
 
-            byte state = (byte)writeState;
+            byte state = (byte) writeState;
             byte errorCode = 0;
             int fCmdRet = 0x30;
 
@@ -426,46 +455,52 @@ namespace Mijin.Library.App.Driver
                     msg = "未连接设备"
                 };
             }
+
             // 获取byte[] uid
             var uid = SerialPortHelper.HexStringToByteArray(uidHex);
 
             // 获取需要写入的块数量
-            var writeBlockCountDouble = (double)data.Length / actionBlockSize;
+            var writeBlockCountDouble = (double) data.Length / actionBlockSize;
             // 包含小数则进1
-            if (((writeBlockCountDouble - (int)writeBlockCountDouble)) * 100 > 0)
+            if (((writeBlockCountDouble - (int) writeBlockCountDouble)) * 100 > 0)
             {
                 writeBlockCountDouble += 1;
             }
+
             // 最终需要写入的块数量
-            var writeBlockCount = (int)writeBlockCountDouble;
+            var writeBlockCount = (int) writeBlockCountDouble;
 
             for (byte i = 0; i < writeBlockCount; i++)
             {
-                int startIndex = (int)(i * actionBlockSize);
-                int endIndex = (int)(i * actionBlockSize + actionBlockSize);
+                int startIndex = (int) (i * actionBlockSize);
+                int endIndex = (int) (i * actionBlockSize + actionBlockSize);
                 // 防止越界
                 if (endIndex > data.Length)
                     endIndex = data.Length;
 
-                fCmdRet = StaticClassReaderA.WriteSingleBlock(ref readerAddr, ref state, uid, i, data[startIndex..endIndex], ref errorCode, portIndex);
+                fCmdRet = StaticClassReaderA.WriteSingleBlock(ref readerAddr, ref state, uid, i,
+                    data[startIndex..endIndex], ref errorCode, portIndex);
                 if (fCmdRet != OK)
                 {
                     res.msg = "写入失败";
                     return res;
                 }
             }
+
             res.msg = "写入成功";
             res.success = true;
             return res;
         }
 
-        public MessageModel<string> WriteLabel(string uidHex, string hexData, Int64 actionBlockSize = -1, Int64 writeState = -1)
+        public MessageModel<string> WriteLabel(string uidHex, string hexData, Int64 actionBlockSize = -1,
+            Int64 writeState = -1)
         {
             var data = SerialPortHelper.HexStringToByteArray(hexData);
             return WriteLabel(uidHex, data, actionBlockSize, writeState);
         }
 
-        public MessageModel<string> WriteLabelByAscii(string uidHex, string asciiData, Int64 actionBlockSize = -1, Int64 writeState = -1)
+        public MessageModel<string> WriteLabelByAscii(string uidHex, string asciiData, Int64 actionBlockSize = -1,
+            Int64 writeState = -1)
         {
             var asciiBytes = System.Text.Encoding.ASCII.GetBytes(asciiData);
             return WriteLabel(uidHex, asciiBytes, actionBlockSize, writeState);
@@ -481,7 +516,7 @@ namespace Mijin.Library.App.Driver
         {
             var res = new MessageModel<string>();
             var fCmdRet = -1;
-            var UID = uid.ConvertAll(new Converter<Int64, byte>(int64 => (byte)int64)).ToArray();
+            var UID = uid.ConvertAll(new Converter<Int64, byte>(int64 => (byte) int64)).ToArray();
             if (enabled)
                 fCmdRet = StaticClassReaderA.SetEASAlarm(ref readerAddr, 1, UID, portIndex);
             else
@@ -494,6 +529,7 @@ namespace Mijin.Library.App.Driver
                 res.msg = "设置失败";
                 return res;
             }
+
             res.msg = "设置成功";
             res.success = true;
             return res;
@@ -516,6 +552,7 @@ namespace Mijin.Library.App.Driver
                 res.msg = "设置失败";
                 return res;
             }
+
             res.msg = "设置成功";
             res.success = true;
             return res;
@@ -523,13 +560,14 @@ namespace Mijin.Library.App.Driver
 
         public MessageModel<string> SetScanSpaceMs(Int64 ms)
         {
-            ScanSpaceMs = (int)ms;
+            ScanSpaceMs = (int) ms;
             return new()
             {
                 success = true,
                 msg = "设置成功"
             };
         }
+
         private async void ReadLabelHandle()
         {
             while (true)
@@ -570,6 +608,7 @@ namespace Mijin.Library.App.Driver
     {
         //public byte[] Uid { get; set; }
         public string UidHexStr { get; set; }
+
         //public string BlockAsciiData { get; set; }
         //public byte[] BlockData { get; set; }
         public string BlockHexData { get; set; }
