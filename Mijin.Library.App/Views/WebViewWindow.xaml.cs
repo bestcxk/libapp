@@ -89,72 +89,6 @@ namespace Mijin.Library.App.Views
         /// </summary>
         async void InitializeAsync()
         {
-            #region 窗口设置
-
-            // 不可调整窗口宽高
-            if (!_clientSettings.CanResize)
-            {
-                this.ResizeMode = System.Windows.ResizeMode.NoResize;
-            }
-
-            // 标题栏设置
-            if (!_clientSettings.ShowWindowTitleBar)
-            {
-                this.ShowTitleBar = false;
-                //this.WindowState = System.Windows.WindowState.Normal;
-                //this.WindowStyle = System.Windows.WindowStyle.None;
-            }
-            else
-            {
-                // 不显示标题栏
-                this.WindowState = System.Windows.WindowState.Normal; //还原窗口（非最小化和最大化）
-                this.WindowStyle = System.Windows.WindowStyle.ThreeDBorderWindow; //仅工作区可见，不显示标题栏和边框
-            }
-
-            //窗口顶置
-            if (_clientSettings.WindowOverhead)
-            {
-                this.Topmost = true;
-            }
-
-            // 全屏
-            if (_clientSettings.WindowWidth == 0 && _clientSettings.WindowHeight == 0)
-            {
-                // 显示标题栏
-                if (_clientSettings.ShowWindowTitleBar)
-                {
-                    this.WindowState = WindowState.Maximized;
-                    this.ShowTitleBar = true; // 不显示标题栏
-                }
-                else // 不显示标题栏
-                {
-                    this.WindowState = System.Windows.WindowState.Normal; //还原窗口（非最小化和最大化）
-                    this.WindowStyle = System.Windows.WindowStyle.None; //仅工作区可见，不显示标题栏和边框
-                    this.ResizeMode = System.Windows.ResizeMode.NoResize; //不显示最大化和最小化按钮
-                    this.ShowTitleBar = false; // 不显示标题栏
-
-                    this.Left = 0.0;
-                    this.Top = 0.0;
-                    this.Width = System.Windows.SystemParameters.PrimaryScreenWidth;
-                    this.Height = System.Windows.SystemParameters.PrimaryScreenHeight;
-                }
-            }
-            else
-            {
-                this.Width = _clientSettings.WindowWidth;
-                this.Height = _clientSettings.WindowHeight;
-
-                // 窗口显示在屏幕中央
-                Rect workArea = SystemParameters.WorkArea;
-                Left = (workArea.Width - this.Width) / 2 + workArea.Left;
-                Top = (workArea.Height - this.Height) / 2 + workArea.Top;
-            }
-
-            // 显示到最前端
-            //this.Topmost = true;
-
-            #endregion
-
 
             // 窗口关闭时
             this.Closed += async (s, e) =>
@@ -235,8 +169,85 @@ namespace Mijin.Library.App.Views
                 // Environment.Exit(0);
             };
 
-            await this.webView.EnsureCoreWebView2Async(null);
+            try
+            {
+                await this.webView.EnsureCoreWebView2Async(null);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Webview2 初始化失败！，检测Webview2运行时是否安装正确","错误");
+                Environment.Exit(0);
+            }
             this.webView.CoreWebView2.WebMessageReceived += WebMessageReceived;
+            #region 窗口设置
+
+            // 不可调整窗口宽高
+            if (!_clientSettings.CanResize)
+            {
+                this.ResizeMode = System.Windows.ResizeMode.NoResize;
+            }
+
+            // 标题栏设置
+            if (!_clientSettings.ShowWindowTitleBar)
+            {
+                this.ShowTitleBar = false;
+                //this.WindowState = System.Windows.WindowState.Normal;
+                //this.WindowStyle = System.Windows.WindowStyle.None;
+            }
+            else
+            {
+                // 不显示标题栏
+                this.WindowState = System.Windows.WindowState.Normal; //还原窗口（非最小化和最大化）
+                this.WindowStyle = System.Windows.WindowStyle.ThreeDBorderWindow; //仅工作区可见，不显示标题栏和边框
+            }
+
+            //窗口顶置
+            if (_clientSettings.WindowOverhead)
+            {
+                this.Topmost = true;
+            }
+
+            // 全屏
+            if (_clientSettings.WindowWidth == 0 && _clientSettings.WindowHeight == 0)
+            {
+                // 显示标题栏
+                if (_clientSettings.ShowWindowTitleBar)
+                {
+                    this.ShowTitleBar = true; // 不显示标题栏
+                    this.WindowState = WindowState.Maximized;
+                    WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                }
+                else // 不显示标题栏
+                {
+                    this.WindowState = WindowState.Maximized;
+                    this.WindowState = WindowState.Normal; //还原窗口（非最小化和最大化）
+                    this.WindowStyle = WindowStyle.None; //仅工作区可见，不显示标题栏和边框
+                    this.ResizeMode = ResizeMode.NoResize; //不显示最大化和最小化按钮
+                    this.ShowTitleBar = false; // 不显示标题栏
+
+
+                    this.Width = System.Windows.SystemParameters.PrimaryScreenWidth;
+                    this.Height = System.Windows.SystemParameters.PrimaryScreenHeight;
+                    this.Left = 0;
+                    this.Top = 0;
+
+                }
+            }
+            else
+            {
+                this.Width = _clientSettings.WindowWidth;
+                this.Height = _clientSettings.WindowHeight;
+
+                // 窗口显示在屏幕中央
+                Rect workArea = SystemParameters.WorkArea;
+                Left = (workArea.Width - this.Width) / 2 + workArea.Left;
+                Top = (workArea.Height - this.Height) / 2 + workArea.Top;
+            }
+
+            // 显示到最前端
+            //this.Topmost = true;
+
+            #endregion
 
             // 注册事件
             if (!hasRegisterEvent)
@@ -260,6 +271,8 @@ namespace Mijin.Library.App.Views
             {
                 OpenUrl = _clientSettings.NoSelectOpenUrl;
             }
+
+
 
             #region 当前路由处理
 

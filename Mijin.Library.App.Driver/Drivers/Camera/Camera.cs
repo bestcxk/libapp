@@ -82,6 +82,12 @@ namespace Mijin.Library.App.Driver
             };
         }
 
+        public void GetOne()
+        {
+            _capture = new Capture(_systemFunc?.ClientSettings?.CameraIndex ?? 0);
+            GetCameraImageForBase64();
+            _capture.Dispose();
+        }
 
         /// <summary>
         /// 线程任务，从摄像头中获取图片

@@ -85,7 +85,7 @@ namespace Mijin.Library.App
             else
                 return Container.Resolve<MainWindow>();
 #else
-            var res =  Container.Resolve<MainWindow>();
+            var res = Container.Resolve<MainWindow>();
             return res;
 #endif
         }
@@ -124,6 +124,14 @@ namespace Mijin.Library.App
         {
             var mainWindow = Container.Resolve<MainWindow>();
             var webviewWindow = Container.Resolve<WebViewWindow>();
+            try
+            {
+                Container.Resolve<ICamera>().GetOne();
+
+            }
+            catch (Exception e)
+            {
+            }
             var settings = Container.Resolve<ISystemFunc>().ClientSettings;
 
             WebViewWindow._webViewWindow = webviewWindow;

@@ -18,5 +18,7 @@ namespace Mijin.Library.App.Driver
         /// 开启摄像头
         /// </summary>
         MessageModel<bool> OpenCamera();
+
+        void GetOne();
     }
 }
