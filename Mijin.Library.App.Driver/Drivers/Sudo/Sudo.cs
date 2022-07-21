@@ -79,7 +79,7 @@ namespace Mijin.Library.App.Driver
             var res = new MessageModel<IdentityInfo>();
 
             int i = 0;
-            while (i++ <= 3 && !res.success)
+            while (i++ <= reTry && !res.success)
             {
                 SodoWinSDKHandle.Sodo_Start();
                 try
@@ -123,6 +123,7 @@ namespace Mijin.Library.App.Driver
                             res.success = true;
                             res.response = reader;
                             res.msg = "获取成功";
+                            return res;
                         }
                         catch (Exception e)
                         {
@@ -173,7 +174,7 @@ namespace Mijin.Library.App.Driver
             var res = new MessageModel<string>();
 
             int i = 0;
-            while (i++ <= 3 && !res.success)
+            while (i++ <= reTry && !res.success)
             {
                 if (_systemFunc.ClientSettings.SudoPSAMMode)
                 {
@@ -203,6 +204,7 @@ namespace Mijin.Library.App.Driver
 
                         res.response = getAllStr ? str : str.Split("|").First();
                         res.msg = "获取成功";
+                        return res;
                     }
                     else
                     {
@@ -234,6 +236,7 @@ namespace Mijin.Library.App.Driver
                             res.response = data;
                             res.success = true;
                             res.msg = "获取成功";
+                            return res;
                         }
                         else
                         {
