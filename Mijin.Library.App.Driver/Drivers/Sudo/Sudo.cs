@@ -23,7 +23,7 @@ namespace Mijin.Library.App.Driver
 
         static bool isFirst = true;
 
-        int reTry = 3;
+        int reTry = 1;
 
 
         public Sudo(ISystemFunc systemFunc)
@@ -160,6 +160,7 @@ namespace Mijin.Library.App.Driver
                         res.success = identityRes.success;
                         res.msg = "读取身份证成功";
                     }
+                    return res;
                 }
                 catch (Exception e)
                 {
