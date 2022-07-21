@@ -89,104 +89,6 @@ namespace Mijin.Library.App.Views
         /// </summary>
         async void InitializeAsync()
         {
-            // 窗口关闭时
-            this.Closed += async (s, e) =>
-            {
-                AppStatic.CloseRfid();
-
-                #region 退出时清空浏览器缓存
-
-                try
-                {
-                    if ((!_doorViewWindow.IsNull() && _doorViewWindow.IsVisible) || _webViewWindow.IsVisible)
-                    {
-                        return;
-                    }
-
-                    // 获取webview 进程id 并杀掉，否则无法删除文件
-                    if (_clientSettings.OnExitClearWebCache != ClearWebViewCacheModeEnum.Default)
-                    {
-                        var process = Process.GetProcessById((int) this.webView.CoreWebView2.BrowserProcessId);
-                        process.Kill();
-                        process.WaitForExit();
-                    }
-
-                    //等待500毫秒等待文件被释放
-                    await Task.Delay(500);
-                    if (true) // 最多等待3秒
-                    {
-                        switch (_clientSettings.OnExitClearWebCache)
-                        {
-                            case ClearWebViewCacheModeEnum.Cookie: // 清空cookie
-                                this.webView.CoreWebView2.CookieManager.DeleteAllCookies();
-                                break;
-                            case ClearWebViewCacheModeEnum.LocalState: // 清空LocalState
-                            {
-                                var dirPath = @"./Mijin.Library.App.exe.WebView2/EBWebView/Default/Local Storage";
-                                var FilePath = @"./Mijin.Library.App.exe.WebView2/EBWebView/Local Storage";
-
-                                if (Directory.Exists(dirPath))
-                                {
-                                    FileHelper.DeleteFolder(dirPath);
-                                    FileHelper.FileDel(FilePath);
-                                }
-                            }
-                                break;
-                            case ClearWebViewCacheModeEnum.DefaultCache: // 删除webview 下的Default文件
-                            {
-                                var dirPath = @"./Mijin.Library.App.exe.WebView2/EBWebView/Default";
-                                if (Directory.Exists(dirPath))
-                                {
-                                    FileHelper.DeleteFolder(dirPath);
-                                }
-                            }
-                                break;
-                            case ClearWebViewCacheModeEnum.AllCache: // 删除整个webview 的Cache文件
-                            {
-                                var dirPath = @"Mijin.Library.App.exe.WebView2";
-                                if (Directory.Exists(dirPath))
-                                {
-                                    FileHelper.DeleteFolder(dirPath);
-                                }
-                            }
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    ex.Log(Log.GetLog().Caption("退出时清空浏览器缓存"));
-                }
-
-                //ReStartApp();
-
-                #endregion
-
-                // 退出整个应用
-                // Environment.Exit(0);
-            };
-
-            await this.webView.EnsureCoreWebView2Async(null);
-            this.webView.CoreWebView2.WebMessageReceived += WebMessageReceived;
-
-            // 注册事件
-            if (!hasRegisterEvent)
-            {
-                hasRegisterEvent = true;
-                _driverHandle.OnDriverEvent += OnDriverEvent;
-            }
-
-            // 非 开发 模式
-            if (!_clientSettings.IsDev)
-            {
-                // 使能 dev tools
-                webView.CoreWebView2.Settings.AreDevToolsEnabled = false;
-                // 取消右键菜单
-                webView.CoreWebView2.Settings.AreDefaultContextMenusEnabled = false;
-            }
-
             #region 窗口设置
 
             // 不可调整窗口宽高
@@ -252,6 +154,106 @@ namespace Mijin.Library.App.Views
             //this.Topmost = true;
 
             #endregion
+
+
+            // 窗口关闭时
+            this.Closed += async (s, e) =>
+            {
+                AppStatic.CloseRfid();
+
+                #region 退出时清空浏览器缓存
+
+                try
+                {
+                    if ((!_doorViewWindow.IsNull() && _doorViewWindow.IsVisible) || _webViewWindow.IsVisible)
+                    {
+                        return;
+                    }
+
+                    // 获取webview 进程id 并杀掉，否则无法删除文件
+                    if (_clientSettings.OnExitClearWebCache != ClearWebViewCacheModeEnum.Default)
+                    {
+                        var process = Process.GetProcessById((int)this.webView.CoreWebView2.BrowserProcessId);
+                        process.Kill();
+                        process.WaitForExit();
+                    }
+
+                    //等待500毫秒等待文件被释放
+                    await Task.Delay(500);
+                    if (true) // 最多等待3秒
+                    {
+                        switch (_clientSettings.OnExitClearWebCache)
+                        {
+                            case ClearWebViewCacheModeEnum.Cookie: // 清空cookie
+                                this.webView.CoreWebView2.CookieManager.DeleteAllCookies();
+                                break;
+                            case ClearWebViewCacheModeEnum.LocalState: // 清空LocalState
+                                {
+                                    var dirPath = @"./Mijin.Library.App.exe.WebView2/EBWebView/Default/Local Storage";
+                                    var FilePath = @"./Mijin.Library.App.exe.WebView2/EBWebView/Local Storage";
+
+                                    if (Directory.Exists(dirPath))
+                                    {
+                                        FileHelper.DeleteFolder(dirPath);
+                                        FileHelper.FileDel(FilePath);
+                                    }
+                                }
+                                break;
+                            case ClearWebViewCacheModeEnum.DefaultCache: // 删除webview 下的Default文件
+                                {
+                                    var dirPath = @"./Mijin.Library.App.exe.WebView2/EBWebView/Default";
+                                    if (Directory.Exists(dirPath))
+                                    {
+                                        FileHelper.DeleteFolder(dirPath);
+                                    }
+                                }
+                                break;
+                            case ClearWebViewCacheModeEnum.AllCache: // 删除整个webview 的Cache文件
+                                {
+                                    var dirPath = @"Mijin.Library.App.exe.WebView2";
+                                    if (Directory.Exists(dirPath))
+                                    {
+                                        FileHelper.DeleteFolder(dirPath);
+                                    }
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ex.Log(Log.GetLog().Caption("退出时清空浏览器缓存"));
+                }
+
+                //ReStartApp();
+
+                #endregion
+
+                // 退出整个应用
+                // Environment.Exit(0);
+            };
+
+            await this.webView.EnsureCoreWebView2Async(null);
+            this.webView.CoreWebView2.WebMessageReceived += WebMessageReceived;
+
+            // 注册事件
+            if (!hasRegisterEvent)
+            {
+                hasRegisterEvent = true;
+                _driverHandle.OnDriverEvent += OnDriverEvent;
+            }
+
+            // 非 开发 模式
+            if (!_clientSettings.IsDev)
+            {
+                // 使能 dev tools
+                webView.CoreWebView2.Settings.AreDevToolsEnabled = false;
+                // 取消右键菜单
+                webView.CoreWebView2.Settings.AreDefaultContextMenusEnabled = false;
+            }
+
 
             // 直达webView模式
             if (!string.IsNullOrEmpty(_clientSettings.NoSelectOpenUrl))
@@ -405,7 +407,7 @@ namespace Mijin.Library.App.Views
 
             // 屏蔽黑名单进info日志
             if (!string.IsNullOrWhiteSpace(obj.method) &&
-                _driverHandle.BlackListLogMethod.Contains((string) obj.method))
+                _driverHandle.BlackListLogMethod.Contains((string)obj.method))
                 return;
 
             // 日志信息记录
@@ -436,8 +438,10 @@ namespace Mijin.Library.App.Views
 
             webLog = @$"console.debug('\x1B[" + logColor + @$"m%s\x1B[0m', '{webLog}')".Replace("\r\n", "\\n");
 
-            if (logColor == "32") logColor = "34";
-            else logColor = "32";
+            if (logColor == "32")
+                logColor = "34";
+            else
+                logColor = "32";
 
             if (obj.status == 1001)
                 this.Dispatcher.Invoke(
@@ -515,7 +519,7 @@ namespace Mijin.Library.App.Views
                         // Remove the first tablet device in the devices collection.
                         stylusLogicType.InvokeMember("OnTabletRemoved",
                             BindingFlags.InvokeMethod | BindingFlags.Instance | BindingFlags.NonPublic,
-                            null, stylusLogic, new object[] {(uint) 0});
+                            null, stylusLogic, new object[] { (uint)0 });
                     }
                 }
             }
