@@ -82,6 +82,7 @@ namespace Mijin.Library.App.Driver
             _capture = new Capture(_systemFunc?.ClientSettings?.CameraIndex ?? 0);
             GetCameraImageForBase64();
             _capture.Dispose();
+            _capture = null;
         }
 
         /// <summary>
@@ -133,7 +134,14 @@ namespace Mijin.Library.App.Driver
         /// <returns></returns>
         private string GetCameraImageForBase64()
         {
-            return _capture.QueryFrame()?.Bitmap?.ToBase64String(ImageFormat.Jpeg);
+            var res = _capture.QueryFrame()?.Bitmap?.ToBase64String(ImageFormat.Jpeg);
+
+            if (res != null)
+            {
+                Console.WriteLine("GetCameraImageForBase64");
+            }
+
+            return res;
         }
     }
 }
