@@ -33,7 +33,7 @@
     <mah:MetroWindow.RightWindowCommands>
         <Controls:WindowCommands>
             <Button Click="ShowCxQueryBtn">
-                <Label Content="部队定制化查询" />
+                <Label Content="定制化查询" />
             </Button>
             <Button Name="doorBtn" Click="doorViewBtn">
                 <Label Content="通道门" />
