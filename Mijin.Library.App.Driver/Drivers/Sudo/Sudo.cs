@@ -17,6 +17,44 @@ using Util.Logs.Extensions;
 
 namespace Mijin.Library.App.Driver
 {
+
+    public class SudoQrcode
+    {
+
+        public string OriginCode { get; set; }
+
+        public string DecodeBase64Code { get; set; }
+
+        public UserInfo UserInfo { get; set; }
+
+
+
+    }
+
+    public class UserInfo
+    {
+        /// <summary>
+        /// 姓名
+        /// </summary>
+        public string name { get; set; }
+
+        /// <summary>
+        /// 身份证
+        /// </summary>
+        public string idcard { get; set; }
+
+        /// <summary>
+        /// 手机号
+        /// </summary>
+        public string tel { get; set; }
+
+        /// <summary>
+        /// base64图片
+        /// </summary>
+        public string photo { get; set; }
+    }
+
+
     public class Sudo : ISudo
     {
         private readonly ISystemFunc _systemFunc;
@@ -25,10 +63,70 @@ namespace Mijin.Library.App.Driver
 
         int reTry = 1;
 
+        private bool isWathing = false;
+
+        public event Action<WebViewSendModel<SudoQrcode>> OnSudoQrcode;
+
 
         public Sudo(ISystemFunc systemFunc)
         {
             _systemFunc = systemFunc;
+
+            Task.Run(async () =>
+            {
+                while (true)
+                {
+                    try
+                    {
+                        await Task.Delay(500);
+                        if (!isWathing) continue;
+
+
+                        var res = ReadQrcode();
+
+                        if (!res.success)
+                            continue;
+
+                        if (res.response.IsEmpty())
+                            continue;
+
+                        var code = res.response.Replace("|", "+"); // 
+
+
+
+
+                        var data = SudoEncrypt.AesDecrypt(code, "tecsun1234567890", Encoding.UTF8);
+
+                        var sudoQrcode = new SudoQrcode();
+
+
+                        sudoQrcode.DecodeBase64Code = data;
+                        sudoQrcode.OriginCode = res.response;
+
+                        try
+                        {
+                            sudoQrcode.UserInfo = JsonConvert.DeserializeObject<UserInfo>(sudoQrcode.DecodeBase64Code);
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e);
+                        }
+
+                        OnSudoQrcode?.Invoke(new WebViewSendModel<SudoQrcode>()
+                        {
+                            method = nameof(OnSudoQrcode),
+                            response = sudoQrcode,
+                            success = true,
+                            msg = "获取成功"
+                        });
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(@$"Sudo_Task：{e}");
+                    }
+
+                }
+            });
         }
 
         static Sudo()
@@ -296,6 +394,29 @@ namespace Mijin.Library.App.Driver
 
             return res;
         }
+
+
+        public MessageModel<string> StartWatchQrcode()
+        {
+            isWathing = true;
+
+            return new MessageModel<string>()
+            {
+                msg = "操作成功",
+                success = true
+            };
+        }
+
+        public MessageModel<string> StopWatchQrcode()
+        {
+            isWathing = false;
+            return new MessageModel<string>()
+            {
+                msg = "操作成功",
+                success = true
+            };
+        }
+
 
         public void Close()
         {

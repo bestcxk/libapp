@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Bing.Extensions;
+using Bing.Text;
 using Mijin.Library.App.Driver;
+using Mijin.Library.App.Driver.Drivers.Sudo;
 using Mijin.Library.App.Model;
 using Xunit;
 
@@ -63,5 +66,26 @@ namespace Mijin.Library.App.Tests.Driver
                 var res = sudo.Read_SSC();
             }
         }
+
+        [Fact]
+        public async void WatchQrcode_Test()
+        {
+
+            sudo.OnSudoQrcode += model =>
+            {
+
+            };
+
+            {
+                var res = sudo.Connect(comNumber, 115200);
+            }
+            {
+                var res = sudo.StartWatchQrcode();
+            }
+
+            await Task.Delay(10000);
+
+        }
+
     }
 }

@@ -14,12 +14,8 @@ using System.IO;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using IsUtil;
-using System.ComponentModel;
 using System.Reflection;
 using System.Windows.Input;
-using System.Windows.Navigation;
-using AspectCore.DependencyInjection;
-using Bing.Threading.Asyncs;
 using Microsoft.Extensions.DependencyInjection;
 using Mijin.Library.App.Driver.Services.Network;
 
@@ -89,7 +85,6 @@ namespace Mijin.Library.App.Views
         /// </summary>
         async void InitializeAsync()
         {
-
             // 窗口关闭时
             this.Closed += async (s, e) =>
             {
