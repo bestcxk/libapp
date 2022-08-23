@@ -18,6 +18,7 @@ using System.Reflection;
 using System.Windows.Input;
 using Microsoft.Extensions.DependencyInjection;
 using Mijin.Library.App.Driver.Services.Network;
+using Enum = IsUtil.Helpers.Enum;
 
 namespace Mijin.Library.App.Views
 {
@@ -33,6 +34,9 @@ namespace Mijin.Library.App.Views
         public static WebViewWindow _doorViewWindow { get; set; } = null;
         public static WebViewWindow _webViewWindow { get; set; } = null;
         public ISystemFunc _systemFunc { get; }
+
+
+        bool? isDoorWindow = null;
 
 
         private string openUrl;
@@ -70,6 +74,23 @@ namespace Mijin.Library.App.Views
 
             Title = _clientSettings.Title?.App ?? "图书管理系统";
             DisableWPFTabletSupport();
+
+            //this.Activated += WebViewWindow_Activated;
+
+
+            //this.WindowState = WindowState.Normal;
+
+            this.StateChanged += (s, e) =>
+            {
+                Send(new WebViewSendModel<string>()
+                {
+                    success = true,
+                    response = Enum.GetName<WindowState>(this.WindowState),
+                    method = "OnWindowStateChanged",
+                    status = isDoorWindow == true ? 1001 : 200
+
+                }, true);
+            };
         }
 
         #endregion
@@ -170,7 +191,7 @@ namespace Mijin.Library.App.Views
             }
             catch (Exception)
             {
-                MessageBox.Show("Webview2 初始化失败！，检测Webview2运行时是否安装正确","错误");
+                MessageBox.Show("Webview2 初始化失败！，检测Webview2运行时是否安装正确", "错误");
                 Environment.Exit(0);
             }
             this.webView.CoreWebView2.WebMessageReceived += WebMessageReceived;
@@ -467,6 +488,7 @@ namespace Mijin.Library.App.Views
             {
                 _doorViewWindow =
                     new WebViewWindow(_driverHandle, _systemFunc, _serviceProvider, _netWorkTranspondService);
+                _doorViewWindow.isDoorWindow = true;
                 var url = this._clientSettings.LibraryManageUrl +
                           (this._clientSettings.LibraryManageUrl.Last() == '/' ? "doorInfo" : "/doorInfo");
                 //_doorViewWindow.openUrl = _netWorkTranspondService.GetVisitUrl(this._clientSettings.DoorControllerUrl.IsEmpty() ? url : this._clientSettings.DoorControllerUrl);
@@ -487,6 +509,7 @@ namespace Mijin.Library.App.Views
 
 
                 _doorViewWindow.Closed += (s, e) => { clseEvent?.Invoke(); };
+
             }
 
             try
