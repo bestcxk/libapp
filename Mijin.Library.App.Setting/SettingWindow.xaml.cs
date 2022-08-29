@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -14,11 +15,14 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Bing.Collections;
 using IsUtil;
 using IsUtil.Helpers;
 using MahApps.Metro.Controls;
 using Mijin.Library.App.Driver;
 using Mijin.Library.App.Model;
+using Mijin.Library.App.Model.Setting;
+using Newtonsoft.Json;
 
 namespace Mijin.Library.App.Setting
 {
@@ -28,7 +32,6 @@ namespace Mijin.Library.App.Setting
     public partial class SettingWindow : MetroWindow
     {
         public event Action OnSettingsChange;
-
         public ClientSettings _clientSettings { get; set; }
 
         private static readonly string startFilePath =
@@ -50,22 +53,76 @@ namespace Mijin.Library.App.Setting
             this.HFReaderSelect.ItemsSource = System.Enum.GetValues(typeof(HFReaderEnum));
 
             // 添加id comBox 选项
-            List<int> idComSources = new List<int>();
             List<int> cameraSources = new List<int>();
             for (int i = 0; i < 50; i++)
             {
-                idComSources.Add(i + 1);
                 cameraSources.Add(i);
             }
-
-            this.idCom.ItemsSource = idComSources;
             this.cameraIndex.ItemsSource = cameraSources;
+
+            RefreshIdList();
         }
 
         public SettingWindow(ISystemFunc systemFunc) : this()
         {
             _clientSettings = systemFunc.ClientSettings;
             this.DataContext = _clientSettings;
+        }
+
+        public async void RefreshIdList()
+        {
+            if (!this.refreshIdBtn.IsEnabled)
+                return;
+            this.refreshIdBtn.IsEnabled = false;
+
+
+
+            List<int> idComSources = new List<int>();
+            string ip = null;
+            try
+            {
+                string p = @"(http|https)://(?<domain>[^(:|/]*)";
+                Regex reg = new Regex(p, RegexOptions.IgnoreCase);
+                Match m = reg.Match(this.LibraryManageUrlText.Text);
+                ip = m.Groups["domain"].Value;
+            }
+            catch (Exception e)
+            {
+            }
+
+            // 网络请求
+            if (!ip.IsEmpty())
+            {
+                try
+                {
+                    using HttpClient httplClient = new HttpClient()
+                    {
+                        Timeout = TimeSpan.FromMilliseconds(1500)
+                    };
+                    httplClient.BaseAddress = new Uri(@$"http://{ip}:5001");
+
+                    var str = await httplClient.GetStringAsync("/api/LibrarySettings/GetLibrarySettings");
+
+                    var librarySettings = JsonConvert.DeserializeObject<MessageModel<LibrarySettings>>(str);
+
+                    idComSources.AddRange(librarySettings?.response?.Clients?.Select(c => c.Id.ToInt()));
+                }
+                catch (Exception e)
+                {
+                }
+
+
+            }
+
+            if (idComSources.IsEmpty())
+            {
+                for (int i = 0; i < 50; i++)
+                {
+                    idComSources.Add(i + 1);
+                }
+            }
+            this.idCom.ItemsSource = idComSources;
+            this.refreshIdBtn.IsEnabled = true;
         }
 
         private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -123,6 +180,8 @@ namespace Mijin.Library.App.Setting
                                                 @$"{(this.LibraryManageUrlText.Text.Last() == '/' ? "" : "/")}terminal";
                 this._clientSettings.ReaderActionUrl = this.ReaderActionUrlText.Text;
             }
+
+            RefreshIdList();
         }
 
         private void CheckDomain_Click(object sender, RoutedEventArgs e)
@@ -130,6 +189,10 @@ namespace Mijin.Library.App.Setting
             if (!IsDomain(this.LibraryManageUrlText.Text))
             {
                 MessageBox.Show("Url不是正确的http 或 https 格式", "错误");
+            }
+            else
+            {
+                RefreshIdList();
             }
         }
 
@@ -198,7 +261,6 @@ namespace Mijin.Library.App.Setting
             Environment.Exit(0);
         }
 
-
         public static bool IsDomain(string str)
         {
             if (str.IsEmpty() || str.Contains(";"))
@@ -215,6 +277,11 @@ namespace Mijin.Library.App.Setting
             {
                 return false;
             }
+        }
+
+        private void RefreshIdBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            RefreshIdList();
         }
     }
 }

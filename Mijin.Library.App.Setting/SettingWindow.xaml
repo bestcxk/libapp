@@ -22,6 +22,7 @@
                     HorizontalContentAlignment="Center"
                     Content="设备ID：" />
                 <ComboBox Name="idCom" Text="{Binding Id}" />
+                <Button Name="refreshIdBtn" Content="刷新" Click="RefreshIdBtn_OnClick"/>
 
                 <Label
                     Width="100"
@@ -262,8 +263,8 @@
                 <Button
                     Width="100"
                     Height="31"
-                    HorizontalAlignment="Left"
                     Margin="200,0,0,0"
+                    HorizontalAlignment="Left"
                     VerticalAlignment="Top"
                     Click="CheckDomain_Click"
                     Content="验证Url正确性"
