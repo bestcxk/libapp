@@ -59,7 +59,6 @@ namespace Mijin.Library.App.Setting
                 cameraSources.Add(i);
             }
             this.cameraIndex.ItemsSource = cameraSources;
-
             RefreshIdList();
         }
 
@@ -67,28 +66,18 @@ namespace Mijin.Library.App.Setting
         {
             _clientSettings = systemFunc.ClientSettings;
             this.DataContext = _clientSettings;
+            RefreshIdList();
         }
 
-        public async void RefreshIdList()
+        public void RefreshIdList()
         {
             if (!this.refreshIdBtn.IsEnabled)
                 return;
             this.refreshIdBtn.IsEnabled = false;
 
 
-
             List<int> idComSources = new List<int>();
-            string ip = null;
-            try
-            {
-                string p = @"(http|https)://(?<domain>[^(:|/]*)";
-                Regex reg = new Regex(p, RegexOptions.IgnoreCase);
-                Match m = reg.Match(this.LibraryManageUrlText.Text);
-                ip = m.Groups["domain"].Value;
-            }
-            catch (Exception e)
-            {
-            }
+            string ip = Url.GetIpPort(this.LibraryManageUrlText.Text?.IsEmpty() == true ? _clientSettings.LibraryManageUrl : this.LibraryManageUrlText.Text);
 
             // 网络请求
             if (!ip.IsEmpty())
@@ -99,26 +88,37 @@ namespace Mijin.Library.App.Setting
                     {
                         Timeout = TimeSpan.FromMilliseconds(1500)
                     };
-                    httplClient.BaseAddress = new Uri(@$"http://{ip}:5001");
+                    httplClient.BaseAddress = new Uri(@$"http://{ip.Split(":").First()}:5001");
 
-                    var str = await httplClient.GetStringAsync("/api/LibrarySettings/GetLibrarySettings");
+                    var str = httplClient.GetStringAsync("/api/LibrarySettings/GetLibrarySettings").GetAwaiter().GetResult();
 
                     var librarySettings = JsonConvert.DeserializeObject<MessageModel<LibrarySettings>>(str);
 
                     idComSources.AddRange(librarySettings?.response?.Clients?.Select(c => c.Id.ToInt()));
+
+                    if (idComSources.IsEmpty())
+                    {
+                        this.idHitLabel.Content = "未在后台配置Id";
+                    }
+                    else
+                    {
+                        this.idHitLabel.Content = "";
+                    }
+
                 }
                 catch (Exception e)
                 {
+                    this.idHitLabel.Content = "获取Id列表失败，请检查后台管理URL";
                 }
-
-
             }
-
-            if (idComSources.IsEmpty())
+            else
             {
-                for (int i = 0; i < 50; i++)
+                if (idComSources.IsEmpty())
                 {
-                    idComSources.Add(i + 1);
+                    for (int i = 0; i < 50; i++)
+                    {
+                        idComSources.Add(i + 1);
+                    }
                 }
             }
             this.idCom.ItemsSource = idComSources;

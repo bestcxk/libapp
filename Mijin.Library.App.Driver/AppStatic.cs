@@ -1,5 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Management;
+using IsUtil.Helper;
 using Microsoft.Extensions.DependencyInjection;
+using Mijin.Library.App.Driver.Services.Network;
 
 namespace Mijin.Library.App.Driver;
 
@@ -9,6 +14,16 @@ public class AppStatic
 
     public static void CloseRfid()
     {
+
+        Process current = Process.GetCurrentProcess();
+        var list = new List<Process>();
+
+        var network = AppStatic.Services?.GetService<INetWorkTranspondService>();
+
+        network.ClearAllListen();
+
+
+
         var sudo = AppStatic.Services?.GetService<ISudo>();
         sudo?.Close();
 
@@ -29,4 +44,5 @@ public class AppStatic
         rfidDoorController?.StopAllDoorWatch();
         rfidDoorController?.CloseAll();
     }
+
 }

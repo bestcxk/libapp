@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,7 +19,7 @@ namespace Mijin.Library.App.Tests.Driver
         {
             ClientSettings = new ClientSettings()
             {
-                SudoPSAMMode = true
+                SudoPSAMMode = false
             }
         });
 
@@ -63,7 +64,12 @@ namespace Mijin.Library.App.Tests.Driver
                 var res = sudo.Connect(comNumber, 115200);
             }
             {
+                Stopwatch st = Stopwatch.StartNew();
                 var res = sudo.Read_SSC();
+                st.Stop();
+
+                var times = st.ElapsedMilliseconds;
+
             }
         }
 

@@ -31,5 +31,24 @@ namespace IsUtil.Helper
             }
             return null;
         }
+
+        public static Process StartCmd(params string[] commands)
+        {
+            var p = new Process();
+            p.StartInfo.FileName = "cmd.exe";
+            p.StartInfo.RedirectStandardInput = true;//接受来自调用程序的输入信息
+            //cmd.StartInfo.RedirectStandardOutput = true;//接受来自调用程序的输入信息
+            p.StartInfo.UseShellExecute = false;   //是否使用操作系统shell启动
+
+            p.StartInfo.CreateNoWindow = true;//不显示程序窗口
+            p.Start();//启动程序
+
+            foreach (var command in commands)
+            {
+                p.StandardInput.WriteLine(command);
+            }
+
+            return p;
+        }
     }
 }

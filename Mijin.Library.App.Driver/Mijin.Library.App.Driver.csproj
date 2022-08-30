@@ -1,72 +1,74 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
-    <Platforms>AnyCPU;x64;X86</Platforms>
-	  <LangVersion>10</LangVersion>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net5.0-windows</TargetFramework>
+		<UseWPF>true</UseWPF>
+		<Platforms>AnyCPU;x64;X86</Platforms>
+		<LangVersion>10</LangVersion>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="Drivers\SystemFunc\Helpers\**" />
-    <EmbeddedResource Remove="Drivers\SystemFunc\Helpers\**" />
-    <None Remove="Drivers\SystemFunc\Helpers\**" />
-  </ItemGroup>
+	<ItemGroup>
+		<Compile Remove="Drivers\SystemFunc\Helpers\**" />
+		<EmbeddedResource Remove="Drivers\SystemFunc\Helpers\**" />
+		<None Remove="Drivers\SystemFunc\Helpers\**" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="System.Data.SqlClient" Version="4.8.3" />
-    <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
-    <PackageReference Include="System.IO.Ports" Version="6.0.0" />
-    <PackageReference Include="Util.Logs" Version="3.0.0.3" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="System.Data.SqlClient" Version="4.8.3" />
+		<PackageReference Include="System.Drawing.Common" Version="6.0.0" />
+		<PackageReference Include="System.IO.Ports" Version="6.0.0" />
+		<PackageReference Include="System.ServiceProcess.ServiceController" Version="6.0.0" />
+		<PackageReference Include="Util.Logs" Version="3.0.0.3" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Extensions\SIP2Client\SIP2Client.csproj" />
-    <ProjectReference Include="..\Mijin.Library.App.Common\Mijin.Library.App.Common.csproj" />
-    <ProjectReference Include="..\Mijin.Library.App.Model\Mijin.Library.App.Model.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Extensions\SIP2Client\SIP2Client.csproj" />
+		<ProjectReference Include="..\Mijin.Library.App.Common\Mijin.Library.App.Common.csproj" />
+		<ProjectReference Include="..\Mijin.Library.App.Model\Mijin.Library.App.Model.csproj" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="autoreplyprint.cs">
-      <HintPath>..\DLL\autoreplyprint.cs.dll</HintPath>
-    </Reference>
-    <Reference Include="CH340, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\DLL\CH340.dll</HintPath>
-    </Reference>
-    <Reference Include="Emgu.CV">
-      <HintPath>..\DLL\Emgu.CV.dll</HintPath>
-    </Reference>
-    <Reference Include="Emgu.Util">
-      <HintPath>..\DLL\Emgu.Util.dll</HintPath>
-    </Reference>
-    <Reference Include="GReaderApi">
-      <HintPath>..\DLL\GReaderApi.dll</HintPath>
-    </Reference>
-    <Reference Include="SimpleTcp">
-      <HintPath>..\DLL\SimpleTcp.dll</HintPath>
-    </Reference>
-  </ItemGroup>
+	<ItemGroup>
+		<Reference Include="autoreplyprint.cs">
+			<HintPath>..\DLL\autoreplyprint.cs.dll</HintPath>
+		</Reference>
+		<Reference Include="CH340, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+			<HintPath>..\DLL\CH340.dll</HintPath>
+		</Reference>
+		<Reference Include="Emgu.CV">
+			<HintPath>..\DLL\Emgu.CV.dll</HintPath>
+		</Reference>
+		<Reference Include="Emgu.Util">
+			<HintPath>..\DLL\Emgu.Util.dll</HintPath>
+		</Reference>
+		<Reference Include="GReaderApi">
+			<HintPath>..\DLL\GReaderApi.dll</HintPath>
+		</Reference>
+		<Reference Include="SimpleTcp">
+			<HintPath>..\DLL\SimpleTcp.dll</HintPath>
+		</Reference>
+	</ItemGroup>
 
-  <ItemGroup>
-    <Compile Update="Properties\Resources.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
+	<ItemGroup>
+		<Compile Update="Properties\Resources.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Resources.resx</DependentUpon>
+		</Compile>
+	</ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Update="Properties\Resources.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
+	<ItemGroup>
+		<EmbeddedResource Update="Properties\Resources.resx">
+			<Generator>PublicResXFileCodeGenerator</Generator>
+			<LastGenOutput>Resources.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+	</ItemGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <!--<Exec Command="copy &quot;$(SolutionDir)DLL\*.*&quot; &quot;$(TargetDir)&quot;" />-->
-  </Target>
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+		<!--<Exec Command="copy &quot;$(SolutionDir)DLL\*.*&quot; &quot;$(TargetDir)&quot;" />-->
+	</Target>
 
-  <ItemGroup>
-    <PackageReference Update="Microsoft.SourceLink.GitHub" Version="1.1.1" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Update="Microsoft.SourceLink.GitHub" Version="1.1.1" />
+	</ItemGroup>
 
 </Project>

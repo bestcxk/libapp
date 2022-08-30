@@ -14,21 +14,48 @@
     <StackPanel Margin="10,10,10,10">
         <WrapPanel Margin="0,5,0,5">
             <StackPanel
-                Height="30"
+                Height="60"
                 Margin="0,5,0,5"
                 Orientation="Horizontal">
-                <Label
-                    Width="100"
-                    HorizontalContentAlignment="Center"
-                    Content="设备ID：" />
-                <ComboBox Name="idCom" Text="{Binding Id}" />
-                <Button Name="refreshIdBtn" Content="刷新" Click="RefreshIdBtn_OnClick"/>
+                <StackPanel>
 
-                <Label
-                    Width="100"
-                    HorizontalContentAlignment="Center"
-                    Content="摄像头索引：" />
-                <ComboBox Name="cameraIndex" Text="{Binding CameraIndex, Mode=TwoWay}" />
+                    <Label
+                        Name="idHitLabel"
+                        HorizontalAlignment="Center"
+                        Background="White"
+                        BorderBrush="#FFDDB4B4"
+                        Content=""
+                        FontSize="8"
+                        Foreground="Red"
+                        Visibility="Visible" />
+                    <StackPanel Orientation="Horizontal">
+                        <Label
+                            Width="100"
+                            HorizontalContentAlignment="Center"
+                            Content="设备ID：" />
+
+                        <ComboBox Name="idCom" Text="{Binding Id}" />
+                        <Button
+                            Name="refreshIdBtn"
+                            Click="RefreshIdBtn_OnClick"
+                            Content="刷新" />
+                    </StackPanel>
+
+                </StackPanel>
+
+                <StackPanel>
+                    <Label
+                        Width="100"
+                        HorizontalContentAlignment="Center"
+                        Content="摄像头索引：" />
+                    <ComboBox
+                        Name="cameraIndex"
+                        Height="30"
+                        HorizontalAlignment="Center"
+                        Text="{Binding CameraIndex, Mode=TwoWay}" />
+                </StackPanel>
+
+
             </StackPanel>
             <StackPanel
                 Height="30"
