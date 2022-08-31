@@ -10,6 +10,7 @@ using Bing.Extensions;
 using Bing.Helpers;
 using Bing.IO;
 using CliWrap;
+using IsUtil.Helper;
 using Mijin.Library.App.Common.Domain;
 using Mijin.Library.App.Model;
 using Url = IsUtil.Helpers.Url;
@@ -137,7 +138,7 @@ public class CaddyTranspondService : INetWorkTranspondService
             else
             {
                 if (s.Status == ServiceControllerStatus.Running || s.Status == ServiceControllerStatus.StartPending)
-                    s.Stop();
+                    StopCaddyService();
 
                 s.Start();
             }
@@ -157,7 +158,17 @@ public class CaddyTranspondService : INetWorkTranspondService
                 MessageBox.Show("将导致无法使用代理", "非管理员启动");
             }
             else if (s.Status != ServiceControllerStatus.Stopped && s.Status != ServiceControllerStatus.StopPending)
-                s.Stop();
+            {
+                var p = ProcessHelper.StartCmd("nssm stop mijin_caddy_services confirm", "exit");
+                try
+                {
+                    p.WaitForExit();
+                }
+                catch (Exception)
+                {
+
+                }
+            }
         }
     }
 
