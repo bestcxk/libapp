@@ -8,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Bing.Extensions;
 using IsUtil;
 using IsUtil.Maps;
 using Microsoft.Extensions.DependencyInjection;

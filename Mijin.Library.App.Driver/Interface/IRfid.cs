@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace Mijin.Library.App.Driver
 {
+
     /// <summary>
     /// RFID接口
     /// </summary>

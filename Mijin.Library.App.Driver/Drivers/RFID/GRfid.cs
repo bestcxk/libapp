@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using IsUtil;
 using IsUtil.Maps;
+using Bing.Extensions;
 
 namespace Mijin.Library.App.Driver
 {
@@ -112,7 +113,7 @@ namespace Mijin.Library.App.Driver
                 keys[msg.logBaseGpiStart.GpiPort] = msg.logBaseGpiStart.Level;
                 if (msg.logBaseGpiStart.Level == 1)
                 {
-                    Task.Run(() => { ReadByAntId(new List<string> {"2"}); });
+                    Task.Run(() => { ReadByAntId(new List<string> { "2" }); });
                 }
                 else
                 {
@@ -151,7 +152,7 @@ namespace Mijin.Library.App.Driver
                     {
                         if ("tcp".Equals(mode))
                         {
-                            if (_gClient.OpenTcp(conStr, (int) timeOutMs, out status))
+                            if (_gClient.OpenTcp(conStr, (int)timeOutMs, out status))
                             {
                                 // result.success = Stop().success;
                                 // if (result.success)
@@ -173,25 +174,55 @@ namespace Mijin.Library.App.Driver
                                 break;
                             }
 
-                            foreach (var s in devList)
+                            if (conStr.IsEmpty())
                             {
-                                if (_gClient.OpenUsbHid(devList[0], IntPtr.Zero, (int) timeOutMs, out status))
+                                foreach (var s in devList)
                                 {
-                                    // result.success = Stop().success;
-                                    // if (result.success)
-                                    //     break;
+                                    if (_gClient.OpenUsbHid(devList[0], IntPtr.Zero, (int)timeOutMs, out status))
+                                    {
+                                        // result.success = Stop().success;
+                                        // if (result.success)
+                                        //     break;
 
-                                    result.success = true;
+                                        result.success = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                try
+                                {
+                                    var index = conStr.ToInt();
+
+                                    if (devList.Count <= index)
+                                    {
+                                        result.msg = @$"超过usb最大索引值";
+                                        break;
+                                    }
+
+                                    if (_gClient.OpenUsbHid(devList[index], IntPtr.Zero, (int)timeOutMs, out status))
+                                    {
+                                        // result.success = Stop().success;
+                                        // if (result.success)
+                                        //     break;
+
+                                        result.success = true;
+                                        break;
+                                    }
+                                }
+                                catch (Exception)
+                                {
+                                    result.msg = @$"usb连接指定索引异常";
                                     break;
                                 }
                             }
-
                             if (result.success)
                                 break;
                         }
                         else
                         {
-                            if (_gClient.OpenSerial(conStr, (int) timeOutMs, out status))
+                            if (_gClient.OpenSerial(conStr, (int)timeOutMs, out status))
                             {
                                 // result.success = Stop().success;
                                 // if (result.success)
@@ -492,13 +523,13 @@ namespace Mijin.Library.App.Driver
                 for (int i = 0; i < antIds.Count; i++)
                 {
                     double doub = Math.Pow(2.0, Convert.ToDouble(antIds[i] - 1));
-                    antIds[i] = (uint) doub;
+                    antIds[i] = (uint)doub;
                     msgBaseInventoryEpc.AntennaEnable |= antIds[i];
                 }
 
-                msgBaseInventoryEpc.InventoryMode = (byte) eInventoryMode.Inventory;
+                msgBaseInventoryEpc.InventoryMode = (byte)eInventoryMode.Inventory;
                 msgBaseInventoryEpc.ReadTid = new ParamEpcReadTid(); // TID和EPC
-                msgBaseInventoryEpc.ReadTid.Mode = (byte) eParamTidMode.Auto;
+                msgBaseInventoryEpc.ReadTid.Mode = (byte)eParamTidMode.Auto;
                 msgBaseInventoryEpc.ReadTid.Len = 6;
 
                 _gClient.SendSynMsg(msgBaseInventoryEpc);
@@ -543,11 +574,11 @@ namespace Mijin.Library.App.Driver
                 for (int i = 0; i < antIds.Count; i++)
                 {
                     double doub = Math.Pow(2.0, Convert.ToDouble(antIds[i] - 1));
-                    antIds[i] = (uint) doub;
+                    antIds[i] = (uint)doub;
                     msgBaseInventoryEpc.AntennaEnable |= antIds[i];
                 }
 
-                msgBaseInventoryEpc.InventoryMode = (byte) eInventoryMode.Inventory;
+                msgBaseInventoryEpc.InventoryMode = (byte)eInventoryMode.Inventory;
                 _gClient.SendSynMsg(msgBaseInventoryEpc);
                 result.success = msgBaseInventoryEpc.RtCode == 0;
                 result.msg = "设置" + (result.success ? "成功" : "失败");
@@ -662,10 +693,10 @@ namespace Mijin.Library.App.Driver
             var result = new MessageModel<bool>();
             MsgAppSetGpo msgAppSetGpo = new MsgAppSetGpo()
             {
-                Gpo1 = (byte) (dic.ContainsKey("Gpo1") ? dic["Gpo1"] : 0),
-                Gpo2 = (byte) (dic.ContainsKey("Gpo2") ? dic["Gpo2"] : 0),
-                Gpo3 = (byte) (dic.ContainsKey("Gpo3") ? dic["Gpo3"] : 0),
-                Gpo4 = (byte) (dic.ContainsKey("Gpo4") ? dic["Gpo4"] : 0),
+                Gpo1 = (byte)(dic.ContainsKey("Gpo1") ? dic["Gpo1"] : 0),
+                Gpo2 = (byte)(dic.ContainsKey("Gpo2") ? dic["Gpo2"] : 0),
+                Gpo3 = (byte)(dic.ContainsKey("Gpo3") ? dic["Gpo3"] : 0),
+                Gpo4 = (byte)(dic.ContainsKey("Gpo4") ? dic["Gpo4"] : 0),
             };
             _gClient.SendSynMsg(msgAppSetGpo);
             result.success = msgAppSetGpo.RtCode == 0;
@@ -730,7 +761,8 @@ namespace Mijin.Library.App.Driver
                             }
                         });
                     }
-                    else alerting = false;
+                    else
+                        alerting = false;
                 }
                 catch (Exception e)
                 {
@@ -780,22 +812,22 @@ namespace Mijin.Library.App.Driver
                     for (int i = 0; i < antIds.Count; i++)
                     {
                         double doub = Math.Pow(2.0, Convert.ToDouble(antIds[i] - 1));
-                        antIds[i] = (uint) doub;
+                        antIds[i] = (uint)doub;
                         msgBaseWriteEpc.AntennaEnable |= antIds[i];
                     }
                 }
                 catch (Exception e)
                 {
-                    msgBaseWriteEpc.AntennaEnable = (ushort) eAntennaNo._1;
+                    msgBaseWriteEpc.AntennaEnable = (ushort)eAntennaNo._1;
                 }
             }
             else
-                msgBaseWriteEpc.AntennaEnable = (ushort) eAntennaNo._1;
+                msgBaseWriteEpc.AntennaEnable = (ushort)eAntennaNo._1;
 
-            msgBaseWriteEpc.Area = (byte) area;
-            msgBaseWriteEpc.Start = (byte) startAddr;
+            msgBaseWriteEpc.Area = (byte)area;
+            msgBaseWriteEpc.Start = (byte)startAddr;
             int iWordLen = data.Length / 4; // 1 word = 2 byte     
-            ushort iPc = (ushort) (iWordLen << 11); // PC值为EPC区域的长度标识（前5个bit标记长度），参考文档说明 
+            ushort iPc = (ushort)(iWordLen << 11); // PC值为EPC区域的长度标识（前5个bit标记长度），参考文档说明 
             String sPc = Convert.ToString(iPc, 16).PadLeft(4, '0');
             data = sPc + data; // 
             msgBaseWriteEpc.HexWriteData = data.Trim().PadRight(iWordLen * 4, '0');
@@ -805,12 +837,12 @@ namespace Mijin.Library.App.Driver
             {
                 msgBaseWriteEpc.Filter = new ParamEpcFilter();
                 // 匹配TID写标签示例，用于多标签环境写单个标签
-                msgBaseWriteEpc.Filter.Area = (byte) eParamFilterArea.TID;
+                msgBaseWriteEpc.Filter.Area = (byte)eParamFilterArea.TID;
                 msgBaseWriteEpc.Filter.BitStart = 0;
                 msgBaseWriteEpc.Filter.HexData = baseTid.Trim();
                 msgBaseWriteEpc.Filter.BData =
                     GDotnet.Reader.Api.Utils.Util.ConvertHexStringToByteArray(msgBaseWriteEpc.Filter.HexData);
-                msgBaseWriteEpc.Filter.BitLength = (byte) (msgBaseWriteEpc.Filter.BData.Length * 8);
+                msgBaseWriteEpc.Filter.BitLength = (byte)(msgBaseWriteEpc.Filter.BData.Length * 8);
             }
 
             while (timeOut-- >= 0)
@@ -884,7 +916,7 @@ namespace Mijin.Library.App.Driver
                 TriggerStart = 5,
             };
             _gClient.SendSynMsg(msg);
-            _gpiAction = (GpiAction) gpiAction;
+            _gpiAction = (GpiAction)gpiAction;
 
             // 不是 扫码枪，则直接开启读标签
             if (_gpiAction != GpiAction.InventoryGun)
@@ -971,4 +1003,6 @@ namespace Mijin.Library.App.Driver
             }
         }
     }
+
+
 }

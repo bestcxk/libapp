@@ -43,6 +43,9 @@ namespace Mijin.Library.App.Driver
         private IQrCode _qrCode { get; }
 
         public static string[] BlackListLogMethod = {"ISystemFunc.SetLibrarySettings", "OnLockEvent"};
+        private readonly ICkLock _ckLock;
+        private readonly IGrfidKeyboard _grfidKeyboard;
+        private readonly IGrfidKeyboard1 _grfidKeyboard1;
 
         string[] IDriverHandle.BlackListLogMethod
         {
@@ -87,11 +90,14 @@ namespace Mijin.Library.App.Driver
             IGRfidDoorController gRfidDoorController, ITuChuangSIP2Client tuChuangSIP2Client, IRRfid rRfid,
             IQrCode qrCode, ICkDoorController ckDoorController, ITrack track, IMultiGrfid multiGrfid, ISudo sudo,
             IWjSIP2Client wjSIP2Client, IDataConvert dataConvert, IWriteCxDb writeCxDb, IJpSip2Client jpSip2Client,
-            IDhCamera dhCamera, IRfidDoor rfidDoor, IDhPeopleInoutCamera dhPeopleInoutCamera)
+            IDhCamera dhCamera, IRfidDoor rfidDoor, IDhPeopleInoutCamera dhPeopleInoutCamera,ICkLock ckLock,IGrfidKeyboard grfidKeyboard,IGrfidKeyboard1 grfidKeyboard1)
         {
             _dhCamera = dhCamera;
             _rfidDoor = rfidDoor;
             _dhPeopleInoutCamera = dhPeopleInoutCamera;
+            _ckLock = ckLock;
+            _grfidKeyboard = grfidKeyboard;
+            _grfidKeyboard1 = grfidKeyboard1;
             _ckDoorController = ckDoorController;
             _track = track;
             _multiGrfid = multiGrfid;

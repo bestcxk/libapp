@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using IsUtil;
 using IsUtil.Helpers;
 using IsUtil.Maps;
+using System.Printing;
 
 namespace Mijin.Library.App.Driver
 {
@@ -226,7 +227,6 @@ namespace Mijin.Library.App.Driver
             res.success = true;
             return res;
         }
-
         /// <summary>
         /// 获取指定锁控地址 柜门状态命令
         /// </summary>

@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using IsUtil;
 using System.Reflection;
 using System.Windows.Input;
+using Bing.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Mijin.Library.App.Driver.Services.Network;
 using Enum = IsUtil.Helpers.Enum;

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Bing.Extensions;
 using IsUtil;
 using IsUtil.Helpers;
 

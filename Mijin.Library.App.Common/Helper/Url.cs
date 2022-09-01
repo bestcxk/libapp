@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Bing.Extensions;
+using System;
 using System.IO;
 using System.Text.RegularExpressions;
 

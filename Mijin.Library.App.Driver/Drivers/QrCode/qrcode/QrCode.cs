@@ -1,13 +1,9 @@
 ﻿using GDotnet.Reader.Api.Utils;
-using IsUtil;
 
 using Mijin.Library.App.Model;
 using System;
-using System.Collections.Generic;
 using System.IO.Ports;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Bing.Extensions;
 using Util.Logs.Extensions;
 
 namespace Mijin.Library.App.Driver
