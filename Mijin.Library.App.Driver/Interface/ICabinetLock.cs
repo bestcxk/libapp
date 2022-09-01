@@ -11,6 +11,8 @@ namespace Mijin.Library.App.Driver
         /// </summary>
         bool IsOpen { get; }
 
+        event Action<WebViewSendModel<List<bool>>> OnLockEvent;
+
         /// <summary>
         /// 获取锁控板锁状态
         /// </summary>

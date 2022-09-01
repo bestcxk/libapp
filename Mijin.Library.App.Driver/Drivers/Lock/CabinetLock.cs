@@ -17,7 +17,7 @@ namespace Mijin.Library.App.Driver
         private readonly static object openLockObj = new object();
 
         private readonly static object sendLockObj = new object();
-        
+
         public event Action<WebViewSendModel<List<bool>>> OnLockEvent;
 
 
@@ -108,7 +108,7 @@ namespace Mijin.Library.App.Driver
         /// <returns></returns>
         public MessageModel<bool> SetControllerCount(Int64 Count)
         {
-            controllerCount = (int) Count;
+            controllerCount = (int)Count;
             return new MessageModel<bool>()
             {
                 success = true,
@@ -132,7 +132,7 @@ namespace Mijin.Library.App.Driver
                     ClosePort();
 
                 _serialPort.PortName = com;
-                _serialPort.BaudRate = (int) baud;
+                _serialPort.BaudRate = (int)baud;
                 _serialPort.DataBits = 8; //数据位：8
                 _serialPort.StopBits = StopBits.One; //停止位：1
                 _serialPort.Parity = Parity.None;
@@ -178,13 +178,13 @@ namespace Mijin.Library.App.Driver
             }
 
 
-            return OpenBox((byte) controller, index);
+            return OpenBox((byte)controller, index);
         }
 
         private MessageModel<string> OpenBox(byte controller, Int64 boxIndex)
         {
             var res = new MessageModel<string>();
-            byte[] bytes = new byte[] {0x8a, controller, (byte) boxIndex, 0x11};
+            byte[] bytes = new byte[] { 0x8a, controller, (byte)boxIndex, 0x11 };
 
             var data = Send(bytes);
             if (!data.success)
@@ -209,7 +209,7 @@ namespace Mijin.Library.App.Driver
         /// <returns></returns>
         public MessageModel<List<bool>> GetLockStatus()
         {
-            var res = new MessageModel<List<bool>>() {response = new List<bool>()};
+            var res = new MessageModel<List<bool>>() { response = new List<bool>() };
 
             for (byte cont = 1; cont <= controllerCount; cont++)
             {
@@ -234,8 +234,8 @@ namespace Mijin.Library.App.Driver
         /// <returns>true 为开 false 为关</returns>
         private MessageModel<List<bool>> GetLockStatus(byte controller, byte lockAddr)
         {
-            var res = new MessageModel<List<bool>>() {response = new List<bool>()};
-            byte[] bytes = new byte[] {0x81, controller, lockAddr, 0x33};
+            var res = new MessageModel<List<bool>>() { response = new List<bool>() };
+            byte[] bytes = new byte[] { 0x81, controller, lockAddr, 0x33 };
 
             if (!IsOpen)
             {
