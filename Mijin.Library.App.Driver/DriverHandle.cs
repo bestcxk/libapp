@@ -42,10 +42,10 @@ namespace Mijin.Library.App.Driver
         private IRRfid _rRfid { get; }
         private IQrCode _qrCode { get; }
 
-        public static string[] BlackListLogMethod = {"ISystemFunc.SetLibrarySettings", "OnLockEvent"};
-        private readonly ICkLock _ckLock;
-        private readonly IGrfidKeyboard _grfidKeyboard;
-        private readonly IGrfidKeyboard1 _grfidKeyboard1;
+        public static string[] BlackListLogMethod = { "ISystemFunc.SetLibrarySettings", "OnLockEvent" };
+        private ICkLock _ckLock { get; }
+        private IGrfidKeyboard _grfidKeyboard { get; }
+        private IGrfidKeyboard1 _grfidKeyboard1 { get; }
 
         string[] IDriverHandle.BlackListLogMethod
         {
@@ -90,7 +90,7 @@ namespace Mijin.Library.App.Driver
             IGRfidDoorController gRfidDoorController, ITuChuangSIP2Client tuChuangSIP2Client, IRRfid rRfid,
             IQrCode qrCode, ICkDoorController ckDoorController, ITrack track, IMultiGrfid multiGrfid, ISudo sudo,
             IWjSIP2Client wjSIP2Client, IDataConvert dataConvert, IWriteCxDb writeCxDb, IJpSip2Client jpSip2Client,
-            IDhCamera dhCamera, IRfidDoor rfidDoor, IDhPeopleInoutCamera dhPeopleInoutCamera,ICkLock ckLock,IGrfidKeyboard grfidKeyboard,IGrfidKeyboard1 grfidKeyboard1)
+            IDhCamera dhCamera, IRfidDoor rfidDoor, IDhPeopleInoutCamera dhPeopleInoutCamera, ICkLock ckLock, IGrfidKeyboard grfidKeyboard, IGrfidKeyboard1 grfidKeyboard1)
         {
             _dhCamera = dhCamera;
             _rfidDoor = rfidDoor;
@@ -134,6 +134,11 @@ namespace Mijin.Library.App.Driver
         /// <returns>调用结果</returns>
         public MessageModel<object> Invoke(string cls, string mthod, object[]? parameters)
         {
+            //cls = "ICkLock";
+            //mthod = "OpenBox";
+
+            //parameters = new object[] { 1 };
+
             // 获取执行参数的所有type
             Type[] parametersTypes =
                 parameters == null ? new Type[] { } : parameters.Select(p => p.GetType()).ToArray();
