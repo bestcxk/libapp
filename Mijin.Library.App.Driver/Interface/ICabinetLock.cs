@@ -31,5 +31,7 @@ namespace Mijin.Library.App.Driver
         /// <param name="baud"></param>
         /// <returns></returns>
         MessageModel<bool> OpenSerialPort(string com, Int64 baud);
+
+        MessageModel<string> Close(Int64 boxIndex);
     }
 }

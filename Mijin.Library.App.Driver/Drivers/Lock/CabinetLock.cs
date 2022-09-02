@@ -367,5 +367,16 @@ namespace Mijin.Library.App.Driver
                 }
             }
         }
+
+        public MessageModel<string> Close(long boxIndex)
+        {
+            ClosePort();
+
+            return new MessageModel<string>()
+            {
+                success = true,
+                msg = "关闭成功"
+            };
+        }
     }
 }

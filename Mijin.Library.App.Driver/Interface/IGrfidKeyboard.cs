@@ -18,7 +18,7 @@ public interface IGrfidKeyboard : IRfid
     /// <param name="putkey">true:开，false：关</param>
     /// <param name="ms">每次模拟键盘输出时的间隔毫秒</param>
     /// <returns></returns>
-    MessageModel<string> SetPrintKeyboard(bool putkey, long ms);
+    MessageModel<string> SetPrintKeyboard(bool putkey, long ms, bool enabledLF = true);
 }
 
 public interface IGrfidKeyboard1 : IGrfidKeyboard

@@ -1,5 +1,6 @@
 ﻿using Bing.Extensions;
 using Bing.Helpers;
+using Bing.Threading.Asyncs;
 using GDotnet.Reader.Api.DAL;
 using IsUtil;
 using Mijin.Library.App.Driver.Interface;
@@ -10,6 +11,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
 
 namespace Mijin.Library.App.Driver.Drivers.RFID;
 
@@ -47,7 +49,7 @@ public class GrfidKeyboard : GRfid, IRfid, IGrfidKeyboard, IGrfidKeyboard1
             }
             else
             {
-                OnReadUHFLabel.Invoke(new WebViewSendModel<LabelInfo>()
+                OnReadUHFLabel?.Invoke(new WebViewSendModel<LabelInfo>()
                 {
                     msg = "获取成功",
                     success = true,
@@ -101,10 +103,11 @@ public class GrfidKeyboard : GRfid, IRfid, IGrfidKeyboard, IGrfidKeyboard1
         };
     }
 
-    public MessageModel<string> SetPrintKeyboard(bool putkey, Int64 ms)
+    public MessageModel<string> SetPrintKeyboard(bool putkey, Int64 ms, bool enabledLF = true)
     {
         keyboardSettings.PrintKeyboardIntervalMs = (int)ms;
         keyboardSettings.StartPutKeyboard = putkey;
+        keyboardSettings.EnabledLF = enabledLF;
         return new MessageModel<string>()
         {
             success = true,
@@ -126,26 +129,49 @@ public class KeyboardSettings
     public int PrintKeyboardIntervalMs { get; set; } = 1000;
 
     // 最后一次模拟键盘输出的值
-    public string LastPutValue { get; set; }
+    public string LastPrintValue { get; set; }
 
-    private DateTime LastPutTime { get; set; } = DateTime.Now;
+    public bool EnabledLF { get; set; }
+
+    private DateTime? LastPrintTime { get; set; } = null;
+
+    private static object lockObj = new object();
+
+
+    static AsyncLock asyncLock = new AsyncLock();
 
     public async Task PutValue(string str)
     {
-        if (!LastPutValue.IsEmpty() && LastPutValue == str || str.IsEmpty())
-            return;
 
-        if ((DateTime.Now - LastPutTime).TotalMilliseconds < PrintKeyboardIntervalMs)
-            return;
-
-        var bytes = str.Select(v => (byte)(v.ToInt() + 48)).ToArray();
-        foreach (var b in bytes)
+        using (await asyncLock.LockAsync())
+        //lock (lockObj)
         {
-            KeyBoard.keyPress(b);
-            await Task.Delay(PrintKeyboardSignleIntervalMs);
+            if (!LastPrintValue.IsEmpty() && LastPrintValue == str || str.IsEmpty())
+                return;
+
+            if (LastPrintTime != null)
+            {
+                var ms = (DateTime.Now - LastPrintTime)?.TotalMilliseconds;
+
+                if (ms < PrintKeyboardIntervalMs)
+                    return;
+            }
+
+            LastPrintValue = str;
+            LastPrintTime = DateTime.Now;
+
+            var bytes = str.Select(v => (byte)(v.ToInt() + 48)).ToArray();
+            foreach (var b in bytes)
+            {
+                KeyBoard.keyPress(b);
+                await Task.Delay(PrintKeyboardSignleIntervalMs);
+            }
+            if (!bytes.IsEmpty())
+                KeyBoard.keyPress(KeyBoard.vKeyReturn);
         }
-        LastPutValue = str;
-        LastPutTime = DateTime.Now;
+
+
+
     }
 }
 

@@ -15,6 +15,18 @@ public class GrfidKeyboard_Test
     [Fact]
     public void TestKeyPut()
     {
+        var connectRes = grfidKeyboard.Connect("tcp", "192.168.0.168:8160");
+
+        grfidKeyboard.SetPrintKeyboard(true, 5000);
+
+        var redRes = grfidKeyboard.Read();
+
+
+        while (true)
+        {
+
+        }
+
     }
 
 

@@ -84,7 +84,7 @@ namespace Mijin.Library.App.Driver
                 }
                 else
                 {
-                    OnReadUHFLabel.Invoke(new WebViewSendModel<LabelInfo>()
+                    OnReadUHFLabel?.Invoke(new WebViewSendModel<LabelInfo>()
                     {
                         msg = "获取成功",
                         success = true,
