@@ -990,6 +990,31 @@ namespace Mijin.Library.App.Driver
 
         #endregion
 
+
+        public MessageModel<List<int>> GetUsbList()
+        {
+            var list = GClient.GetUsbHidList();
+
+
+            var rtList = new List<int>();
+
+            if (!list.IsEmpty())
+            {
+                foreach (var item in list)
+                {
+                    rtList.Add(rtList.Count);
+                }
+            }
+
+            return new MessageModel<List<int>>()
+            {
+                success = true,
+                msg = "获取成功",
+                response = list.IsEmpty() ? null : rtList
+            };
+
+        }
+
         public void Dispose()
         {
             try

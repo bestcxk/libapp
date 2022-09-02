@@ -133,5 +133,6 @@ namespace Mijin.Library.App.Driver
         /// </summary>
         /// <returns></returns>
         MessageModel<string> Alert(string ms);
+        MessageModel<List<int>> GetUsbList();
     }
 }
