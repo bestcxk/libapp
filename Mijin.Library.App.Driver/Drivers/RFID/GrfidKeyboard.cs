@@ -91,18 +91,6 @@ public class GrfidKeyboard : GRfid, IRfid, IGrfidKeyboard, IGrfidKeyboard1
 
     }
 
-    public MessageModel<string> SetPrintKeyboardIntervalMs(Int64 ms)
-    {
-        keyboardSettings.PrintKeyboardIntervalMs = (int)ms;
-
-        return new MessageModel<string>()
-        {
-            success = true,
-            msg = "设置成功"
-        };
-
-    }
-
     public MessageModel<string> SetOnReadUHFLabelEventName(string eventName)
     {
         this.eventName = eventName;
@@ -113,8 +101,9 @@ public class GrfidKeyboard : GRfid, IRfid, IGrfidKeyboard, IGrfidKeyboard1
         };
     }
 
-    public MessageModel<string> SetPrintKeyboard(bool putkey)
+    public MessageModel<string> SetPrintKeyboard(bool putkey, Int64 ms)
     {
+        keyboardSettings.PrintKeyboardIntervalMs = (int)ms;
         keyboardSettings.StartPutKeyboard = putkey;
         return new MessageModel<string>()
         {
