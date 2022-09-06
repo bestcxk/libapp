@@ -53,19 +53,31 @@ namespace Mijin.Library.App.Setting
             }
 
             this.cameraIndex.ItemsSource = cameraSources;
+
+             this.idCom.ItemsSource = cameraSources;
+
+
+
             RefreshIdList();
         }
 
         public SettingWindow(ISystemFunc systemFunc) : this()
         {
             _clientSettings = systemFunc.ClientSettings;
-            this.DataContext = _clientSettings;
             RefreshIdList();
         }
 
         private static AsyncLock actionLock = new AsyncLock();
 
-        public async Task RefreshIdList()
+        public  Task RefreshIdList()
+        {
+            return RefreshIdDataList();
+
+            //return Task.CompletedTask;
+
+        }
+
+        async Task RefreshIdDataList()
         {
             using (await actionLock.LockAsync())
             {
@@ -92,13 +104,38 @@ namespace Mijin.Library.App.Setting
                             {
                                 Timeout = TimeSpan.FromMilliseconds(1500)
                             };
-                            httplClient.BaseAddress = new Uri(@$"http://{ip.Split(":").First()}:5001");
+                            httplClient.BaseAddress = new Uri(@$"http://{ip}");
 
                             var str = await httplClient.GetStringAsync("/api/LibrarySettings/GetLibrarySettings");
 
                             var librarySettings = JsonConvert.DeserializeObject<MessageModel<LibrarySettings>>(str);
 
                             idComSources.AddRange(librarySettings?.response?.Clients?.Select(c => c.Id.ToInt()));
+                            return false;
+                        }
+                        catch (Exception)
+                        {
+                            Application.Current.Dispatcher.Invoke(DispatcherPriority.Normal, () =>
+                            {
+                                this.idHitLabel.Content = "获取Id列表失败，请检查后台管理URL";
+                            });
+                        }
+
+                        try
+                        {
+                            using HttpClient httplClient = new HttpClient()
+                            {
+                                Timeout = TimeSpan.FromMilliseconds(1500)
+                            };
+                            httplClient.BaseAddress = new Uri(@$"http://{ip.Split(":").First()}:5001");
+
+
+                            var str = await httplClient.GetStringAsync("/api/LibrarySettings/GetLibrarySettings");
+
+                            var librarySettings = JsonConvert.DeserializeObject<MessageModel<LibrarySettings>>(str);
+
+                            idComSources.AddRange(librarySettings?.response?.Clients?.Select(c => c.Id.ToInt()));
+                            return false;
                         }
                         catch (Exception)
                         {
@@ -132,24 +169,26 @@ namespace Mijin.Library.App.Setting
 
                         }
                     }
-
-
                 }
-                else
+
+                if (idComSources?.Any() != true)
                 {
-                    if (idComSources?.Any() != true)
+                    for (int i = 0; i < 50; i++)
                     {
-                        for (int i = 0; i < 50; i++)
-                        {
-                            idComSources.Add(i + 1);
-                        }
+                        idComSources.Add(i + 1);
                     }
                 }
 
                 this.idCom.ItemsSource = idComSources;
+
+
+                //this._clientSettings.Id = this._clientSettings.Id == 0 ? idComSources?.FirstOrDefault() ?? this._clientSettings.Id : this._clientSettings.Id;
+
+                //this.idCom.Text = this._clientSettings.Id.ToString();
+
+
                 this.refreshIdBtn.IsEnabled = true;
             }
-
         }
 
         private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)

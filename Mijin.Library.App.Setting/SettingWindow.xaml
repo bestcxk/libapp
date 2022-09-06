@@ -34,7 +34,7 @@
                             HorizontalContentAlignment="Center"
                             Content="设备ID：" />
 
-                        <ComboBox Name="idCom" Text="{Binding Id}" />
+                        <ComboBox Name="idCom" Text="{Binding Id, Mode=TwoWay}" />
                         <Button
                             Name="refreshIdBtn"
                             Click="RefreshIdBtn_OnClick"
