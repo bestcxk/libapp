@@ -71,31 +71,28 @@ namespace Mijin.Library.App.Common.Domain
         private void Listen(object obj)
         {
             Socket serverSocket = (Socket)obj;
-
             IPAddress ip = null;
             try
             {
-                var address = Dns.GetHostEntry(TargetHost)?.AddressList;
-                ip = address.First(a => !a.ToString().Contains(":"));
-            }
-            catch (Exception e)
-            {
-            }
-
-            try
-            {
-                if (ip == null)
-                {
-                    ip = IPAddress.Parse(TargetHost);
-                }
+                ip = IPAddress.Parse(TargetHost);
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
             }
 
+            try
+            {
+                if (ip == null)
+                {
+                    var address = Dns.GetHostEntry(TargetHost)?.AddressList;
+                    ip = address.First(a => !a.ToString().Contains(":"));
+                }
 
-
+            }
+            catch (Exception e)
+            {
+            }
 
             while (true)
             {
