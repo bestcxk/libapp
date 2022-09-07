@@ -54,7 +54,7 @@ namespace Mijin.Library.App.Setting
 
             this.cameraIndex.ItemsSource = cameraSources;
 
-             this.idCom.ItemsSource = cameraSources;
+            this.idCom.ItemsSource = cameraSources;
 
 
 
@@ -64,12 +64,13 @@ namespace Mijin.Library.App.Setting
         public SettingWindow(ISystemFunc systemFunc) : this()
         {
             _clientSettings = systemFunc.ClientSettings;
+            this.DataContext = _clientSettings;
             RefreshIdList();
         }
 
         private static AsyncLock actionLock = new AsyncLock();
 
-        public  Task RefreshIdList()
+        public Task RefreshIdList()
         {
             return RefreshIdDataList();
 
@@ -224,11 +225,11 @@ namespace Mijin.Library.App.Setting
                     }
 
                     //_systemFunc.ClientSettings.SetPropValue(_clientSettings, true);
-                    _clientSettings.Write();
                 }));
             });
-            OnSettingsChange?.Invoke();
+            _clientSettings.Write();
             await Task.Delay(500);
+            OnSettingsChange?.Invoke();
             this.saveLoading.Visibility = Visibility.Hidden;
             button.IsEnabled = true;
         }

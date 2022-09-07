@@ -52,7 +52,7 @@ namespace Mijin.Library.App.Driver.Extentions
             services.AddSingleton<IWjSIP2Client, WjSIP2Client>();
             services.AddSingleton<IDataConvert, DataConvert>();
             services.AddSingleton<IWriteCxDb, WriteCxDb>();
-            services.AddSingleton<INetWorkTranspondService, TestTranspondService>();
+            services.AddSingleton<INetWorkTranspondService, CaddyTranspondService>();
             services.AddSingleton<IJpSip2Client, JpSip2Client>();
 
             services.AddSingleton<IDhCamera, DhCamera>();

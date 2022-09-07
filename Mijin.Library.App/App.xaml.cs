@@ -188,15 +188,16 @@ namespace Mijin.Library.App
             if (!settings.DisibleProxy)
                 Container.Resolve<INetWorkTranspondService>().StartOrUpdateListen(settings);
             var settingWindow = Container.Resolve<SettingWindow>();
-            settingWindow.OnSettingsChange += () =>
+            settingWindow.OnSettingsChange += async () =>
             {
                 var network = Container.Resolve<INetWorkTranspondService>();
+                var settings = new ClientSettings();
                 if (!settings.DisibleProxy)
-                    network
+                    await network
                         .StartOrUpdateListen(Container.Resolve<ISystemFunc>().ClientSettings);
                 else
                 {
-                    network.ClearAllListen();
+                    await network.ClearAllListen();
                 }
             };
         }
