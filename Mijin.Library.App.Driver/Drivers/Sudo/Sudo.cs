@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -79,7 +80,8 @@ namespace Mijin.Library.App.Driver
                     try
                     {
                         await Task.Delay(500);
-                        if (!isWathing) continue;
+                        if (!isWathing)
+                            continue;
 
 
                         var res = ReadQrcode();
@@ -301,7 +303,7 @@ namespace Mijin.Library.App.Driver
                         var str = Encoding.GetEncoding("GB18030")
                             .GetString(ptrTradeRecord.recvBuf, 0, ptrTradeRecord.lenrecv);
 
-                        res.response = getAllStr ? str : str.Split("|").First();
+                        res.response = (getAllStr ? str : str.Split("|").First())?.Replace("\0", "");
                         res.msg = "获取成功";
                         return res;
                     }
@@ -333,7 +335,7 @@ namespace Mijin.Library.App.Driver
                         {
                             var str = Encoding.GetEncoding("GB18030").GetString(bytes);
                             var data = getAllStr ? str : str.Split("|").First();
-                            res.response = data;
+                            res.response = data?.Replace("\0", "");
                             res.success = true;
                             res.msg = "获取成功";
                             return res;
