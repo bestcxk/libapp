@@ -331,7 +331,8 @@ namespace Mijin.Library.App.Driver
 
                         if (code == 0)
                         {
-                            var data = Encoding.Default.GetString(bytes)?.Split("|")[1];
+                            var str = Encoding.Default.GetString(bytes);
+                            var data = getAllStr ? str : str.Split("|").First();
                             res.response = data;
                             res.success = true;
                             res.msg = "获取成功";
