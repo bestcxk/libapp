@@ -331,7 +331,7 @@ namespace Mijin.Library.App.Driver
 
                         if (code == 0)
                         {
-                            var str = Encoding.Default.GetString(bytes);
+                            var str = Encoding.GetEncoding("GB18030").GetString(bytes);
                             var data = getAllStr ? str : str.Split("|").First();
                             res.response = data;
                             res.success = true;
