@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using IsUtil;
 using IsUtil.Maps;
 using Bing.Extensions;
+using Newtonsoft.Json;
 
 namespace Mijin.Library.App.Driver
 {
@@ -668,6 +669,12 @@ namespace Mijin.Library.App.Driver
 
                 return result;
             }
+        }
+
+
+        public MessageModel<LabelInfo> ReadOnceByAntId(string antIdStrs)
+        {
+            return ReadOnceByAntId(JsonConvert.DeserializeObject<List<string>>(antIdStrs));
         }
 
         #endregion
