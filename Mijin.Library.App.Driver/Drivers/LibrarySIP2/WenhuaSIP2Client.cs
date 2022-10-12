@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using IsUtil;
 using IsUtil.Maps;
+using Bing.Extensions;
 
 namespace Mijin.Library.App.Driver
 {

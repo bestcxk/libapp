@@ -3,19 +3,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Bing.Collections;
+using System.Windows.Threading;
+using Bing.Threading.Asyncs;
 using IsUtil;
 using IsUtil.Helpers;
 using MahApps.Metro.Controls;
@@ -58,7 +51,13 @@ namespace Mijin.Library.App.Setting
             {
                 cameraSources.Add(i);
             }
+
             this.cameraIndex.ItemsSource = cameraSources;
+
+            this.idCom.ItemsSource = cameraSources;
+
+
+
             RefreshIdList();
         }
 
@@ -69,60 +68,128 @@ namespace Mijin.Library.App.Setting
             RefreshIdList();
         }
 
-        public void RefreshIdList()
+        private static AsyncLock actionLock = new AsyncLock();
+
+        public Task RefreshIdList()
         {
-            if (!this.refreshIdBtn.IsEnabled)
-                return;
-            this.refreshIdBtn.IsEnabled = false;
+            return RefreshIdDataList();
 
+            //return Task.CompletedTask;
 
-            List<int> idComSources = new List<int>();
-            string ip = Url.GetIpPort(this.LibraryManageUrlText.Text?.IsEmpty() == true ? _clientSettings.LibraryManageUrl : this.LibraryManageUrlText.Text);
+        }
 
-            // 网络请求
-            if (!ip.IsEmpty())
+        async Task RefreshIdDataList()
+        {
+            using (await actionLock.LockAsync())
             {
-                try
+
+                if (!this.refreshIdBtn.IsEnabled)
+                    return;
+                this.refreshIdBtn.IsEnabled = false;
+
+
+                List<int> idComSources = new List<int>();
+                string ip = Url.GetIpPort(this.LibraryManageUrlText.Text?.Any() != true
+                    ? _clientSettings.LibraryManageUrl
+                    : this.LibraryManageUrlText.Text);
+
+                // 网络请求
+                if (ip?.Any() == true)
                 {
-                    using HttpClient httplClient = new HttpClient()
+
+                    var hasExp = await Task.Run(async () =>
                     {
-                        Timeout = TimeSpan.FromMilliseconds(1500)
-                    };
-                    httplClient.BaseAddress = new Uri(@$"http://{ip.Split(":").First()}:5001");
+                        try
+                        {
+                            using HttpClient httplClient = new HttpClient()
+                            {
+                                Timeout = TimeSpan.FromMilliseconds(1500)
+                            };
+                            httplClient.BaseAddress = new Uri(@$"http://{ip}");
 
-                    var str = httplClient.GetStringAsync("/api/LibrarySettings/GetLibrarySettings").GetAwaiter().GetResult();
+                            var str = await httplClient.GetStringAsync("/api/LibrarySettings/GetLibrarySettings");
 
-                    var librarySettings = JsonConvert.DeserializeObject<MessageModel<LibrarySettings>>(str);
+                            var librarySettings = JsonConvert.DeserializeObject<MessageModel<LibrarySettings>>(str);
 
-                    idComSources.AddRange(librarySettings?.response?.Clients?.Select(c => c.Id.ToInt()));
+                            idComSources.AddRange(librarySettings?.response?.Clients?.Select(c => c.Id.ToInt()));
+                            return false;
+                        }
+                        catch (Exception)
+                        {
+                            Application.Current.Dispatcher.Invoke(DispatcherPriority.Normal, () =>
+                            {
+                                this.idHitLabel.Content = "获取Id列表失败，请检查后台管理URL";
+                            });
+                        }
 
-                    if (idComSources.IsEmpty())
+                        try
+                        {
+                            using HttpClient httplClient = new HttpClient()
+                            {
+                                Timeout = TimeSpan.FromMilliseconds(1500)
+                            };
+                            httplClient.BaseAddress = new Uri(@$"http://{ip.Split(":").First()}:5001");
+
+
+                            var str = await httplClient.GetStringAsync("/api/LibrarySettings/GetLibrarySettings");
+
+                            var librarySettings = JsonConvert.DeserializeObject<MessageModel<LibrarySettings>>(str);
+
+                            idComSources.AddRange(librarySettings?.response?.Clients?.Select(c => c.Id.ToInt()));
+                            return false;
+                        }
+                        catch (Exception)
+                        {
+                            Application.Current.Dispatcher.Invoke(DispatcherPriority.Normal, () =>
+                            {
+                                this.idHitLabel.Content = "获取Id列表失败，请检查后台管理URL";
+                            });
+                            return true;
+                        }
+
+                        return false;
+                    });
+
+                    if (!hasExp)
                     {
-                        this.idHitLabel.Content = "未在后台配置Id";
+
+                        if (idComSources?.Any() != true)
+                        {
+                            Application.Current.Dispatcher.Invoke(DispatcherPriority.Normal, () =>
+                            {
+                                this.idHitLabel.Content = "未在后台配置Id";
+                            });
+
+                        }
+                        else
+                        {
+                            Application.Current.Dispatcher.Invoke(DispatcherPriority.Normal, () =>
+                            {
+                                this.idHitLabel.Content = "";
+                            });
+
+                        }
                     }
-                    else
-                    {
-                        this.idHitLabel.Content = "";
-                    }
+                }
 
-                }
-                catch (Exception e)
-                {
-                    this.idHitLabel.Content = "获取Id列表失败，请检查后台管理URL";
-                }
-            }
-            else
-            {
-                if (idComSources.IsEmpty())
+                if (idComSources?.Any() != true)
                 {
                     for (int i = 0; i < 50; i++)
                     {
                         idComSources.Add(i + 1);
                     }
                 }
+
+                this.idCom.ItemsSource = idComSources;
+
+
+                //this._clientSettings.Id = this._clientSettings.Id == 0 ? idComSources?.FirstOrDefault() ?? this._clientSettings.Id : this._clientSettings.Id;
+
+                //this.idCom.Text = this._clientSettings.Id.ToString();
+
+
+                this.refreshIdBtn.IsEnabled = true;
             }
-            this.idCom.ItemsSource = idComSources;
-            this.refreshIdBtn.IsEnabled = true;
         }
 
         private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -158,11 +225,11 @@ namespace Mijin.Library.App.Setting
                     }
 
                     //_systemFunc.ClientSettings.SetPropValue(_clientSettings, true);
-                    _clientSettings.Write();
                 }));
             });
-            OnSettingsChange?.Invoke();
+            _clientSettings.Write();
             await Task.Delay(500);
+            OnSettingsChange?.Invoke();
             this.saveLoading.Visibility = Visibility.Hidden;
             button.IsEnabled = true;
         }
@@ -263,7 +330,7 @@ namespace Mijin.Library.App.Setting
 
         public static bool IsDomain(string str)
         {
-            if (str.IsEmpty() || str.Contains(";"))
+            if (str?.Any() != true || str.Contains(";"))
             {
                 return false;
             }

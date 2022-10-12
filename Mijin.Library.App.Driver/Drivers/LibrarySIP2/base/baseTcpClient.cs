@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using IsUtil;
+using Bing.Extensions;
 
 namespace Mijin.Library.App.Driver
 {

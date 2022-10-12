@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace Mijin.Library.App.Driver
 {
+
     /// <summary>
     /// RFID接口
     /// </summary>
@@ -132,5 +133,6 @@ namespace Mijin.Library.App.Driver
         /// </summary>
         /// <returns></returns>
         MessageModel<string> Alert(string ms);
+        MessageModel<List<int>> GetUsbList();
     }
 }

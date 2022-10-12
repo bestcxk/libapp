@@ -35,7 +35,8 @@ public class CkLock : ICkLock
         task = Task.Run(LockEvent);
     }
 
-    ~CkLock(){
+    ~CkLock()
+    {
         try
         {
             _serialPort.Close();
@@ -111,7 +112,8 @@ public class CkLock : ICkLock
         for (byte cont = 1; cont <= controllerCount; cont++)
         {
             var data = GetLockStatus(cont);
-            if (!data.success) return new(data);
+            if (!data.success)
+                return new(data);
             res.response.AddRange(data.response);
         }
 
@@ -345,7 +347,8 @@ public class CkLock : ICkLock
     /// </summary>
     private void ClosePort()
     {
-        if (!_serialPort.IsOpen) return;
+        if (!_serialPort.IsOpen)
+            return;
 
         try
         {
@@ -354,5 +357,16 @@ public class CkLock : ICkLock
         catch (Exception)
         {
         }
+    }
+
+    public MessageModel<string> Close(long boxIndex)
+    {
+        ClosePort();
+
+        return new MessageModel<string>()
+        {
+            success = true,
+            msg = "关闭成功"
+        };
     }
 }

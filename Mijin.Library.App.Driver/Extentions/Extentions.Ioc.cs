@@ -10,6 +10,8 @@ using Mijin.Library.App.Driver.Drivers.DataConvert;
 using Mijin.Library.App.Driver.Drivers.DhCamera;
 using Mijin.Library.App.Driver.Drivers.LibrarySIP2;
 using Mijin.Library.App.Driver.Interface;
+using Mijin.Library.App.Driver.Drivers.Lock;
+using Mijin.Library.App.Driver.Drivers.RFID;
 
 namespace Mijin.Library.App.Driver.Extentions
 {
@@ -34,7 +36,6 @@ namespace Mijin.Library.App.Driver.Extentions
             else
                 services.AddSingleton<IQrCode, VbarQrCode>();
 
-
             services.AddSingleton<IRRfid, RRfid>();
             services.AddSingleton<IRfid, GRfid>();
             services.AddSingleton<IGRfidDoorController, GRfidDoorController>();
@@ -51,7 +52,7 @@ namespace Mijin.Library.App.Driver.Extentions
             services.AddSingleton<IWjSIP2Client, WjSIP2Client>();
             services.AddSingleton<IDataConvert, DataConvert>();
             services.AddSingleton<IWriteCxDb, WriteCxDb>();
-            services.AddSingleton<INetWorkTranspondService, CaddyTranspondService>();
+            services.AddSingleton<INetWorkTranspondService, NetWorkTranspondService>();
             services.AddSingleton<IJpSip2Client, JpSip2Client>();
 
             services.AddSingleton<IDhCamera, DhCamera>();
@@ -65,6 +66,11 @@ namespace Mijin.Library.App.Driver.Extentions
                 services.AddSingleton<IHFReader, BlackHFReader>();
             else
                 services.AddSingleton<IHFReader, RRHFReader>();
+
+            services.AddSingleton<ICkLock, CkLock>();
+            services.AddSingleton<IGrfidKeyboard, GrfidKeyboard>();
+            services.AddSingleton<IGrfidKeyboard1, GrfidKeyboard>();
+
 
             #endregion
         }

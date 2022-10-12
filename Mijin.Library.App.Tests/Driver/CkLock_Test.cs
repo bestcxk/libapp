@@ -22,7 +22,7 @@ public class CkLock_Test
     [Fact]
     public void OpenLockTest()
     {
-        var openSerialPortResult = _ckLock.OpenSerialPort("COM5", 9600);
+        var openSerialPortResult = _ckLock.OpenSerialPort("COM8", 9600);
 
         var openBoxResult = _ckLock.OpenBox(1);
     }
@@ -33,7 +33,7 @@ public class CkLock_Test
     [Fact]
     public void GetLockStatusTest()
     {
-        var openSerialPortResult = _ckLock.OpenSerialPort("COM5", 9600);
+        var openSerialPortResult = _ckLock.OpenSerialPort("COM8", 9600);
 
         var lockStatusResult = _ckLock.GetLockStatus();
     }
@@ -44,7 +44,7 @@ public class CkLock_Test
     [Fact]
     public void LockEventTest()
     {
-        var openSerialPortResult = _ckLock.OpenSerialPort("COM5", 9600);
+        var openSerialPortResult = _ckLock.OpenSerialPort("COM8", 9600);
 
         _ckLock.OnLockEvent += model =>
         {

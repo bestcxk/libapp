@@ -5,10 +5,12 @@ using System.Linq;
 using System.ServiceProcess;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
 using System.Windows;
 using Bing.Extensions;
 using Bing.Helpers;
 using Bing.IO;
+using Bing.Threading.Asyncs;
 using CliWrap;
 using IsUtil.Helper;
 using Mijin.Library.App.Common.Domain;
@@ -43,14 +45,9 @@ public class CaddyTranspondService : INetWorkTranspondService
 {
     internal List<Transpond> Transponds { get; set; } = new List<Transpond>();
 
-    private Process cmd;
-
-    private Task task;
-
-
-    public void StartOrUpdateListen(ClientSettings settings)
+    public async Task StartOrUpdateListen(ClientSettings settings)
     {
-        RegisterCaddyIfNotService();
+        await RegisterCaddyIfNotService();
         var urls = new List<string>()
         {
             settings.LibraryManageUrl,
@@ -64,7 +61,7 @@ public class CaddyTranspondService : INetWorkTranspondService
         Transponds = urls.Select(url => new Transpond()
         {
             OriginUrl = Url.GetIpPort(url)
-        }).Distinct().ToList();
+        }).DistinctBy(d => d.OriginUrl).ToList();
 
         var str = @$"
 {{
@@ -78,11 +75,15 @@ public class CaddyTranspondService : INetWorkTranspondService
         }
         FileHelper.Write("Caddyfile", str);
 
-        RestartCaddyService();
+        await RestartCaddyService();
     }
 
     public string GetVisitUrl(string url)
     {
+
+        if (new ClientSettings().DisibleProxy)
+            return url;
+
         var transpond = Transponds.FirstOrDefault(t => t.OriginUrl == Url.GetIpPort(url));
 
         if (transpond is null)
@@ -100,12 +101,12 @@ public class CaddyTranspondService : INetWorkTranspondService
         return (sp.FirstOrDefault() ?? "") + Transponds.FirstOrDefault(t => t.OriginUrl == Url.GetIpPort(url))?.ToUrl;
     }
 
-    public void ClearAllListen()
+    public async Task ClearAllListen()
     {
-        StopCaddyService();
+        await StopCaddyService();
     }
 
-    public void RegisterCaddyIfNotService()
+    public async Task RegisterCaddyIfNotService()
     {
         ServiceController[] services = ServiceController.GetServices();
         var s = services.FirstOrDefault(s => s.ServiceName == "mijin_caddy_services");
@@ -118,14 +119,14 @@ public class CaddyTranspondService : INetWorkTranspondService
             else
             {
                 var p = Process.Start("caddyRegiester.bat");
-                p.WaitForExit();
+                await p.WaitForExitAsync();
             }
 
 
         }
     }
 
-    public void RestartCaddyService()
+    public async Task RestartCaddyService()
     {
         ServiceController[] services = ServiceController.GetServices();
         var s = services.FirstOrDefault(s => s.ServiceName == "mijin_caddy_services");
@@ -137,39 +138,60 @@ public class CaddyTranspondService : INetWorkTranspondService
             }
             else
             {
-                if (s.Status == ServiceControllerStatus.Running || s.Status == ServiceControllerStatus.StartPending)
-                    StopCaddyService();
-
-                s.Start();
+                await StopCaddyService();
+                await StartCaddyService();
             }
-
-
         }
     }
 
-    public void StopCaddyService()
+
+    static AsyncLock caddyLock = new AsyncLock();
+
+    async Task StopCaddyService()
     {
-        ServiceController[] services = ServiceController.GetServices();
-        var s = services.FirstOrDefault(s => s.ServiceName == "mijin_caddy_services");
-        if (s is not null)
+        using (await caddyLock.LockAsync())
         {
             if (!IsAdministrator())
             {
                 MessageBox.Show("将导致无法使用代理", "非管理员启动");
+                return;
             }
-            else if (s.Status != ServiceControllerStatus.Stopped && s.Status != ServiceControllerStatus.StopPending)
+            var p = ProcessHelper.StartCmd("nssm stop mijin_caddy_services confirm", "exit");
+            try
             {
-                var p = ProcessHelper.StartCmd("nssm stop mijin_caddy_services confirm", "exit");
-                try
-                {
-                    p.WaitForExit();
-                }
-                catch (Exception)
-                {
+                await p.WaitForExitAsync();
+            }
+            catch (Exception)
+            {
 
-                }
             }
         }
+
+    }
+
+    async Task StartCaddyService()
+    {
+        using (await caddyLock.LockAsync())
+        {
+            if (!IsAdministrator())
+            {
+                MessageBox.Show("将导致无法使用代理", "非管理员启动");
+                return;
+            }
+
+            var p = ProcessHelper.StartCmd("nssm start mijin_caddy_services confirm", "exit");
+            try
+            {
+                await p.WaitForExitAsync();
+            }
+            catch (Exception)
+            {
+
+            }
+        }
+
+
+
     }
 
     private bool IsAdministrator()

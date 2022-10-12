@@ -34,7 +34,7 @@
                             HorizontalContentAlignment="Center"
                             Content="设备ID：" />
 
-                        <ComboBox Name="idCom" Text="{Binding Id}" />
+                        <ComboBox Name="idCom" Text="{Binding Id, Mode=TwoWay}" />
                         <Button
                             Name="refreshIdBtn"
                             Click="RefreshIdBtn_OnClick"
@@ -174,7 +174,7 @@
                 <TextBox
                     Name="WindowWidthText"
                     Width="75"
-                    Text="{Binding WindowWidth}" />
+                    Text="{Binding WindowWidth, Mode=TwoWay}" />
                 <Label
                     Width="100"
                     HorizontalContentAlignment="Center"
@@ -183,7 +183,7 @@
                 <TextBox
                     Name="WindowHeightText"
                     Width="75"
-                    Text="{Binding WindowHeight}" />
+                    Text="{Binding WindowHeight, Mode=TwoWay}" />
             </StackPanel>
             <StackPanel
                 Height="30"
@@ -195,7 +195,7 @@
                     Content="缓存处理：" />
                 <ComboBox
                     Name="OnExitClearWebCacheCom"
-                    SelectedItem="{Binding OnExitClearWebCache}"
+                    SelectedItem="{Binding OnExitClearWebCache, Mode=TwoWay}"
                     ToolTip="程序退出时缓存处理" />
                 <Label
                     Width="100"
@@ -203,7 +203,7 @@
                     Content="高频读卡器：" />
                 <ComboBox
                     Name="HFReaderSelect"
-                    SelectedItem="{Binding HFReader}"
+                    SelectedItem="{Binding HFReader, Mode=TwoWay}"
                     ToolTip="读读者证的读卡器" />
             </StackPanel>
             <StackPanel
@@ -214,7 +214,7 @@
                     Width="100"
                     HorizontalContentAlignment="Center"
                     Content="二维码扫描模块：" />
-                <ComboBox Name="QrcodeDriverCom" SelectedItem="{Binding QrcodeDriver}" />
+                <ComboBox Name="QrcodeDriverCom" SelectedItem="{Binding QrcodeDriver, Mode=TwoWay}" />
             </StackPanel>
 
 
@@ -223,55 +223,55 @@
             <CheckBox
                 Content="门禁窗口随系统启动"
                 FontSize="16"
-                IsChecked="{Binding DoorControllerStart}" />
+                IsChecked="{Binding DoorControllerStart, Mode=TwoWay}" />
             <CheckBox
                 Content="显示窗口标题栏"
                 FontSize="16"
-                IsChecked="{Binding ShowWindowTitleBar}" />
+                IsChecked="{Binding ShowWindowTitleBar, Mode=TwoWay}" />
             <CheckBox
                 Content="开发者模式"
                 FontSize="16"
-                IsChecked="{Binding IsDev}" />
+                IsChecked="{Binding IsDev, Mode=TwoWay}" />
             <CheckBox
                 Content="窗口顶置"
                 FontSize="16"
-                IsChecked="{Binding WindowOverhead}" />
+                IsChecked="{Binding WindowOverhead, Mode=TwoWay}" />
             <CheckBox
                 Content="显示标题栏多项按钮"
                 FontSize="16"
-                IsChecked="{Binding ShowTitleBarBtns}" />
+                IsChecked="{Binding ShowTitleBarBtns, Mode=TwoWay}" />
             <CheckBox
                 Content="调整窗口宽高"
                 FontSize="16"
-                IsChecked="{Binding CanResize}" />
+                IsChecked="{Binding CanResize, Mode=TwoWay}" />
             <CheckBox
                 Content="窗口被关闭后自动重启"
                 FontSize="16"
-                IsChecked="{Binding CannotClosed}" />
+                IsChecked="{Binding CannotClosed, Mode=TwoWay}" />
             <CheckBox
                 Content="开机自动启动"
                 FontSize="16"
-                IsChecked="{Binding FollowSystemRun}" />
+                IsChecked="{Binding FollowSystemRun, Mode=TwoWay}" />
             <CheckBox
                 Content="超高频模块事件名使用旧事件名"
                 FontSize="16"
-                IsChecked="{Binding UHFEventIsOldName}" />
+                IsChecked="{Binding UHFEventIsOldName, Mode=TwoWay}" />
             <CheckBox
                 Content="高频读卡器发送原始卡号"
                 FontSize="16"
-                IsChecked="{Binding HFOriginalCard}" />
+                IsChecked="{Binding HFOriginalCard, Mode=TwoWay}" />
             <CheckBox
                 Content="M53身份证读卡器"
                 FontSize="16"
-                IsChecked="{Binding IsM513IdentityReader}" />
+                IsChecked="{Binding IsM513IdentityReader, Mode=TwoWay}" />
             <CheckBox
                 Content="禁用代理"
                 FontSize="16"
-                IsChecked="{Binding DisibleProxy}" />
+                IsChecked="{Binding DisibleProxy, Mode=TwoWay}" />
             <CheckBox
                 Content="PASM社保卡模式"
                 FontSize="16"
-                IsChecked="{Binding SudoPSAMMode}" />
+                IsChecked="{Binding SudoPSAMMode, Mode=TwoWay}" />
         </StackPanel>
         <StackPanel>
             <Grid>

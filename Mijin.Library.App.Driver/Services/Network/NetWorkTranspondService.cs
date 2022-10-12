@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Bing.Extensions;
 using Bing.Helpers;
 using Mijin.Library.App.Common.Domain;
@@ -22,7 +23,8 @@ namespace Mijin.Library.App.Driver.Services.Network
 
         public string GetVisitUrl(string url)
         {
-            if (url.IsEmpty() || !url.Contains("http")) return url;
+            if (url.IsEmpty() || !url.Contains("http"))
+                return url;
 
 
             var host_port = url.Split("//")[1].Split("/")[0];
@@ -36,7 +38,7 @@ namespace Mijin.Library.App.Driver.Services.Network
             return url.Replace(tran.ToTargetString(), @$"127.0.0.1:{tran.localPort}");
         }
 
-        public void StartOrUpdateListen(ClientSettings settings)
+        public async Task StartOrUpdateListen(ClientSettings settings)
         {
             var urls = new List<string>()
             {
@@ -77,7 +79,7 @@ namespace Mijin.Library.App.Driver.Services.Network
         }
 
 
-        public void ClearAllListen()
+        public async Task ClearAllListen()
         {
             Transponds?.ForEach(t =>
             {
@@ -88,7 +90,8 @@ namespace Mijin.Library.App.Driver.Services.Network
 
         private void AddTranspond(NetWorkTranspond transpond)
         {
-            if (transpond.TargetHost == "localhost" || transpond.TargetHost == "127.0.0.1") return;
+            if (transpond.TargetHost == "localhost" || transpond.TargetHost == "127.0.0.1")
+                return;
             transpond.localPort = !Transponds.IsEmpty() ? Transponds.Max(t => t.localPort) + 1 : startPort;
             var usingPorts = NetWorkHelper.GetUsingPorts().ToList();
 

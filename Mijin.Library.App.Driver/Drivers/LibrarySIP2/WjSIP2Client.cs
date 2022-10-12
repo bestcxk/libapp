@@ -5,9 +5,10 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using Bing.Extensions;
 using IsUtil;
 using IsUtil.Maps;
-using NLog.Fluent;
+
 
 namespace Mijin.Library.App.Driver
 {

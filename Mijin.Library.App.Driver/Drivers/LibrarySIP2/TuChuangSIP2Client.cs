@@ -2,11 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using IsUtil;
 using IsUtil.Maps;
 using System.Text.RegularExpressions;
+using IsUtil;
 
 namespace Mijin.Library.App.Driver
 {
@@ -28,10 +27,9 @@ namespace Mijin.Library.App.Driver
 
         internal override Task<string> SendAsync(string message)
         {
-
             int retry = 0;
 
-            if (host.IsEmpty() || port.IsEmpty())
+            if (host?.Any() == false || port?.Any() == false)
                 throw new ArgumentNullException(@$"{nameof(host)}_{nameof(port)}");
 
             while (++retry < 3)
@@ -49,6 +47,7 @@ namespace Mijin.Library.App.Driver
                     ReConnect();
                 }
             }
+
             throw new Exception(@$"超过最大重试次数{retry}");
         }
 
@@ -207,7 +206,7 @@ namespace Mijin.Library.App.Driver
             var data = new MessageModel<object>();
             Regex objReg = new Regex(@"^(\d{15}$|^\d{18}$|^\d{17}(\d|X|x))$");
             var getCardNoByIdCard = "";
-            if (readerPw.IsEmpty()) readerPw = null;
+            if (readerPw?.Any() != true) readerPw = null;
             var sendStr = "";
             string message = null;
             if (objReg.IsMatch(readerNo))

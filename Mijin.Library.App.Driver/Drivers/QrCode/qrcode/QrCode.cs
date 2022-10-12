@@ -1,13 +1,9 @@
 ﻿using GDotnet.Reader.Api.Utils;
-using IsUtil;
 
 using Mijin.Library.App.Model;
 using System;
-using System.Collections.Generic;
 using System.IO.Ports;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Bing.Extensions;
 using Util.Logs.Extensions;
 
 namespace Mijin.Library.App.Driver
@@ -56,7 +52,14 @@ namespace Mijin.Library.App.Driver
             // 如果com口已经打开，则先关闭
             if (serialPort.IsOpen)
             {
-                serialPort.Close();
+                try
+                {
+                    serialPort.Close();
+                }
+                catch (Exception e)
+                {
+            
+                }
             }
             var comName = PublicFun.GetPortNameFormVidPid(vid, pid);
             if (comName.IsNull())
