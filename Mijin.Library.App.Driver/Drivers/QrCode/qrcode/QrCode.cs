@@ -52,14 +52,7 @@ namespace Mijin.Library.App.Driver
             // 如果com口已经打开，则先关闭
             if (serialPort.IsOpen)
             {
-                try
-                {
-                    serialPort.Close();
-                }
-                catch (Exception e)
-                {
-            
-                }
+                serialPort.Close();
             }
             var comName = PublicFun.GetPortNameFormVidPid(vid, pid);
             if (comName.IsNull())
