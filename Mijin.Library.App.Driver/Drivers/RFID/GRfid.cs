@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using IsUtil;
 using IsUtil.Maps;
 using Bing.Extensions;
+using Newtonsoft.Json;
 
 namespace Mijin.Library.App.Driver
 {
@@ -37,8 +38,6 @@ namespace Mijin.Library.App.Driver
         private string eventName = nameof(OnReadUHFLabel);
 
         private object _lockObj = new object();
-
-        public bool IsConnected => _gClient is not null && _gClient?.Type != eConnectType.Unkonw;
 
 
         #region 构造函数
@@ -137,12 +136,12 @@ namespace Mijin.Library.App.Driver
         /// <returns></returns>
         public MessageModel<bool> Connect(string mode, string conStr, Int64 timeOutMs = 1500)
         {
-
-  
             lock (_lockObj)
             {
                 var result = new MessageModel<bool>();
                 eConnectionAttemptEventStatusType status = eConnectionAttemptEventStatusType.NoResponse;
+
+                Stop();
 
                 _gClient?.Close();
 
@@ -154,7 +153,7 @@ namespace Mijin.Library.App.Driver
                     {
                         if ("tcp".Equals(mode))
                         {
-                            if (_gClient.OpenTcp(conStr, (int) timeOutMs, out status) && status == eConnectionAttemptEventStatusType.OK)
+                            if (_gClient.OpenTcp(conStr, (int)timeOutMs, out status))
                             {
                                 // result.success = Stop().success;
                                 // if (result.success)
@@ -176,13 +175,15 @@ namespace Mijin.Library.App.Driver
                                 break;
                             }
 
-                            foreach (var s in devList)
+                            if (conStr.IsEmpty())
                             {
-                                if (_gClient.OpenUsbHid(devList[0], IntPtr.Zero, (int) timeOutMs, out status) && status == eConnectionAttemptEventStatusType.OK)
+                                foreach (var s in devList)
                                 {
-                                    // result.success = Stop().success;
-                                    // if (result.success)
-                                    //     break;
+                                    if (_gClient.OpenUsbHid(devList[0], IntPtr.Zero, (int)timeOutMs, out status))
+                                    {
+                                        // result.success = Stop().success;
+                                        // if (result.success)
+                                        //     break;
 
                                         result.success = true;
                                         break;
@@ -222,7 +223,7 @@ namespace Mijin.Library.App.Driver
                         }
                         else
                         {
-                            if (_gClient.OpenSerial(conStr, (int) timeOutMs, out status) && status == eConnectionAttemptEventStatusType.OK)
+                            if (_gClient.OpenSerial(conStr, (int)timeOutMs, out status))
                             {
                                 // result.success = Stop().success;
                                 // if (result.success)
@@ -242,7 +243,6 @@ namespace Mijin.Library.App.Driver
 
                 if (result.success)
                 {
-                    Stop();
                     // 清除绑定的委托
                     ClearEvent("all");
                     _gClient.OnEncapedTagEpcLog += OnEncapedTagEpcLog; //标签读取时间
@@ -356,19 +356,6 @@ namespace Mijin.Library.App.Driver
 
         #endregion
 
-        #region CheckConnected
-
-        private MessageModel<bool> CheckConnected()
-        {
-            return new MessageModel<bool>()
-            {
-                success = IsConnected,
-                msg = IsConnected ? "设备已连接" : "设备未连接"
-            };
-        }
-
-        #endregion
-
         #region 停止读标签(Stop)
 
         /// <summary>
@@ -377,10 +364,6 @@ namespace Mijin.Library.App.Driver
         /// <returns></returns>
         public MessageModel<bool> Stop()
         {
-            var res = CheckConnected();
-
-            if (!res.success) return res;
-
             lock (_lockObj)
             {
                 var result = new MessageModel<bool>();
@@ -686,6 +669,12 @@ namespace Mijin.Library.App.Driver
 
                 return result;
             }
+        }
+
+
+        public MessageModel<LabelInfo> ReadOnceByAntId(string antIdStrs)
+        {
+            return ReadOnceByAntId(JsonConvert.DeserializeObject<List<string>>(antIdStrs));
         }
 
         #endregion
