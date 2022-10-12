@@ -39,6 +39,7 @@ namespace Mijin.Library.App.Driver
 
         private object _lockObj = new object();
 
+        private bool isConnected => _gClient?.Type != null && _gClient.Type != eConnectType.Unkonw;
 
         #region 构造函数
 
@@ -153,7 +154,7 @@ namespace Mijin.Library.App.Driver
                     {
                         if ("tcp".Equals(mode))
                         {
-                            if (_gClient.OpenTcp(conStr, (int)timeOutMs, out status))
+                            if (_gClient.OpenTcp(conStr, (int)timeOutMs, out status) && status == eConnectionAttemptEventStatusType.OK)
                             {
                                 // result.success = Stop().success;
                                 // if (result.success)
@@ -179,7 +180,7 @@ namespace Mijin.Library.App.Driver
                             {
                                 foreach (var s in devList)
                                 {
-                                    if (_gClient.OpenUsbHid(devList[0], IntPtr.Zero, (int)timeOutMs, out status))
+                                    if (_gClient.OpenUsbHid(devList[0], IntPtr.Zero, (int)timeOutMs, out status) && status == eConnectionAttemptEventStatusType.OK)
                                     {
                                         // result.success = Stop().success;
                                         // if (result.success)
@@ -202,7 +203,7 @@ namespace Mijin.Library.App.Driver
                                         break;
                                     }
 
-                                    if (_gClient.OpenUsbHid(devList[index], IntPtr.Zero, (int)timeOutMs, out status))
+                                    if (_gClient.OpenUsbHid(devList[index], IntPtr.Zero, (int)timeOutMs, out status) && status == eConnectionAttemptEventStatusType.OK)
                                     {
                                         // result.success = Stop().success;
                                         // if (result.success)
@@ -356,6 +357,20 @@ namespace Mijin.Library.App.Driver
 
         #endregion
 
+        #region 判断设备是否连接(CheckConnected)
+
+        /// <summary>
+        /// 判断设备是否连接
+        /// </summary>
+        /// <returns></returns>
+        public MessageModel<bool> CheckConnected() => new()
+        {
+            success = isConnected,
+            msg = isConnected ? "设备已连接" : "设备未连接"
+        };
+
+        #endregion
+
         #region 停止读标签(Stop)
 
         /// <summary>
@@ -366,6 +381,10 @@ namespace Mijin.Library.App.Driver
         {
             lock (_lockObj)
             {
+                //判断设备是否连接
+                var res = CheckConnected();
+                if (!res.success) return res;
+
                 var result = new MessageModel<bool>();
 
                 if (_gClient == null)
