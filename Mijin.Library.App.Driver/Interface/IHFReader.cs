@@ -1,6 +1,6 @@
 ﻿using Mijin.Library.App.Model;
 
-namespace Mijin.Library.App.Driver
+namespace Mijin.Library.App.Driver.Interface
 {
     /// <summary>
     /// 高频读卡器通用接口

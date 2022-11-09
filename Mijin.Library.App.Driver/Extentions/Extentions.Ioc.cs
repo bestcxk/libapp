@@ -11,6 +11,7 @@ using Mijin.Library.App.Driver.Drivers.DhCamera;
 using Mijin.Library.App.Driver.Drivers.LibrarySIP2;
 using Mijin.Library.App.Driver.Interface;
 using Mijin.Library.App.Driver.Drivers.Lock;
+using Mijin.Library.App.Driver.Drivers.Reader;
 using Mijin.Library.App.Driver.Drivers.RFID;
 
 namespace Mijin.Library.App.Driver.Extentions

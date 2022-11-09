@@ -1,22 +1,20 @@
-﻿using Mijin.Library.App.Model;
-using Mijin.Library.App.Model.Setting;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
-using IsUtil;
 using IsUtil.Helpers;
+using Mijin.Library.App.Driver.Interface;
+using Mijin.Library.App.Model;
+using Mijin.Library.App.Model.Setting;
 using String = System.String;
 
-namespace Mijin.Library.App.Driver
+namespace Mijin.Library.App.Driver.Drivers.Reader
 {
     /// <summary>
     /// 黑色高频读卡器
     /// 可直接调用读卡方法，读卡方法会进行初始化
     /// </summary>
-    public class BlackHFReader : IHFReader, IBlackHFReader
+    public class BlackHFReader : IBlackHFReader
     {
         public ISystemFunc _systemFunc { get; }
 

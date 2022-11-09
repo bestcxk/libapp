@@ -10,6 +10,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Bing.Extensions;
 using IsUtil;
+using Mijin.Library.App.Driver.Drivers.Reader;
+using Mijin.Library.App.Driver.Interface;
 using Xunit;
 
 namespace Mijin.Library.App.Tests.Driver

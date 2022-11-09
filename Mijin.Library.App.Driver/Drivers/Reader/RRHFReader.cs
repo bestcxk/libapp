@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Bing.Extensions;
+using Mijin.Library.App.Driver.Interface;
 using Util.Logs;
 using Util.Logs.Extensions;
 namespace Mijin.Library.App.Driver
