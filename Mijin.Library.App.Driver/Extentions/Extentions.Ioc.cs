@@ -63,10 +63,15 @@ namespace Mijin.Library.App.Driver.Extentions
 
             #region HFReader IOC
 
-            if (clientSettings.HFReader == HFReaderEnum.BlackReader)
-                services.AddSingleton<IHFReader, BlackHFReader>();
-            else
-                services.AddSingleton<IHFReader, RRHFReader>();
+            Action hfAddIocAction = clientSettings.HFReader switch
+            {
+                HFReaderEnum.BlackReader => () => services.AddSingleton<IHFReader, BlackHFReader>(),
+                HFReaderEnum.RRHFReader => () => services.AddSingleton<IHFReader, RRHFReader>(),
+                HFReaderEnum.MiniBlackReader => () => services.AddSingleton<IHFReader, MiniBlackHFReader>(),
+                _ => null
+            };
+
+            hfAddIocAction?.Invoke();
 
             services.AddSingleton<ICkLock, CkLock>();
             services.AddSingleton<IGrfidKeyboard, GrfidKeyboard>();

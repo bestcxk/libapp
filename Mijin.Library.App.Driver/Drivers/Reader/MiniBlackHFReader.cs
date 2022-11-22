@@ -11,13 +11,13 @@ using Mijin.Library.App.Model.Setting;
 
 namespace Mijin.Library.App.Driver.Drivers.Reader;
 
-public class JaReader : IHFReader
+public class MiniBlackHFReader : IHFReader
 {
     public ISystemFunc _systemFunc { get; }
 
     private bool isConnect { get; set; }
 
-    public JaReader(ISystemFunc systemFunc)
+    public MiniBlackHFReader(ISystemFunc systemFunc)
     {
         _systemFunc = systemFunc;
     }

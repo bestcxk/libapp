@@ -10,7 +10,7 @@ public class JaReader_Test
 
     public JaReader_Test()
     {
-        _reader = new JaReader(null);
+        _reader = new MiniBlackHFReader(null);
     }
 
     /// <summary>

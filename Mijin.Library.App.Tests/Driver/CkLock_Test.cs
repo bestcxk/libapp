@@ -1,7 +1,4 @@
-﻿using System;
-using System.Text;
-using IsUtil.Helpers;
-using Mijin.Library.App.Driver.Drivers.Lock;
+﻿using Mijin.Library.App.Driver.Drivers.Lock;
 using Xunit;
 using Console = System.Console;
 
@@ -15,14 +12,14 @@ public class CkLock_Test
     {
         _ckLock = new CkLock();
     }
-    
+
     /// <summary>
     /// 开启指定锁控
     /// </summary>
     [Fact]
     public void OpenLockTest()
     {
-        var openSerialPortResult = _ckLock.OpenSerialPort("COM8", 9600);
+        var openSerialPortResult = _ckLock.OpenSerialPort("COM9", 115200);
 
         var openBoxResult = _ckLock.OpenBox(1);
     }
@@ -37,7 +34,7 @@ public class CkLock_Test
 
         var lockStatusResult = _ckLock.GetLockStatus();
     }
-    
+
     /// <summary>
     /// 锁控板状态事件
     /// </summary>

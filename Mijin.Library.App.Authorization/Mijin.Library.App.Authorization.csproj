@@ -6,8 +6,9 @@
 		<Nullable>enable</Nullable>
 		<UseWPF>true</UseWPF>
 		<LangVersion>10</LangVersion>
-		<Platforms>AnyCPU;x64;X86</Platforms>
+		<Platforms>x64</Platforms>
 		<ApplicationIcon>favicon.ico</ApplicationIcon>
+		
 	</PropertyGroup>
 	<!-- 发布模式不生成pdb文件-->
 	<PropertyGroup Condition="'$(Configuration)'=='Release'">

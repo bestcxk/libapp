@@ -164,7 +164,8 @@ namespace Mijin.Library.App.Model
     public enum HFReaderEnum
     {
         [Description("黑色读卡器")] BlackReader = 0,
-        [Description("荣睿高频读卡器")] RRHFReader = 1
+        [Description("荣睿高频读卡器")] RRHFReader = 1,
+        [Description("Mini黑色读卡器")] MiniBlackReader = 2
     }
 
     public class Title

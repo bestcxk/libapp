@@ -14,8 +14,10 @@ namespace Mijin.Library.App.Driver
         MessageModel<string> ConnectDoors(Dictionary<int, DoorSetting> connectDic);
         MessageModel<List<object>> GetConnectDoorInfos();
         MessageModel<Dictionary<int, Dictionary<byte, byte>>> GetDoorsPower();
+        MessageModel<string> ReadAll();
         MessageModel<string> SetDoorsPower(Dictionary<int, Dictionary<byte, byte>> powers);
         MessageModel<string> StartAllDoorWatch(bool clear = false);
+        MessageModel<string> StopAll();
         MessageModel<string> StopAllDoorWatch();
     }
 }

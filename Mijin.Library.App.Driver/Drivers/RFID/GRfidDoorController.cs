@@ -1,14 +1,10 @@
-﻿using Mijin.Library.App.Model;
-using Newtonsoft.Json.Linq;
+﻿using Bing.Extensions;
+using IsUtil;
+using Mijin.Library.App.Model;
+using Mijin.Library.App.Model.Setting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Bing.Extensions;
-using Mijin.Library.App.Model.Setting;
-using Extensions = IsUtil.Extensions;
-using IsUtil;
 
 namespace Mijin.Library.App.Driver
 {
@@ -170,6 +166,43 @@ namespace Mijin.Library.App.Driver
                 res.msg = @$"设置部分门禁功率失败，失败门禁包含：{string.Join(",", failActionKey)}";
             }
 
+            return res;
+        }
+
+        public MessageModel<string> ReadAll()
+        {
+            var res = new MessageModel<string>();
+
+            foreach (var door in doors)
+            {
+                if (!door.RfidDoor.Read().success)
+                {
+                    StopAll();
+                    res.msg = "开启所有门禁读失败";
+                    return res;
+                }
+            }
+
+            res.msg = "开启门禁读成功";
+            res.success = true;
+            return res;
+        }
+
+        public MessageModel<string> StopAll()
+        {
+            var res = new MessageModel<string>();
+
+            foreach (var door in doors)
+            {
+                if (!door.RfidDoor.Stop().success)
+                {
+                    res.msg = "开启所有门禁读失败";
+                    return res;
+                }
+            }
+
+            res.success = true;
+            res.msg = "关闭所有门禁读取RFID";
             return res;
         }
 
