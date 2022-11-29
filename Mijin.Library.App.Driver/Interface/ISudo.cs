@@ -10,7 +10,7 @@ namespace Mijin.Library.App.Driver
         MessageModel<string> Read_SSC(bool getAllStr = false);
         MessageModel<string> ReadQrcode();
         void Close();
-        MessageModel<string> StartWatchQrcode();
+        MessageModel<string> StartWatchQrcode(bool normalCode=false);
         MessageModel<string> StopWatchQrcode();
         event Action<WebViewSendModel<SudoQrcode>> OnSudoQrcode;
     }
