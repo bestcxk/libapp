@@ -134,5 +134,6 @@ namespace Mijin.Library.App.Driver
         /// <returns></returns>
         MessageModel<string> Alert(string ms);
         MessageModel<List<int>> GetUsbList();
+        event Action<WebViewSendModel<GpiEvent>> OnGipEvent;
     }
 }

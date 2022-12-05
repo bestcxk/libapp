@@ -13,6 +13,7 @@ namespace Mijin.Library.App.Driver
         private List<DoorControllerModel> doors { get; set; } = new List<DoorControllerModel>();
         public event Action<WebViewSendModel<LabelInfo>> OnDoorReadUHFLabel;
         public event Action<WebViewSendModel<PeopleInOut>> OnDoorPeopleInOut;
+        public event Action<WebViewSendModel<GpiEvent>> OnDoorGpiEvent;
 
 
         ~GRfidDoorController()
@@ -75,6 +76,13 @@ namespace Mijin.Library.App.Driver
                         obj.response.OutCount = outCount;
                         obj.method = "OnDoorPeopleInOut";
                         OnDoorPeopleInOut?.Invoke(obj);
+                    };
+
+                    door.RfidDoor.OnGipEvent += (obj) =>
+                    {
+                        obj.method = nameof(OnDoorGpiEvent);
+                        obj.status = 1001;
+                        OnDoorGpiEvent?.Invoke(obj);
                     };
                 }
             }
