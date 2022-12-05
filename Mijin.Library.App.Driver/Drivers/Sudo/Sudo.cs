@@ -61,6 +61,7 @@ namespace Mijin.Library.App.Driver
         int reTry = 1;
 
         private bool isWathing = false;
+        private bool isNormalQrCode = false;
 
         public event Action<WebViewSendModel<SudoQrcode>> OnSudoQrcode;
 
@@ -88,35 +89,51 @@ namespace Mijin.Library.App.Driver
                         if (res.response.IsEmpty())
                             continue;
 
-                        var code = res.response.Replace("|", "+"); // 
-
-
-
-
-                        var data = SudoEncrypt.AesDecrypt(code, "tecsun1234567890", Encoding.UTF8);
-
-                        var sudoQrcode = new SudoQrcode();
-
-
-                        sudoQrcode.DecodeBase64Code = data;
-                        sudoQrcode.OriginCode = res.response;
-
-                        try
+                        if (!isNormalQrCode)
                         {
-                            sudoQrcode.UserInfo = JsonConvert.DeserializeObject<UserInfo>(sudoQrcode.DecodeBase64Code);
+                            var code = res.response.Replace("|", "+"); // 
+
+                            var data = SudoEncrypt.AesDecrypt(code, "tecsun1234567890", Encoding.UTF8);
+
+                            var sudoQrcode = new SudoQrcode();
+
+
+                            sudoQrcode.DecodeBase64Code = data;
+                            sudoQrcode.OriginCode = res.response;
+
+                            try
+                            {
+                                sudoQrcode.UserInfo = JsonConvert.DeserializeObject<UserInfo>(sudoQrcode.DecodeBase64Code);
+                            }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine(e);
+                            }
+
+                            OnSudoQrcode?.Invoke(new WebViewSendModel<SudoQrcode>()
+                            {
+                                method = nameof(OnSudoQrcode),
+                                response = sudoQrcode,
+                                success = true,
+                                msg = "获取成功"
+                            });
                         }
-                        catch (Exception e)
+                        else
                         {
-                            Console.WriteLine(e);
+                            OnSudoQrcode?.Invoke(new WebViewSendModel<SudoQrcode>()
+                            {
+                                method = nameof(OnSudoQrcode),
+                                response = new SudoQrcode()
+                                {
+                                    OriginCode = res.response
+                                },
+                                success = true,
+                                msg = "获取成功"
+                            });
                         }
+                        
 
-                        OnSudoQrcode?.Invoke(new WebViewSendModel<SudoQrcode>()
-                        {
-                            method = nameof(OnSudoQrcode),
-                            response = sudoQrcode,
-                            success = true,
-                            msg = "获取成功"
-                        });
+                        
                     }
                     catch (Exception e)
                     {
@@ -371,9 +388,12 @@ namespace Mijin.Library.App.Driver
             int ret = SodoWinSDKHandle.Sodo_RequestCardAndQrcode(ref ptrTradeRecord);
             if (ret == (int)STATUS_CODE.BASE_SUCCESS)
             {
-                var qrcode = JsonConvert.DeserializeObject<QrcodeType>(Encoding.ASCII.GetString(
+
+                var originData = Encoding.ASCII.GetString(
                     ptrTradeRecord.transOutBuf,
-                    0, ptrTradeRecord.lenTransOutbuf));
+                    0, ptrTradeRecord.lenTransOutbuf);
+
+                var qrcode = JsonConvert.DeserializeObject<QrcodeType>(originData);
 
                 if (qrcode.Id.IsEmpty())
                 {
@@ -381,7 +401,14 @@ namespace Mijin.Library.App.Driver
                     return res;
                 }
 
-                res.response = qrcode.Id.DecodeBase64();
+                if(qrcode.cardType == "1")
+                {
+                    res.response = qrcode.Id.Substring(6, 8);
+                }
+                else
+                {
+                    res.response = qrcode.Id.DecodeBase64();
+                }
                 res.success = true;
                 res.msg = "获取成功";
                 return res;
@@ -395,9 +422,10 @@ namespace Mijin.Library.App.Driver
         }
 
 
-        public MessageModel<string> StartWatchQrcode()
+        public MessageModel<string> StartWatchQrcode(bool normalCode=false)
         {
             isWathing = true;
+            isNormalQrCode = normalCode;
 
             return new MessageModel<string>()
             {
@@ -409,6 +437,7 @@ namespace Mijin.Library.App.Driver
         public MessageModel<string> StopWatchQrcode()
         {
             isWathing = false;
+            isNormalQrCode = false;
             return new MessageModel<string>()
             {
                 msg = "操作成功",

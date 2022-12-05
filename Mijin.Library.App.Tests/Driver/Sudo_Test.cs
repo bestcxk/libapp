@@ -23,7 +23,7 @@ namespace Mijin.Library.App.Tests.Driver
             }
         });
 
-        private const int comNumber = 3;
+        private const int comNumber = 7;
 
         public Sudo_Test()
         {
@@ -50,10 +50,11 @@ namespace Mijin.Library.App.Tests.Driver
         public void Qrcode_Test()
         {
             {
-                var res = sudo.Connect(3, 115200);
+                var res = sudo.Connect(7, 115200);
             }
             {
                 var res = sudo.ReadQrcode();
+                Console.WriteLine(res);
             }
         }
 
@@ -79,7 +80,7 @@ namespace Mijin.Library.App.Tests.Driver
 
             sudo.OnSudoQrcode += model =>
             {
-
+                Console.WriteLine(model);
             };
 
             {
@@ -89,7 +90,7 @@ namespace Mijin.Library.App.Tests.Driver
                 var res = sudo.StartWatchQrcode();
             }
 
-            await Task.Delay(10000);
+            await Task.Delay(100000);
 
         }
 
