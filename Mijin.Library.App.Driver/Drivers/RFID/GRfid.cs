@@ -1,18 +1,15 @@
-﻿using GDotnet.Reader.Api.DAL;
+﻿using Bing.Extensions;
+using GDotnet.Reader.Api.DAL;
 using GDotnet.Reader.Api.Protocol.Gx;
-using Mijin.Library.App.Model;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using IsUtil;
 using IsUtil.Maps;
-using Bing.Extensions;
+using Mijin.Library.App.Model;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Mijin.Library.App.Driver
 {
@@ -34,6 +31,7 @@ namespace Mijin.Library.App.Driver
 
         // 标签触发事件
         public virtual event Action<WebViewSendModel<LabelInfo>> OnReadUHFLabel;
+        public virtual event Action<WebViewSendModel<GpiEvent>> OnGipEvent;
 
         private string eventName = nameof(OnReadUHFLabel);
 
@@ -107,6 +105,19 @@ namespace Mijin.Library.App.Driver
             {
                 return;
             }
+
+            OnGipEvent?.Invoke(new WebViewSendModel<GpiEvent>()
+            {
+                success = true,
+                msg = "获取成功",
+                method = nameof(OnGipEvent),
+                response = new GpiEvent()
+                {
+                    Gpi = msg.logBaseGpiStart.GpiPort,
+                    Level = msg.logBaseGpiStart.Level
+                }
+            });
+
 
             // 扫码枪 处理
             if (_gpiAction == GpiAction.InventoryGun && msg.logBaseGpiStart.GpiPort == 0) //扫码枪
@@ -383,7 +394,8 @@ namespace Mijin.Library.App.Driver
             {
                 //判断设备是否连接
                 var res = CheckConnected();
-                if (!res.success) return res;
+                if (!res.success)
+                    return res;
 
                 var result = new MessageModel<bool>();
 
@@ -760,7 +772,8 @@ namespace Mijin.Library.App.Driver
                         {"Gpo1", 1}
                     }).JsonMapTo<MessageModel<string>>();
 
-                    if (result.success)
+                    //if (result.success)
+                    if (true)
                     {
                         Task.Run(() =>
                         {
@@ -785,6 +798,7 @@ namespace Mijin.Library.App.Driver
                                     break;
                                 }
                             }
+                            alerting = false;
                         });
                     }
                     else

@@ -1,12 +1,6 @@
 ﻿using GDotnet.Reader.Api.DAL;
-using GDotnet.Reader.Api.Protocol.Gx;
 using Mijin.Library.App.Model;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using IsUtil;
 
 namespace Mijin.Library.App.Driver
 {
@@ -24,13 +18,16 @@ namespace Mijin.Library.App.Driver
 
         // 是否已经开启了人员进出判断
         protected bool isStartWatch = false;
-        
+
         ~GRfidDoor()
         {
             Dispose();
         }
 
         public override event Action<WebViewSendModel<LabelInfo>> OnReadUHFLabel;
+
+        public override event Action<WebViewSendModel<GpiEvent>> OnGipEvent;
+
 
         public GRfidDoor() : base(null)
         {
@@ -40,7 +37,7 @@ namespace Mijin.Library.App.Driver
         // 人员进出事件(需要先设置 _gpiAction 为 InventoryGun 模式)
         public event Action<WebViewSendModel<PeopleInOut>> OnPeopleInOut;
 
-        
+
 
         protected override void OnEncapedTagEpcLog(EncapedLogBaseEpcInfo msg)
         {
@@ -73,10 +70,32 @@ namespace Mijin.Library.App.Driver
         /// <param name="msg"></param>
         protected override void OnEncapedGpiStart(EncapedLogBaseGpiStart msg)
         {
-            if (null == msg || !isStartWatch)
+
+            if (msg is null)
             {
                 return;
             }
+
+
+            OnGipEvent?.Invoke(new WebViewSendModel<GpiEvent>()
+            {
+                success = true,
+                msg = "获取成功",
+                method = nameof(OnGipEvent),
+                response = new GpiEvent()
+                {
+                    Gpi = msg.logBaseGpiStart.GpiPort,
+                    Level = msg.logBaseGpiStart.Level
+                }
+            });
+
+            if (!isStartWatch)
+            {
+                return;
+            }
+
+
+
 
             // 进馆/出馆 处理
             if (_gpiAction == GpiAction.WatchPeopleInOut)
@@ -170,7 +189,7 @@ namespace Mijin.Library.App.Driver
             result.success = true;
             result.msg = "开启出入馆进出判断" + (result.success ? "成功" : "失败");
             //result.devMsg = msg2.RtMsg;
-            
+
 
             isStartWatch = true;
 

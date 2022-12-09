@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Diagnostics;
+﻿using Bing.Extensions;
+using Mijin.Library.App.Driver.Drivers.Sudo;
+using Mijin.Library.App.Model;
+using Newtonsoft.Json;
+using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Bing.Extensions;
-using Bing.Text;
-using Mijin.Library.App.Driver.Drivers.Sudo;
-using Mijin.Library.App.Model;
-using Newtonsoft.Json;
 using Util.Logs;
 using Util.Logs.Extensions;
 
