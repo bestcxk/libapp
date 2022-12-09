@@ -438,6 +438,11 @@ namespace Mijin.Library.App.Driver
             };
         }
 
+        public MessageModel<string> StartWatchQrcode()
+        {
+            return StartWatchQrcode();
+        }
+
         public MessageModel<string> StopWatchQrcode()
         {
             isWathing = false;
