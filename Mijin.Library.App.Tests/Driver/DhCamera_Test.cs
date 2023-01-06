@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Bing.Extensions;
+﻿using Bing.Extensions;
 using Mijin.Library.App.Driver.Drivers.DhCamera;
+using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -22,7 +18,7 @@ namespace Mijin.Library.App.Tests.Driver
         #region 参数
 
         DhCamera dh = new();
-        private string ip = "192.168.1.108";
+        private string ip = "192.168.0.108";
         private string port = "37777";
         private string name = "admin";
         private string password = "admin123";
@@ -46,6 +42,13 @@ namespace Mijin.Library.App.Tests.Driver
             while (true)
             {
             }
+        }
+
+        [Fact]
+        public void TestImageCat()
+        {
+            var bitmap = dh.CutFace(@$"C:\Users\zy\Desktop\temp\test\下载.png");
+            bitmap.Dispose();
         }
 
         [Fact]
@@ -77,7 +80,7 @@ namespace Mijin.Library.App.Tests.Driver
             {
                 res = dh.CutCameraBase64Image();
                 Assert.True(res.success);
-                 Assert.True(!res.response.IsEmpty());
+                Assert.True(!res.response.IsEmpty());
             }
         }
     }

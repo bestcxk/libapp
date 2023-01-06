@@ -14,6 +14,7 @@ namespace Mijin.Library.App.Driver
         public event Action<WebViewSendModel<LabelInfo>> OnDoorReadUHFLabel;
         public event Action<WebViewSendModel<PeopleInOut>> OnDoorPeopleInOut;
         public event Action<WebViewSendModel<GpiEvent>> OnDoorGpiEvent;
+        public event Action<WebViewSendModel<GpiEvent>> OnDoorStartGpiEvent;
 
 
         ~GRfidDoorController()
@@ -78,12 +79,20 @@ namespace Mijin.Library.App.Driver
                         OnDoorPeopleInOut?.Invoke(obj);
                     };
 
-                    door.RfidDoor.OnGipEvent += (obj) =>
+                    door.RfidDoor.OnGpiEvent += (obj) =>
                     {
                         obj.method = nameof(OnDoorGpiEvent);
                         obj.status = 1001;
                         OnDoorGpiEvent?.Invoke(obj);
                     };
+
+                    door.RfidDoor.OnStartGpiEvent += (obj) =>
+                    {
+                        obj.method = nameof(OnDoorStartGpiEvent);
+                        obj.status = 1001;
+                        OnDoorStartGpiEvent?.Invoke(obj);
+                    };
+
                 }
             }
 

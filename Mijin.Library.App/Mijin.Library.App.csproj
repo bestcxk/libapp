@@ -1,100 +1,103 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<OutputType>WinExe</OutputType>
-		<TargetFramework>net5.0-windows</TargetFramework>
-		<UseWPF>true</UseWPF>
-		<Platforms>x64</Platforms>
-		<RootNamespace>Mijin.Library.App</RootNamespace>
-		<ApplicationIcon>library.ico</ApplicationIcon>
-		<SatelliteResourceLanguages>zh-Hans</SatelliteResourceLanguages>
-		<Version>5.3.9</Version>
-		<RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
-		<LangVersion>10</LangVersion>
-	</PropertyGroup>
-	<!-- 发布模式不生成pdb文件-->
-	<PropertyGroup Condition="'$(Configuration)'=='Release'">
-		<DebugType>none</DebugType>
-		<DebugSymbols>false</DebugSymbols>
-	</PropertyGroup>
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net5.0-windows</TargetFramework>
+        <UseWPF>true</UseWPF>
+        <Platforms>x64</Platforms>
+        <RootNamespace>Mijin.Library.App</RootNamespace>
+        <ApplicationIcon>library.ico</ApplicationIcon>
+        <SatelliteResourceLanguages>zh-Hans</SatelliteResourceLanguages>
+        <Version>5.4.5</Version>
+        <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+        <LangVersion>10</LangVersion>
+    </PropertyGroup>
+    <!-- 发布模式不生成pdb文件-->
+    <PropertyGroup Condition="'$(Configuration)'=='Release'">
+        <DebugType>none</DebugType>
+        <DebugSymbols>false</DebugSymbols>
+    </PropertyGroup>
 
-	<ItemGroup>
-		<None Remove="library.ico" />
-	</ItemGroup>
+    <ItemGroup>
+        <None Remove="library.ico"/>
+    </ItemGroup>
 
-	<ItemGroup>
-		<PackageReference Include="MahApps.Metro" Version="2.4.9" />
-		<PackageReference Include="MahApps.Metro.IconPacks" Version="4.11.0" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
-		<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1210.39" />
-		<PackageReference Include="Prism.DryIoc" Version="8.1.97" />
-		<PackageReference Include="System.Drawing.Common" Version="6.0.0" />
-	</ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="MahApps.Metro" Version="2.4.9"/>
+        <PackageReference Include="MahApps.Metro.IconPacks" Version="4.11.0"/>
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0"/>
+        <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1210.39"/>
+        <PackageReference Include="Prism.DryIoc" Version="8.1.97"/>
+        <PackageReference Include="System.Drawing.Common" Version="6.0.0"/>
+    </ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\Mijin.Library.App.Authorization\Mijin.Library.App.Authorization.csproj" />
-		<ProjectReference Include="..\Mijin.Library.App.Common\Mijin.Library.App.Common.csproj" />
-		<ProjectReference Include="..\Mijin.Library.App.Driver\Mijin.Library.App.Driver.csproj" />
-		<ProjectReference Include="..\Mijin.Library.App.Setting\Mijin.Library.App.Setting.csproj" />
-	</ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Mijin.Library.App.Authorization\Mijin.Library.App.Authorization.csproj"/>
+        <ProjectReference Include="..\Mijin.Library.App.Common\Mijin.Library.App.Common.csproj"/>
+        <ProjectReference Include="..\Mijin.Library.App.Driver\Mijin.Library.App.Driver.csproj"/>
+        <ProjectReference Include="..\Mijin.Library.App.Setting\Mijin.Library.App.Setting.csproj"/>
+    </ItemGroup>
 
-	<ItemGroup>
-		<Resource Include="library.ico">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Resource>
-	</ItemGroup>
+    <ItemGroup>
+        <Resource Include="library.ico">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Resource>
+    </ItemGroup>
 
-	<ItemGroup>
-		<None Update="appsettings.json">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
-		<None Update="caddy.exe">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="caddyRemove.bat">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="caddyRun.bat">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="caddyStartService.bat">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="caddyStopService.bat">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="DependInstaller\MicrosoftEdgeWebView2RuntimeInstallerX64.exe">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="DependInstaller\MicrosoftEdgeWebview2Setup.exe">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="FollowSystemRunScript.vbs">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
-		<None Update="nlog.config">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
-		<None Update="nssm.exe">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="caddyRegiester.bat">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-	</ItemGroup>
+    <ItemGroup>
+        <None Update="appsettings.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="caddy.exe">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="caddyRemove.bat">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="caddyRun.bat">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="caddyStartService.bat">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="caddyStopService.bat">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="DependInstaller\MicrosoftEdgeWebView2RuntimeInstallerX64.exe">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="DependInstaller\MicrosoftEdgeWebview2Setup.exe">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="FollowSystemRunScript.vbs">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="haarcascade_frontalface_default.xml">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="nlog.config">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="nssm.exe">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="caddyRegiester.bat">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
 
-	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-		<Exec Condition="false" Command="copy &quot;$(SolutionDir)DLL\*.*&quot; &quot;$(TargetDir)&quot;" />
-	</Target>
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+        <Exec Condition="false" Command="copy &quot;$(SolutionDir)DLL\*.*&quot; &quot;$(TargetDir)&quot;"/>
+    </Target>
 
-	<ProjectExtensions>
-		<VisualStudio>
-			<UserProperties appsettings_1json__JsonSchema="" />
-		</VisualStudio>
-	</ProjectExtensions>
+    <ProjectExtensions>
+        <VisualStudio>
+            <UserProperties appsettings_1json__JsonSchema=""/>
+        </VisualStudio>
+    </ProjectExtensions>
 
-	<ItemGroup>
-		<PackageReference Update="Microsoft.SourceLink.GitHub" Version="1.1.1" />
-	</ItemGroup>
+    <ItemGroup>
+        <PackageReference Update="Microsoft.SourceLink.GitHub" Version="1.1.1"/>
+    </ItemGroup>
 
 </Project>

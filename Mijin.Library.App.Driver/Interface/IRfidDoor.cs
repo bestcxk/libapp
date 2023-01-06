@@ -33,6 +33,7 @@ namespace Mijin.Library.App.Driver
         /// 人进出事件
         /// </summary>
         event Action<WebViewSendModel<PeopleInOut>> OnPeopleInOut;
+        event Action<WebViewSendModel<GpiEvent>> OnStartGpiEvent;
 
         /// <summary>
         /// 开始监听人员进出

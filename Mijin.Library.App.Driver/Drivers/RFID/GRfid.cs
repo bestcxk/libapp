@@ -31,7 +31,7 @@ namespace Mijin.Library.App.Driver
 
         // 标签触发事件
         public virtual event Action<WebViewSendModel<LabelInfo>> OnReadUHFLabel;
-        public virtual event Action<WebViewSendModel<GpiEvent>> OnGipEvent;
+        public virtual event Action<WebViewSendModel<GpiEvent>> OnGpiEvent;
 
         private string eventName = nameof(OnReadUHFLabel);
 
@@ -106,11 +106,11 @@ namespace Mijin.Library.App.Driver
                 return;
             }
 
-            OnGipEvent?.Invoke(new WebViewSendModel<GpiEvent>()
+            OnGpiEvent?.Invoke(new WebViewSendModel<GpiEvent>()
             {
                 success = true,
                 msg = "获取成功",
-                method = nameof(OnGipEvent),
+                method = nameof(OnGpiEvent),
                 response = new GpiEvent()
                 {
                     Gpi = msg.logBaseGpiStart.GpiPort,

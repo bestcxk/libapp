@@ -1,20 +1,25 @@
-﻿using Mijin.Library.App.Driver.Interface;
+﻿using Bing.Drawing;
+using Bing.Extensions;
+using Bing.Utils.Timing;
+using Emgu.CV;
+using Mijin.Library.App.Driver.Interface;
+using Mijin.Library.App.Model;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using Bing.Conversions;
-using Bing.Drawing;
-using Bing.Extensions;
-using Bing.Helpers;
-using Bing.Utils.Timing;
-using Microsoft.AspNetCore.Http.Internal;
-using Mijin.Library.App.Model;
+using Bing.IO;
+using Emgu.CV.Structure;
+using OpenCvSharp;
 using Util.Logs;
 using Util.Logs.Extensions;
 using static Mijin.Library.App.Driver.Drivers.DhCamera.DhSdk;
+using CascadeClassifier = Emgu.CV.CascadeClassifier;
+using Size = System.Windows.Size;
 
 namespace Mijin.Library.App.Driver.Drivers.DhCamera
 {
@@ -75,6 +80,8 @@ namespace Mijin.Library.App.Driver.Drivers.DhCamera
 
         private fSnapRevCallBack _SnapRevCallBack;
 
+        private bool reCat = false;
+
         /// <summary>
         /// 人脸图片保存地址
         /// </summary>
@@ -104,12 +111,45 @@ namespace Mijin.Library.App.Driver.Drivers.DhCamera
         private void SnapRevCallBack(IntPtr lLoginID, IntPtr pBuf, uint RevLen, uint EncodeType, uint CmdSerial,
             IntPtr dwUser)
         {
-            if (EncodeType == 10) //.jpg
+            try
             {
-                byte[] data = new byte[RevLen];
-                Marshal.Copy(pBuf, data, 0, (int) RevLen);
-                networkCutbase64 = data.ToBase64String();
+                var dirName = "tempFaces";
+                DirectoryHelper.CreateIfNotExists(dirName);
+                var timesp = DateTime.Now.ToTimeStamp();
+                var tempPic = Path.Combine(dirName, @$"{timesp}_temp_face_pic.jpg");
+                var saveFacePic = Path.Combine(dirName, @$"{timesp}_face_pic.jpg");
+
+
+                if (EncodeType == 10) //.jpg
+                {
+                    byte[] data = new byte[RevLen];
+                    Marshal.Copy(pBuf, data, 0, (int) RevLen);
+
+
+                    var stream = new MemoryStream(data);
+
+
+                    stream.ToFile(tempPic);
+
+                    stream.Close();
+                    stream.Dispose();
+
+
+                    var bitmap = CutFace(tempPic);
+
+                    if (bitmap is null) return;
+
+                    bitmap.Save(saveFacePic);
+                    networkCutbase64 = bitmap.ToBase64String(ImageFormat.Jpeg);
+
+                    bitmap.Dispose();
+                }
             }
+            catch (Exception e)
+            {
+            }
+
+            reCat = false;
         }
 
         /// <summary>
@@ -189,7 +229,8 @@ namespace Mijin.Library.App.Driver.Drivers.DhCamera
         private int AnalyzerDataCallBack(IntPtr lAnalyzerHandle, uint dwEventType, IntPtr pEventInfo, IntPtr pBuffer,
             uint dwBufSize, IntPtr dwUser, int nSequence, IntPtr reserved)
         {
-            if (m_AnalyzerID != lAnalyzerHandle) return 0;
+            if (m_AnalyzerID != lAnalyzerHandle)
+                return 0;
 
             DhStruct.NET_DEV_EVENT_FACEDETECT_INFO info =
                 (DhStruct.NET_DEV_EVENT_FACEDETECT_INFO) Marshal.PtrToStructure(pEventInfo,
@@ -243,7 +284,7 @@ namespace Mijin.Library.App.Driver.Drivers.DhCamera
         }
 
         #endregion
-        
+
         #region MyRegion
 
         /// <summary>
@@ -436,7 +477,20 @@ namespace Mijin.Library.App.Driver.Drivers.DhCamera
         {
             var res = new MessageModel<string>();
 
-            var fileName = @"C:\Users\zy\Desktop\temp\CutCameraImage.jpg";
+            // var fileName = @"C:\Users\zy\Desktop\temp\CutCameraImage.jpg";
+
+            try
+            {
+                var dirName = "tempFaces";
+#if !DEBUG
+                                DirectoryHelper.Delete(dirName, false);
+
+#endif
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
 
             lock (lockobj)
             {
@@ -470,21 +524,51 @@ namespace Mijin.Library.App.Driver.Drivers.DhCamera
                     return res;
                 }
 
+                int maxCount = 50;
+                int count = 0;
+
                 while (networkCutbase64.IsEmpty())
                 {
+                    if (!reCat)
+                    {
+                        count = 0;
+                        reCat = true;
+                        try
+                        {
+                            ret = DhSdk.SnapPictureEx(m_LoginID, asyncSnap, IntPtr.Zero);
+                        }
+                        catch (Exception e)
+                        {
+                            reCat = false;
+                            res.success = false;
+                            res.msg = "远程抓图请求异常";
+                            res.devMsg = @$"exception msg : {e.ToString()} " + "\r\n" + @$"StackTrace: {e.StackTrace}";
+
+                            e.Log(Log.GetLog());
+                            return res;
+                        }
+                    }
+                    else
+                    {
+                        count++;
+                        if (count > maxCount)
+                        {
+                            reCat = false;
+                        }
+                    }
+
                     Task.Delay(10).GetAwaiter().GetResult();
                 }
 
 #if DEBUG
-                try
-                {
-                    ImageHelper.FromBase64String(networkCutbase64)?.Save(@$"imgs/cut_{new DateTime().ToTimeStamp()}");
-                }
-                catch (Exception e)
-                {
-                }
+                // try
+                // {
+                //     ImageHelper.FromBase64String(networkCutbase64)?.Save(@$"imgs/cut_{new DateTime().ToTimeStamp()}");
+                // }
+                // catch (Exception e)
+                // {
+                // }
 #endif
-
                 res.response = networkCutbase64;
                 res.success = true;
                 res.msg = "获取成功";
@@ -507,6 +591,50 @@ namespace Mijin.Library.App.Driver.Drivers.DhCamera
             //     res.msg = res.success ? "获取成功" : "获取失败";
             //     return res;
             // }
+        }
+
+
+        public Bitmap CutFace(string filename)
+        {
+            //CvInvoke.UseOpenCL = CvInvoke.HaveOpenCLCompatibleGpuDevice;//使用GPU运算
+            var _faceCascade = new CascadeClassifier("haarcascade_frontalface_default.xml");
+            var mat = CvInvoke.Imread(filename, Emgu.CV.CvEnum.LoadImageType.Grayscale); //灰度导入图片
+            int minNeighbors = 7; //最小矩阵组，默认3
+            var size = new System.Drawing.Size(10, 10); //最小头像大小
+            var facesDetected = _faceCascade.DetectMultiScale(mat, 1.1, minNeighbors, size);
+            //循环把人脸部分切割出来并保存
+            int index = 0;
+            var bitmap = Bitmap.FromFile(filename);
+
+            var bitmaps = new List<Bitmap>();
+
+            foreach (var item in facesDetected)
+            {
+                index++;
+                var bmpOut = new Bitmap(item.Width, item.Height, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+                var g = Graphics.FromImage(bmpOut);
+                g.DrawImage(bitmap, new System.Drawing.Rectangle(0, 0, item.Width, item.Height),
+                    new System.Drawing.Rectangle(item.X, item.Y, item.Width, item.Height), GraphicsUnit.Pixel);
+                g.Dispose();
+
+                bitmaps.Add(bmpOut);
+                // bmpOut.Save(savePath, System.Drawing.Imaging.ImageFormat.Jpeg);
+                // bmpOut.Dispose();
+            }
+
+            bitmap.Dispose();
+            mat.Dispose();
+            _faceCascade.Dispose();
+
+            var rtBitmap = bitmaps.OrderByDescending(b => b.Size).FirstOrDefault();
+
+            foreach (var bitmap1 in bitmaps)
+            {
+                if (bitmap1.Size != rtBitmap?.Size)
+                    bitmap1.Dispose();
+            }
+
+            return rtBitmap;
         }
 
         #endregion

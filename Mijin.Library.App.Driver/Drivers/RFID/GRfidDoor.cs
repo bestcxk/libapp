@@ -26,7 +26,9 @@ namespace Mijin.Library.App.Driver
 
         public override event Action<WebViewSendModel<LabelInfo>> OnReadUHFLabel;
 
-        public override event Action<WebViewSendModel<GpiEvent>> OnGipEvent;
+        public override event Action<WebViewSendModel<GpiEvent>> OnGpiEvent;
+
+        public event Action<WebViewSendModel<GpiEvent>> OnStartGpiEvent;
 
 
         public GRfidDoor() : base(null)
@@ -77,11 +79,11 @@ namespace Mijin.Library.App.Driver
             }
 
 
-            OnGipEvent?.Invoke(new WebViewSendModel<GpiEvent>()
+            OnGpiEvent?.Invoke(new WebViewSendModel<GpiEvent>()
             {
                 success = true,
                 msg = "获取成功",
-                method = nameof(OnGipEvent),
+                method = nameof(OnGpiEvent),
                 response = new GpiEvent()
                 {
                     Gpi = msg.logBaseGpiStart.GpiPort,
@@ -109,6 +111,18 @@ namespace Mijin.Library.App.Driver
                 if (firstTrigger == -1 && msg.logBaseGpiStart.Level == 1)
                 {
                     firstTrigger = msg.logBaseGpiStart.GpiPort;
+                    OnStartGpiEvent?.Invoke(new WebViewSendModel<GpiEvent>()
+                    {
+                        success = true,
+                        status = 1001,
+                        msg = "获取成功",
+                        method = nameof(OnStartGpiEvent),
+                        response = new GpiEvent()
+                        {
+                            Gpi = msg.logBaseGpiStart.GpiPort,
+                            Level = msg.logBaseGpiStart.Level
+                        }
+                    });
                     stopwatch.Reset();
                     stopwatch.Start();
                 }
