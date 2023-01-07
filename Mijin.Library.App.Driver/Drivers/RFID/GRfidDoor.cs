@@ -40,7 +40,6 @@ namespace Mijin.Library.App.Driver
         public event Action<WebViewSendModel<PeopleInOut>> OnPeopleInOut;
 
 
-
         protected override void OnEncapedTagEpcLog(EncapedLogBaseEpcInfo msg)
         {
             // 回调内部如有阻塞，会影响API正常使用
@@ -72,8 +71,7 @@ namespace Mijin.Library.App.Driver
         /// <param name="msg"></param>
         protected override void OnEncapedGpiStart(EncapedLogBaseGpiStart msg)
         {
-
-            if (msg is null)
+            if (msg is null || msg.logBaseGpiStart.Level != 1)
             {
                 return;
             }
@@ -97,8 +95,6 @@ namespace Mijin.Library.App.Driver
             }
 
 
-
-
             // 进馆/出馆 处理
             if (_gpiAction == GpiAction.WatchPeopleInOut)
             {
@@ -108,7 +104,7 @@ namespace Mijin.Library.App.Driver
                 }
 
                 //进先高，出低
-                if (firstTrigger == -1 && msg.logBaseGpiStart.Level == 1)
+                if (firstTrigger == -1)
                 {
                     firstTrigger = msg.logBaseGpiStart.GpiPort;
                     OnStartGpiEvent?.Invoke(new WebViewSendModel<GpiEvent>()
@@ -126,7 +122,7 @@ namespace Mijin.Library.App.Driver
                     stopwatch.Reset();
                     stopwatch.Start();
                 }
-                else if (firstTrigger != -1 && msg.logBaseGpiStart.Level == 0)
+                else if (firstTrigger != -1)
                 {
                     if (firstTrigger != msg.logBaseGpiStart.GpiPort)
                     {
@@ -199,6 +195,7 @@ namespace Mijin.Library.App.Driver
             {
                 result.success = true;
             }
+
             _gpiAction = GpiAction.WatchPeopleInOut;
             result.success = true;
             result.msg = "开启出入馆进出判断" + (result.success ? "成功" : "失败");
