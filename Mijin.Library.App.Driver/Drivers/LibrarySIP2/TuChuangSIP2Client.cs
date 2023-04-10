@@ -61,7 +61,7 @@ namespace Mijin.Library.App.Driver
             var readerInfo = new SIP2ReaderInfo();
             var data = new MessageModel<object>();
             var sendStr =
-                $@"11YN{DateTime.Now.ToString("yyyyMMddHHmmss")}   {DateTime.Now.ToString("yyyyMMddHHmmss")}AO|AA{readerNo}|AB{bookserial}|CN{libraryAccount}|AC|AY3AZEDB7|";
+                $@"11YN19960212   10051419960212   100514AO|AA{readerNo}|AB{bookserial}|CN{libraryAccount}|AC|AY3AZEDB7|";
             string message = null;
             try
             {
@@ -69,7 +69,7 @@ namespace Mijin.Library.App.Driver
             }
             catch (Exception e)
             {
-                data.msg = e.ToString();
+                data.msg = $"{e.ToString()}:{sendStr}";
                 return data;
             }
 
