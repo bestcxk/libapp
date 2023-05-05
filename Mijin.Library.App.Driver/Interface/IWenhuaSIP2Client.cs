@@ -19,7 +19,7 @@ namespace Mijin.Library.App.Driver
         /// <param name="host"></param>
         /// <param name="port"></param>
         /// <returns></returns>
-        MessageModel<bool> Connect(string host, string port);
+        MessageModel<bool> Connect(string host, string port, bool reconnected = false);
 
         /// <summary>
         /// 续借书籍

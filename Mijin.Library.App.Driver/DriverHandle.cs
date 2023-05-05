@@ -10,6 +10,7 @@ using Bing.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Mijin.Library.App.Driver.Drivers.LibrarySIP2;
 using Mijin.Library.App.Driver.Interface;
+using Newtonsoft.Json;
 
 namespace Mijin.Library.App.Driver
 {
@@ -139,9 +140,24 @@ namespace Mijin.Library.App.Driver
 
             //parameters = new object[] { 1 };
 
-            // 获取执行参数的所有type
-            Type[] parametersTypes =
+
+
+            Type[] parametersTypes;
+
+            try
+            {
+                // 获取执行参数的所有type
+                parametersTypes =
                 parameters == null ? new Type[] { } : parameters.Select(p => p.GetType()).ToArray();
+            }
+            catch (Exception e)
+            {
+                return new MessageModel<object>()
+                {
+                    msg = @$"无法获取到传入参数的类型，可能传入null参数，参数:{(parameters != null ? JsonConvert.SerializeObject(parameters) : null)}",
+                    devMsg = e.StackTrace
+                };
+            }
 
             // 反射通过cls 获取 同名接口的 属性
             var bindingFlags = BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public;

@@ -37,6 +37,7 @@ using IdentityModel.Client;
 using Microsoft.AspNetCore.Http.Extensions;
 using Mijin.Library.App.Common.Domain;
 using Mijin.Library.App.Driver.Services.Network;
+using Newtonsoft.Json;
 
 namespace Mijin.Library.App
 {
@@ -122,6 +123,43 @@ namespace Mijin.Library.App
         // 使用了ioc后，只能使用该方式进行启动,把app.xaml的StartupUrl 修改成 Startup = App_OnStartup
         private void App_OnStartup()
         {
+
+            Task.Run(() =>
+            {
+                #region Test
+                {
+
+                    //try
+                    //{
+                    //    Console.WriteLine("Start Test");
+                    //    var tuchang = new TuChuangSIP2Client();
+
+                    //    var connectRes = tuchang.Connect("172.16.0.11", "60002",true);
+                    //    Console.WriteLine(JsonConvert.SerializeObject(connectRes));
+
+                    //    var res = tuchang.AdminLogin("zzjh1", "ilas");
+                    //      Console.WriteLine(JsonConvert.SerializeObject(res));
+
+                    //    res = tuchang.GetBookInfo("36080000229434");
+
+                    //    Console.WriteLine(JsonConvert.SerializeObject(res));
+
+                    //}
+                    //catch (Exception e)
+                    //{
+                    //    Console.WriteLine(e);
+                    //}
+
+
+
+                }
+                #endregion
+            });
+
+
+
+
+
             var mainWindow = Container.Resolve<MainWindow>();
             var webviewWindow = Container.Resolve<WebViewWindow>();
             try

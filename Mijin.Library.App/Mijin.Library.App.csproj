@@ -19,23 +19,23 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <None Remove="library.ico"/>
+        <None Remove="library.ico" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="MahApps.Metro" Version="2.4.9"/>
-        <PackageReference Include="MahApps.Metro.IconPacks" Version="4.11.0"/>
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0"/>
-        <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1210.39"/>
-        <PackageReference Include="Prism.DryIoc" Version="8.1.97"/>
-        <PackageReference Include="System.Drawing.Common" Version="6.0.0"/>
+        <PackageReference Include="MahApps.Metro" Version="2.4.9" />
+        <PackageReference Include="MahApps.Metro.IconPacks" Version="4.11.0" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
+        <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1210.39" />
+        <PackageReference Include="Prism.DryIoc" Version="8.1.97" />
+        <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Mijin.Library.App.Authorization\Mijin.Library.App.Authorization.csproj"/>
-        <ProjectReference Include="..\Mijin.Library.App.Common\Mijin.Library.App.Common.csproj"/>
-        <ProjectReference Include="..\Mijin.Library.App.Driver\Mijin.Library.App.Driver.csproj"/>
-        <ProjectReference Include="..\Mijin.Library.App.Setting\Mijin.Library.App.Setting.csproj"/>
+        <ProjectReference Include="..\Mijin.Library.App.Authorization\Mijin.Library.App.Authorization.csproj" />
+        <ProjectReference Include="..\Mijin.Library.App.Common\Mijin.Library.App.Common.csproj" />
+        <ProjectReference Include="..\Mijin.Library.App.Driver\Mijin.Library.App.Driver.csproj" />
+        <ProjectReference Include="..\Mijin.Library.App.Setting\Mijin.Library.App.Setting.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -87,17 +87,17 @@
     </ItemGroup>
 
     <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-        <Exec Condition="false" Command="copy &quot;$(SolutionDir)DLL\*.*&quot; &quot;$(TargetDir)&quot;"/>
+        <Exec Condition="false" Command="copy &quot;$(SolutionDir)DLL\*.*&quot; &quot;$(TargetDir)&quot;" />
     </Target>
 
     <ProjectExtensions>
         <VisualStudio>
-            <UserProperties appsettings_1json__JsonSchema=""/>
+            <UserProperties appsettings_1json__JsonSchema="" />
         </VisualStudio>
     </ProjectExtensions>
 
     <ItemGroup>
-        <PackageReference Update="Microsoft.SourceLink.GitHub" Version="1.1.1"/>
+        <PackageReference Update="Microsoft.SourceLink.GitHub" Version="1.1.1" />
     </ItemGroup>
 
 </Project>

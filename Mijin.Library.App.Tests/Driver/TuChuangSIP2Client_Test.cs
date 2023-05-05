@@ -44,7 +44,7 @@ namespace Mijin.Library.App.Tests.Driver
             {
                 //var res = tuChuangSIP2Client.Connect("222.89.181.140", "2001");//连接
                 //var res = tuChuangSIP2Client.Connect("47.107.119.27", "2042");
-                var res = tuChuangSIP2Client.Connect("218.14.113.25", "2001");
+                var res = tuChuangSIP2Client.Connect("172.16.0.11", "60002");
                 var gbRes = tuChuangSIP2Client.GetBookInfo("75240010007856");
                 //var getReaderRes = tuChuangSIP2Client.GetReaderInfo("75240000000063");
                
