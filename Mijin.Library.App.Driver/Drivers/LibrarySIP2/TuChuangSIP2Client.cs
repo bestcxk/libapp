@@ -112,7 +112,7 @@ namespace Mijin.Library.App.Driver
             bookInfo.ShuldBackDate = message.Search("AH", "|");
             readerInfo.CardNo = readerNo;
 
-            bookInfo.ScreenMsg = message.Search("AF", "|")?.Replace(bookserial, "");
+            bookInfo.ScreenMsg = message.Search("AF", "|")?.Replace(bookserial, newValue: "");
             data.success = bookInfo.ScreenMsg.Contains("成功");
             bookInfo.PrintLine = message.Search("AG", "|");
 
