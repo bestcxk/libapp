@@ -475,7 +475,7 @@ namespace Mijin.Library.App.Driver
             var bookInfo = new SIP2BookInfo();
             var readerInfo = new SIP2ReaderInfo();
             var data = new MessageModel<object>();
-            var sendStr = "9300CNzzjhs|COilas|CP11|AY1AZF660";
+            var sendStr = $"9300CN{admin}|CO{pw}|CP11|AY1AZf793";
 
             string message = null;
             try
