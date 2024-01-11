@@ -345,5 +345,14 @@ namespace Mijin.Library.App.Driver.Drivers.Sudo
 
         [DllImport("SodoXP100.dll", EntryPoint = "Sodo_SB_Process", CharSet = CharSet.Unicode, SetLastError = true)]
         public static extern int Sodo_SB_Process(ref STR_SB_INFO op);
+        
+        /// <summary>
+        /// 获取社保卡规则
+        /// </summary>
+        /// <param name="returnInfo">返回信息"</param>
+        /// <param name="inbuf">服务器端口，例如8443</param> 
+        /// <param name="op">OP=1读出的社保卡基本信息各数据项，依次为：发卡地区行政区划代码（卡识别码前6位）、社会保障号码、卡号、卡识别码、姓名、卡复位信息（仅取历史字节）、规范版本、发卡日期、卡有效期、终端机编号、终端设备号。各数据项之间以“|”分割，且最后一个数据项以“|”结尾OP=2:输出参数为读出的社保卡内部认证和外部认证的计算数据，依次为：发卡地区行政区划代码（卡识别码前6位）、卡复位信息（仅取历史字节）、算法标识、卡识别码、内部认证过程因子、内部认证鉴别所需的原始信息、外部认证过程因子、外部认证鉴别所需的原始信息，其中外部认证相关数据项全部不为空或全部为空。各数据项之间以“|”分割，且最后一个数据项以“|”结尾OP=3:后台密服返回的信息带入接口做卡片授权，授权后可以拿到同OP=1同样的数据内容。返回信息同OP=1。OP=4：输入参数无返回:卡片发行机构代码|社保卡卡号|卡片识别码|卡复位的信息|卡片版本|发行日期|有效日期</param>
+        [DllImport("SodoXP100.dll", EntryPoint = "Sodo_SB_Psam_Process_GetAllInfo", CharSet = CharSet.Unicode, SetLastError = true)]
+        public static extern int Sodo_SB_Psam_Process_GetAllInfo(ref IntPtr returnInfo,ref IntPtr inbuf,int op);
     }
 }

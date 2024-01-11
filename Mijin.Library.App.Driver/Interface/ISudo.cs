@@ -13,5 +13,9 @@ namespace Mijin.Library.App.Driver
         MessageModel<string> StartWatchQrcode(bool normalCode=false);
         MessageModel<string> StopWatchQrcode();
         event Action<WebViewSendModel<SudoQrcode>> OnSudoQrcode;
+                
+        MessageModel<string> ReadinternalInfo();
+        
+        MessageModel<string>  SecretServiceCheck(string SecretStr);
     }
 }

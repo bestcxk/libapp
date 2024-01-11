@@ -7,6 +7,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Util.Logs;
@@ -55,6 +56,8 @@ namespace Mijin.Library.App.Driver
     public class Sudo : ISudo
     {
         private readonly ISystemFunc _systemFunc;
+        
+        object lockobj = new object();
 
         static bool isFirst = true;
 
@@ -448,6 +451,68 @@ namespace Mijin.Library.App.Driver
                 msg = "操作成功",
                 success = true
             };
+        }
+        
+        public MessageModel<string> ReadinternalInfo()
+        {
+            MessageModel<string> res = new MessageModel<string>();
+                lock (lockobj)
+                {
+                    SodoWinSDKHandle.Sodo_Start();
+                    try
+                    {
+                        IntPtr returnInfo2 = Marshal.AllocHGlobal(1024);
+                        IntPtr inbuf2 = Marshal.AllocHGlobal(1024);
+                        var ret = SodoWinSDKHandle.Sodo_SB_Psam_Process_GetAllInfo(ref returnInfo2, ref inbuf2, 2);
+                        if (ret == (int)STATUS_CODE.BASE_SUCCESS)
+                        {
+                            res.response = Marshal.PtrToStringAnsi(returnInfo2).Trim();
+                            res.success = true;
+                            res.msg = "获取成功";
+                        }
+                        else
+                        {
+                            res.msg = "读取失败";
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        e.Log(Log.GetLog());
+                    }
+                }
+
+                return res;
+        }
+        
+        public MessageModel<string> SecretServiceCheck(string SecretStr)
+        {
+            var res = new MessageModel<string>();
+            lock (lockobj)
+            {
+                try
+                {
+                    var returnInfo = Marshal.AllocHGlobal(1024);
+                    var inbuf = Marshal.StringToHGlobalAnsi(SecretStr);
+                    var ret = SodoWinSDKHandle.Sodo_SB_Psam_Process_GetAllInfo(ref returnInfo, ref inbuf, 3);
+                    if (ret == (int)STATUS_CODE.BASE_SUCCESS)
+                    {
+                        res.response = Marshal.PtrToStringAnsi(returnInfo).Trim();
+                        res.success = true;
+                        res.msg = "获取成功";
+                    }
+                    else
+                    {
+                        res.msg = "密服验证失败";
+                    }
+                }
+                catch (Exception e)
+                {
+                    e.Log(Log.GetLog());
+                }
+
+
+                return res;
+            }
         }
 
 

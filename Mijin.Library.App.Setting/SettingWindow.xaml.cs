@@ -55,10 +55,6 @@ namespace Mijin.Library.App.Setting
             this.cameraIndex.ItemsSource = cameraSources;
 
             this.idCom.ItemsSource = cameraSources;
-
-
-
-            RefreshIdList();
         }
 
         public SettingWindow(ISystemFunc systemFunc) : this()
@@ -114,7 +110,7 @@ namespace Mijin.Library.App.Setting
                             idComSources.AddRange(librarySettings?.response?.Clients?.Select(c => c.Id.ToInt()));
                             return false;
                         }
-                        catch (Exception)
+                        catch (Exception e)
                         {
                             Application.Current.Dispatcher.Invoke(DispatcherPriority.Normal, () =>
                             {
